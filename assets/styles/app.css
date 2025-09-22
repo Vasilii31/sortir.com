@@ -1,5 +1,28 @@
+/* Définitions des couleurs par défaut de l'app */
 
+:root{
+    --custom-prim: #e3ded0;
+    --custom-sec: #333333;
+}
 body{
-    background-color: #e3ded0;
+    background-color: var(--custom-prim);
     font-family: 'Roboto', sans-serif;
+}
+
+/* Couleurs custom pour les BACKGROUND */
+
+.bg-custom-prim {
+    background-color: var(--custom-prim)  !important;
+}
+.bg-custom-sec{
+    background-color: var(--custom-sec) !important ;
+}
+
+/* Couleurs custom pour les FONT */
+
+.txt-custom-prim{
+    color: var(--custom-prim) !important;
+}
+.txt-custom-sec{
+    color:  var(--custom-sec)  !important;
 }
