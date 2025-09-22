@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Site index{% endblock %}
+
+{% block body %}
+    <h1>Gestion des sites</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Nom du site</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+            <tr>
+
+                <td>{{ site.nomSite }}</td>
+                {# Nom affiché en span et input caché #}
+
+                <td>
+                    <a href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
+                    <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
+                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">Aucun site trouvé</td>
+            </tr>
+        {% endfor %}
+        <a href="{{ path('app_site_new') }}">Créer un nouveau site</a>
+
+        </tbody>
+    </table>
+
+
+{% endblock %}
