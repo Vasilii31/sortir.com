@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Site;
 use App\Form\SiteType;
-use App\Repository\SiteRepository;
+use App\Service\SiteService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,11 +14,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/site')]
 final class SiteController extends AbstractController
 {
+    public function __construct(private readonly SiteService $siteService) {}
     #[Route(name: 'app_site_index', methods: ['GET'])]
-    public function index(SiteRepository $siteRepository): Response
+    public function index(): Response
     {
         return $this->render('site/index.html.twig', [
-            'sites' => $siteRepository->findAll(),
+            'sites' => $this->siteService->getAllSites(),
         ]);
     }
 

@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Site index{% endblock %}
+{% block title %}Gestion des sites{% endblock %}
 
 {% block body %}
     <h1>Gestion des sites</h1>
-
+    <input type="text" id="site-search" placeholder="Rechercher par nom..." class="form-control mb-3">
     <table class="table">
         <thead>
             <tr>
@@ -13,7 +13,7 @@
                 <th>actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="site-table">
         {% for site in sites %}
             <tr>
 
@@ -38,6 +38,15 @@
 
         </tbody>
     </table>
-
+    <script>
+        document.getElementById('site-search').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            document.querySelectorAll('#site-table tr').forEach(row => {
+                // On cible uniquement la première colonne <td> (nom du site)
+                let siteName = row.querySelector('td').innerText.toLowerCase();
+                row.style.display = siteName.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
 
 {% endblock %}
