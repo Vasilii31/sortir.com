@@ -3,9 +3,9 @@
 {% block title %}Sortie index{% endblock %}
 
 {% block body %}
-    <h1>Sortie index</h1>
-    <div>
-        <h3>Filtrer les sorties</h3>
+
+    <div class="py-3">
+        <h4 class="txt-custom-prim">Filtrer les sorties</h4>
 
         <div class="card p-3 mb-4 shadow-sm">
             {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
@@ -28,8 +28,9 @@
             {{ form_end(form) }}
         </div>
     </div>
-    <table class="table">
-        <thead>
+    <div class="card">
+        <table class="table ">
+            <thead>
             <tr>
                 <th>Nom de la sortie</th>
                 <th>Date de la sortie</th>
@@ -39,28 +40,31 @@
                 <th>Organisateur</th>
                 <th>actions</th>
             </tr>
-        </thead>
-        <tbody>
-        {% for item in sortiesWithSub %}
-            <tr>
-                <td>{{ item.sortie.nom }}</td>
-                <td>{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
-                <td>{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y H:i') : '' }}</td>
-                <td>{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
-                <td>{{ item.sortie.etatsortie }}</td>
-                <td> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}.</td>
-                <td>
-                    <a class="a-custom-prim-outline" href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">show</a>
-                    <a class="a-custom-sec-outline" href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="10">Aucune sortie.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for item in sortiesWithSub %}
+                <tr>
+                    <td>{{ item.sortie.nom }}</td>
+                    <td>{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
+                    <td>{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y H:i') : '' }}</td>
+                    <td>{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
+                    <td>{{ item.sortie.etat.libelle }}</td>
+                    <td> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}
+                        .
+                    </td>
+                    <td>
+                        <a class="a-custom-prim-outline" href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">show</a>
+                        <a class="a-custom-sec-outline" href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="10">Aucune sortie.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
+    </div>
     <a href="{{ path('app_sortie_new') }}">Create new</a>
 {% endblock %}

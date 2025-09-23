@@ -1,11 +1,11 @@
 /* Définitions des couleurs par défaut de l'app */
 
 :root{
-    --custom-prim: #e3ded0;
-    --custom-sec: #333333;
+    --custom-prim: #f3f2ff;
+    --custom-sec: #1a1b23;
 }
 body{
-    background-color: var(--custom-prim);
+    background-color: var(--custom-sec);
     font-family: 'Roboto', sans-serif;
 }
 
@@ -21,10 +21,10 @@ body{
 /* Couleurs custom pour les FONT */
 
 .txt-custom-prim{
-    color: var(--custom-prim) !important;
+    color:  var(--custom-prim)  !important;
 }
 .txt-custom-sec{
-    color:  var(--custom-sec)  !important;
+    color: var(--custom-sec) !important;
 }
 
 /* BUTTON et LIENS */

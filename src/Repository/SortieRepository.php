@@ -4,13 +4,9 @@ namespace App\Repository;
 
 use App\Dto\SortieInscritsDTO;
 use App\Entity\Sortie;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Sortie>
- */
-class SortieRepository extends ServiceEntityRepository
+class SortieRepository  extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -30,18 +26,23 @@ class SortieRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
+            ->leftJoin('s.etat', 'e')
             ->addSelect('COUNT(i.id) as nbInscrits')
+            ->addSelect('e.libelle AS etatLibelle')
             ->groupBy('s.id')
+            ->addGroupBy('e.id')
             ->orderBy('s.id', 'ASC');
 
         $results = $qb->getQuery()->getResult();
 
-        $toReturn =  array_map(fn($row) =>
-        new SortieInscritsDTO($row[0], (int)$row['nbInscrits']),
+        return array_map(
+            fn($row) => new SortieInscritsDTO(
+                $row[0],
+                (int)$row['nbInscrits'],
+                $row['etatLibelle'] // ajouter le libellé dans le DTO
+            ),
             $results
         );
-        return $toReturn;
-
     }
 
     //    /**
