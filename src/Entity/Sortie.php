@@ -79,15 +79,14 @@ class Sortie
         return $this;
     }
 
-    public function getDatedebut(): ?string
+    public function getDatedebut(): ?\DateTimeInterface
     {
         return $this->datedebut;
     }
 
-    public function setDatedebut(string $datedebut): static
+    public function setDatedebut(\DateTimeInterface $datedebut): static
     {
         $this->datedebut = $datedebut;
-
         return $this;
     }
 
@@ -103,15 +102,14 @@ class Sortie
         return $this;
     }
 
-    public function getDatecloture(): ?\DateTime
+    public function getDatecloture(): ?\DateTimeInterface
     {
         return $this->datecloture;
     }
 
-    public function setDatecloture(\DateTime $datecloture): static
+    public function setDatecloture(\DateTimeInterface $datecloture): static
     {
         $this->datecloture = $datecloture;
-
         return $this;
     }
 

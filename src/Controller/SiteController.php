@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/sites', name: 'app_sites_')]
-final class SitesController extends AbstractController
+final class SiteController extends AbstractController
 {
     #[Route('/', name: 'list')]
     public function index(): Response
