@@ -1,5 +1,114 @@
+/* Définitions des couleurs par défaut de l'app */
 
+:root{
+    --custom-prim: #f3f2ff;
+    --custom-sec: #1a1b23;
+    --custom-ter: #c5c3cd;
+}
 body{
-    background-color: #e3ded0;
+    background-color: var(--custom-sec);
     font-family: 'Roboto', sans-serif;
+}
+
+/* Couleurs custom pour les BACKGROUND */
+
+.bg-custom-prim {
+    background-color: var(--custom-prim)  !important;
+}
+.bg-custom-sec{
+    background-color: var(--custom-sec) !important ;
+}
+
+/* Couleurs custom pour les FONT */
+
+.txt-custom-prim{
+    color:  var(--custom-prim)  !important;
+}
+.txt-custom-sec{
+    color: var(--custom-sec) !important;
+}
+
+/* BUTTON et LIENS */
+
+/* Liens remplis*/
+[class^="a-custom-"] {
+    text-decoration: none;
+    width: fit-content;
+    min-width: 100px;
+    text-align: center;
+    padding: 5px 15px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+/* Liens remplis */
+.a-custom-prim {
+    --btn-bg: #764ba2;
+    --btn-hover: #5a3f87;
+    background: var(--btn-bg);
+    color: white;
+    border-color: var(--btn-bg);
+}
+.a-custom-prim:hover {
+    background: var(--btn-hover);
+    border-color: var(--btn-hover);
+}
+
+.a-custom-sec {
+    --btn-bg: #667eea;
+    --btn-hover: #4c5bd1;
+    background: var(--btn-bg);
+    color: white;
+    border-color: var(--btn-bg);
+}
+.a-custom-sec:hover {
+    background: var(--btn-hover);
+    border-color: var(--btn-hover);
+}
+
+/* Liens outlined */
+.a-custom-prim-outline {
+    --btn-bg: #764ba2;
+    --btn-hover: #5a3f87;
+    background: transparent;
+    color: var(--btn-bg);
+    border-color: var(--btn-bg);
+}
+.a-custom-prim-outline:hover {
+    background: var(--btn-hover);
+    color: white;
+    border-color: var(--btn-hover);
+}
+
+.a-custom-sec-outline {
+    --btn-bg: #667eea;
+    --btn-hover: #4c5bd1;
+    background: transparent;
+    color: var(--btn-bg);
+    border-color: var(--btn-bg);
+}
+.a-custom-sec-outline:hover {
+    background: var(--btn-hover);
+    color: white;
+    border-color: var(--btn-hover);
+}
+
+input, select{
+    text-decoration: none;
+    min-width: 200px;
+    max-width: 400px;
+    /*margin-block: 15px ;*/
+    padding: 5px 15px;
+    border: 2px solid transparent;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+input::placeholder{
+    font-style: italic;
+    color: var(--custom-ter) !important;
 }

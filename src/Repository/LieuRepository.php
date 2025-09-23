@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Dto\SortieInscritsDTO;
 use App\Entity\Lieu;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,17 @@ class LieuRepository extends ServiceEntityRepository
         parent::__construct($registry, Lieu::class);
     }
 
-    //    /**
-    //     * @return Lieu[] Returns an array of Lieu objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('l.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findAll() : array
+    {
 
-    //    public function findOneBySomeField($value): ?Lieu
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $qb = $this->createQueryBuilder('l')
+            ->leftJoin('l.ville', 'v')
+            ->addSelect('v') // très important : pour charger aussi l'entité Ville
+            ->orderBy('l.id', 'ASC');
+//        dd( $qb->getQuery()->getResult());
+
+        return $qb->getQuery()->getResult();
+
+    }
+
 }
