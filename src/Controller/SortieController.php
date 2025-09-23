@@ -22,18 +22,16 @@ final class SortieController extends AbstractController
 
         $form = $this->createForm(SortieFilterType::class);
         $form->handleRequest($request);
-
+        $sortiesWithSub = [];
         if ($form->isSubmitted() && $form->isValid()) {
-//            $filteredSorties = $sortieService->getFilteredSorties($form->getData());
+            $sortiesWithSub = $sortieService->findFilteredSorties($form->getData());
+        }else{
+            $sortiesWithSub = $sortieService->findAllWithSubscribed();
         }
-//        else{
-//            $sorties = $sortieService->findAll(
-//        }
 
         return $this->render('sortie/index.html.twig', [
-            'sortiesWithSub' => $sortieService->findAllWithSubscribed(),
+            'sortiesWithSub' => $sortiesWithSub,
             'form' => $form->createView(),
-//            'filteredSorties' => $filteredSorties,
         ]);
     }
 
@@ -86,7 +84,7 @@ final class SortieController extends AbstractController
     #[Route('/{id}', name: 'app_sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($sortie);
             $entityManager->flush();
         }

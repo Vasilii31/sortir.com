@@ -5,9 +5,12 @@ namespace App\Form;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Participant;
+use App\Entity\Site;
 use App\Entity\Sortie;
+use App\Service\SiteService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,9 +19,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SortieFilterType extends AbstractType
 {
+    public function __construct(private SiteService $siteService){}
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $sites = $this->siteService->getAllSites();
         $builder
+            ->add('site', ChoiceType::class, [
+                'choices' => $sites,
+                'choice_label' => fn(Site $site) => $site->getNomSite(),
+                'choice_value' => fn(?Site $site) => $site ? $site->getId() : '',
+                'placeholder' => 'Choisissez un site',
+                'required' => false,
+                'label' => 'Site :',
+                'attr' => [
+                    'class' => 'form-control',
+                ],
+            ])
             ->add('nom', TextType::class, [
                 'required' => false,
                 'label' => 'Le nom de la sortie contient:',

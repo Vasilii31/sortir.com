@@ -1,7 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-dark w-75 m-auto bg-custom-prim py-4 px-4">
+<nav class="navbar navbar-expand-lg navbar-dark w-75 m-auto bg-custom-prim px-4">
     <div class="container-fluid">
         <!-- Titre / Logo -->
-        <a class="navbar-brand txt-custom-sec" href="{{ path('app_sortie_index') }}">SORTIR</a>
+        <a class="navbar-brand txt-custom-sec" href="{{ path('app_sortie_index') }}">
+            <img src="logo.png" alt="Logo sortir" style="width: 100px;">
+        </a>
 
         <!-- Bouton hamburger pour mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -26,14 +28,14 @@
                 <!-- Authentification boutons -->
                 {% if app.user %}
                     <li class="nav-item">
-                        <a class="nav-link a-custom-prim" href="{{ path('app_sortie_index') }}">Mon profil</a>
+                        <a class="nav-link a-custom-sec" href="{{ path('app_sortie_index') }}">Mon profil</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="a-custom-sec-outline" href="{{ path('app_sortie_index') }}">Logout</a>
                     </li>
                 {% else %}
                     <li class="nav-item ms-2">
-                        <a class="a-custom-prim" href="{{ path('app_sortie_index') }}">Login</a>
+                        <a class="a-custom-sec " href="{{ path('app_sortie_index') }}">Login</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="a-custom-sec-outline" href="{{ path('app_sortie_index') }}">Register</a>

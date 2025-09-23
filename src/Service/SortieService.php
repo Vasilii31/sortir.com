@@ -6,41 +6,16 @@ use App\Repository\SortieRepository;
 
 class SortieService
 {
-    private SortieRepository $sortieRepository;
+    private  readonly SortieRepository $sortieRepository;
 
     public function __construct(SortieRepository $sortieRepository)
     {
         $this->sortieRepository = $sortieRepository;
     }
 
-    /**
-     * Retourne les sorties filtrées selon les critères du formulaire
-     */
-    public function getFilteredSorties(array $criteria): array
+    public function findFilteredSorties(array $searchCriteria): array
     {
-        $qb = $this->sortieRepository->createQueryBuilder('s');
-
-        if (!empty($criteria['nom'])) {
-            $qb->andWhere('s.nom LIKE :nom')
-                ->setParameter('nom', '%' . $criteria['nom'] . '%');
-        }
-
-        if (!empty($criteria['datedebut'])) {
-            $qb->andWhere('s.datedebut >= :dateDebut')
-                ->setParameter('dateDebut', $criteria['datedebut']);
-        }
-
-        if (!empty($criteria['datecloture'])) {
-            $qb->andWhere('s.datecloture <= :dateCloture')
-                ->setParameter('dateCloture', $criteria['datecloture']);
-        }
-
-        if (!empty($criteria['descriptionInfos'])) {
-            $qb->andWhere('s.descriptioninfos LIKE :desc')
-                ->setParameter('desc', '%' . $criteria['descriptionInfos'] . '%');
-        }
-
-        return $qb->getQuery()->getResult();
+        return $this->sortieRepository->FindByFilter($searchCriteria);
     }
 
     public function findAll(): array
