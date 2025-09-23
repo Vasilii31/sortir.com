@@ -47,4 +47,8 @@ class SortieService
     {
         return $this->sortieRepository->findAll();
     }
+    public function findAllWithSubscribed(): array
+    {
+        return $this->sortieRepository->findAllWithSubscribed();
+    }
 }

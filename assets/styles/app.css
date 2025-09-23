@@ -27,3 +27,67 @@ body{
     color:  var(--custom-sec)  !important;
 }
 
+/* BUTTON et LIENS */
+
+/* Liens remplis*/
+[class^="a-custom-"] {
+    text-decoration: none;
+    padding: 5px 15px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+/* Liens remplis */
+.a-custom-prim {
+    --btn-bg: #764ba2;
+    --btn-hover: #5a3f87;
+    background: var(--btn-bg);
+    color: white;
+    border-color: var(--btn-bg);
+}
+.a-custom-prim:hover {
+    background: var(--btn-hover);
+    border-color: var(--btn-hover);
+}
+
+.a-custom-sec {
+    --btn-bg: #667eea;
+    --btn-hover: #4c5bd1;
+    background: var(--btn-bg);
+    color: white;
+    border-color: var(--btn-bg);
+}
+.a-custom-sec:hover {
+    background: var(--btn-hover);
+    border-color: var(--btn-hover);
+}
+
+/* Liens outlined */
+.a-custom-prim-outline {
+    --btn-bg: #764ba2;
+    --btn-hover: #5a3f87;
+    background: transparent;
+    color: var(--btn-bg);
+    border-color: var(--btn-bg);
+}
+.a-custom-prim-outline:hover {
+    background: var(--btn-hover);
+    color: white;
+    border-color: var(--btn-hover);
+}
+
+.a-custom-sec-outline {
+    --btn-bg: #667eea;
+    --btn-hover: #4c5bd1;
+    background: transparent;
+    color: var(--btn-bg);
+    border-color: var(--btn-bg);
+}
+.a-custom-sec-outline:hover {
+    background: var(--btn-hover);
+    color: white;
+    border-color: var(--btn-hover);
+}

@@ -29,8 +29,9 @@ final class SortieController extends AbstractController
 //        else{
 //            $sorties = $sortieService->findAll(
 //        }
+
         return $this->render('sortie/index.html.twig', [
-            'sorties' => $sortieService->findAll(),
+            'sortiesWithSub' => $sortieService->findAllWithSubscribed(),
             'form' => $form->createView(),
 //            'filteredSorties' => $filteredSorties,
         ]);

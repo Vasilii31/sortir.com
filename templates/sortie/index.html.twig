@@ -33,32 +33,30 @@
             <tr>
                 <th>Nom de la sortie</th>
                 <th>Date de la sortie</th>
-                <th>Date de la cloture</th>
-                <th>NbInscriptionsMax</th>
-                <th>DescriptionInfos</th>
-                <th>Etatsortie</th>
-                <th>UrlPhoto</th>
+                <th>Cloture</th>
+                <th>Inscrits / places</th>
+                <th>Etat</th>
+                <th>Organisateur</th>
                 <th>actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for sortie in sorties %}
+        {% for item in sortiesWithSub %}
             <tr>
-                <td>{{ sortie.nom }}</td>
-                <td>{{ sortie.datedebut ? sortie.datedebut|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ sortie.datecloture ? sortie.datecloture|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ sortie.nbInscriptionsMax }}</td>
-                <td>{{ sortie.descriptionInfos }}</td>
-                <td>{{ sortie.etatsortie }}</td>
-                <td>{{ sortie.urlPhoto }}</td>
+                <td>{{ item.sortie.nom }}</td>
+                <td>{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
+                <td>{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y H:i') : '' }}</td>
+                <td>{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
+                <td>{{ item.sortie.etatsortie }}</td>
+                <td> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}.</td>
                 <td>
-                    <a href="{{ path('app_sortie_show', {'id': sortie.id}) }}">show</a>
-                    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">edit</a>
+                    <a class="a-custom-prim-outline" href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">show</a>
+                    <a class="a-custom-sec-outline" href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="10">no records found</td>
+                <td colspan="10">Aucune sortie.</td>
             </tr>
         {% endfor %}
         </tbody>
