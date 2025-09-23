@@ -3,41 +3,44 @@
 {% block title %}Gestion des sites{% endblock %}
 
 {% block body %}
-    <h1>Gestion des sites</h1>
-    <input type="text" id="site-search" placeholder="Rechercher par nom..." class="form-control mb-3">
-    <table class="table">
-        <thead>
-            <tr>
+    <h1 class="text-center">Gestion des sites</h1>
+    <div class="w-75 p-5 ">
+        <h2>filtrer les sites</h2>
+        <input type="text" id="site-search" placeholder="Rechercher par nom..." class="form-control mb-3 ">
+        <table class="table">
+            <thead>
+                <tr>
 
-                <th>Nom du site</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody id="site-table">
-        {% for site in sites %}
-            <tr>
+                    <th>Nom du site</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody id="site-table">
+            {% for site in sites %}
+                <tr>
 
-                <td>{{ site.nomSite }}</td>
-                {# Nom affiché en span et input caché #}
+                    <td>{{ site.nomSite }}</td>
+                    {# Nom affiché en span et input caché #}
 
-                <td>
-                    <a href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
-                    <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
-                        <button class="btn btn-danger btn-sm">Supprimer</button>
-                    </form>
+                    <td>
+                        <a href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
+                        <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
+                            <button class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
 
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">Aucun site trouvé</td>
-            </tr>
-        {% endfor %}
-        <a href="{{ path('app_site_new') }}">Créer un nouveau site</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun site trouvé</td>
+                </tr>
+            {% endfor %}
+            <a href="{{ path('app_site_new') }}">Créer un nouveau site</a>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     <script>
         document.getElementById('site-search').addEventListener('keyup', function() {
             let filter = this.value.toLowerCase();
