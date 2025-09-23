@@ -3,6 +3,7 @@
 :root{
     --custom-prim: #f3f2ff;
     --custom-sec: #1a1b23;
+    --custom-ter: #c5c3cd;
 }
 body{
     background-color: var(--custom-sec);
@@ -32,6 +33,9 @@ body{
 /* Liens remplis*/
 [class^="a-custom-"] {
     text-decoration: none;
+    width: fit-content;
+    min-width: 100px;
+    text-align: center;
     padding: 5px 15px;
     border-radius: 50px;
     border: 2px solid transparent;
@@ -90,4 +94,21 @@ body{
     background: var(--btn-hover);
     color: white;
     border-color: var(--btn-hover);
+}
+
+input, select{
+    text-decoration: none;
+    min-width: 200px;
+    max-width: 400px;
+    /*margin-block: 15px ;*/
+    padding: 5px 15px;
+    border: 2px solid transparent;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+input::placeholder{
+    font-style: italic;
+    color: var(--custom-ter) !important;
 }

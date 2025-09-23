@@ -2,13 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Etat;
-use App\Entity\Lieu;
-use App\Entity\Participant;
 use App\Entity\Site;
-use App\Entity\Sortie;
 use App\Service\SiteService;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
