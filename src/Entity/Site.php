@@ -6,8 +6,13 @@ use App\Repository\SiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: SiteRepository::class)]
+#[UniqueEntity(
+    fields: ['nom_site'],
+    message: 'Un site avec ce nom existe déjà.'
+)]
 class Site
 {
     #[ORM\Id]
