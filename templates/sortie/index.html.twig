@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sortie index{% endblock %}
+
+{% block body %}
+
+        <h4 class="txt-custom-prim my-3">Filtrer les sorties</h4>
+    <div class="pb-3">
+
+        <div class="card p-3 mb-4 shadow-sm">
+            {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+
+            <div class="col-md-4">
+                {{ form_row(form.site) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_row(form.nom) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_row(form.datedebut) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_row(form.datecloture) }}
+            </div>
+
+
+            <div class="col-12">
+                {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+    <div class="card">
+        <table class="table ">
+            <thead>
+            <tr>
+                <th class="text-center">Nom de la sortie</th>
+                <th class="text-center">Date de la sortie</th>
+                <th class="text-center">Cloture</th>
+                <th class="text-center">Inscrits / places</th>
+                <th class="text-center">Etat</th>
+                <th class="text-center">Organisateur</th>
+                <th class="text-center">actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in sortiesWithSub %}
+                <tr>
+                    <td class="text-center">{{ item.sortie.nom }}</td>
+                    <td class="text-center">{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
+                    <td class="text-center">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y H:i') : '' }}</td>
+                    <td class="text-center">{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
+                    <td class="text-center">{{ item.sortie.etat.libelle }}</td>
+                    <td class="text-center"> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}
+                        .
+                    </td>
+                    <td>
+                        <a class="a-custom-prim-outline" href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">show</a>
+                        <a class="a-custom-sec-outline" href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="10">Aucune sortie.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <a class="a-custom-sec my-3" href="{{ path('app_sortie_new') }}">Create new</a>
+{% endblock %}

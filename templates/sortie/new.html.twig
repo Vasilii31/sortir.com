@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Sortie{% endblock %}
+
+{% block body %}
+    <h4 class="txt-custom-prim my-3">Créer une nouvelle sortie</h4>
+    <div class="card my-3 p-3">
+
+        {{ include('sortie/_form.html.twig') }}
+
+        <a class="a-custom-sec-outline" href="{{ path('app_sortie_index') }}">back to list</a>
+    </div>
+{% endblock %}
