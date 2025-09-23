@@ -6,8 +6,6 @@ use App\Entity\Site;
 use App\Form\SiteType;
 use App\Service\SiteService;
 use App\ServiceResult\Site\DeleteSiteResult;
-use App\ServiceResult\Site\UpdateSiteResult;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,7 +44,7 @@ final class SiteController extends AbstractController
 //    }
 
     #[Route('/new', name: 'app_site_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, SiteService $siteService): Response
+    public function new(Request $request): Response
     {
         $site = new Site();
         $form = $this->createForm(SiteType::class, $site);
@@ -54,7 +52,7 @@ final class SiteController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // délégation à la couche métier
-            $siteService->createSite($site->getNomSite());
+           $this->siteService->createSite($site->getNomSite());
 
             return $this->redirectToRoute('app_site_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -113,14 +111,14 @@ final class SiteController extends AbstractController
 //    }
 
     #[Route('/{id}/edit', name: 'app_site_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Site $site, SiteService $siteService): Response
+    public function edit(Request $request, Site $site): Response
     {
         $form = $this->createForm(SiteType::class, $site);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Symfony a déjà validé l'unicité grâce à @UniqueEntity
-            $siteService->updateSite($site, $form->get('nom_site')->getData());
+            $this->siteService->updateSite($site, $form->get('nom_site')->getData());
 
             $this->addFlash('success', 'Site modifié avec succès.');
             return $this->redirectToRoute('app_site_index', [], Response::HTTP_SEE_OTHER);
@@ -135,10 +133,10 @@ final class SiteController extends AbstractController
 
 
     #[Route('/{id}', name: 'app_site_delete', methods: ['POST'])]
-    public function delete(Request $request, Site $site, SiteService $siteService): Response
+    public function delete(Request $request, Site $site): Response
     {
         if ($this->isCsrfTokenValid('delete'.$site->getId(), $request->getPayload()->getString('_token'))) {
-            $result = $siteService->deleteSite($site);
+            $result = $this->siteService->deleteSite($site);
 
             match ($result) {
                 DeleteSiteResult::SUCCESS =>

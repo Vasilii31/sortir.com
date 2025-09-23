@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification d'une ville existante{% endblock %}
+
+{% block body %}
+    <h1>Modifier une ville</h1>
+
+{#    {{ include('ville/_form.html.twig', {'button_label': 'Update'}) }}#}
+    {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+    {{ form_row(form.nom_ville) }}
+    {{ form_row(form.code_postal) }}
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a href="{{ path('app_ville_index') }}">Retourner aux villes</a>
+    {{ form_end(form) }}
+{% endblock %}

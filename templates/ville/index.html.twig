@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ville index{% endblock %}
+
+{% block body %}
+    <h1>Ville index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_ville</th>
+                <th>Code_postal</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ville in villes %}
+            <tr>
+                <td>{{ ville.id }}</td>
+                <td>{{ ville.nomVille }}</td>
+                <td>{{ ville.codePostal }}</td>
+                <td>
+                    <a href="{{ path('app_ville_edit', {'id': ville.id}) }}">edit</a>
+                    <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cette ville ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
+                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucune ville trouvée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_ville_new') }}">Créer une nouvelle ville</a>
+{% endblock %}
