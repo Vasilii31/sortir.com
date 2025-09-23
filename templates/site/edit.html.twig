@@ -5,7 +5,13 @@
 {% block body %}
     <h1>Modifier un site</h1>
 
-    {{ include('site/_form.html.twig', {'button_label': 'Valider'}) }}
+{#    {{ include('site/_form.html.twig', {'button_label': 'Valider'}) }}#}
+    {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+    {{ form_row(form.nom_site) }}
+{#    {{ form_errors(form.nom_site) }} #}{# affichera le message si déjà utilisé #}
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    {{ form_end(form) }}
 
     <a href="{{ path('app_site_index') }}">Retourner aux sites</a>
 
