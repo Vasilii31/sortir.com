@@ -14,10 +14,13 @@
                 {{ form_row(form.nom) }}
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-1 me-5">
                 {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
             </div>
 
+            <div class="col-md-1">
+                <a class="a-custom-warn-outline" href="{{ path('app_site_index') }}">Réinitialiser</a>
+            </div>
             {{ form_end(form) }}
         </div>
     </div>
@@ -38,10 +41,10 @@
                 <td>{{ ville.nomVille }}</td>
                 <td>{{ ville.codePostal }}</td>
                 <td>
-                    <a href="{{ path('app_ville_edit', {'id': ville.id}) }}">Modifier</a>
+                    <a class="a-custom-sec-outline" href="{{ path('app_ville_edit', {'id': ville.id}) }}">Modifier</a>
                     <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cette ville ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
-                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                        <button  class="a-custom-warn">Supprimer</button>
                     </form>
                 </td>
             </tr>

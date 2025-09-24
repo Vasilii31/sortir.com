@@ -3,7 +3,7 @@
 {% block title %}Gestion des sites{% endblock %}
 
 {% block body %}
-{#    <h1 class="text-center">Gestion des sites</h1>#}
+    <h1 class="text-center ">Gestion des sites</h1>
     <h4 class="txt-custom-prim my-3">Filtrer les sites</h4>
     <div class="pb-3">
 
@@ -16,12 +16,12 @@
                     {{ form_row(form.nom) }}
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-1 me-5">
                     {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
                 </div>
 
-                <div class="col-md-2">
-                    <a class="a-custom-red" href="{{ path('app_site_index') }}">Réinitialiser</a>
+                <div class="col-md-1">
+                    <a class="a-custom-warn-outline" href="{{ path('app_site_index') }}">Réinitialiser</a>
                 </div>
 
                 {{ form_end(form) }}
@@ -45,10 +45,10 @@
                         {# Nom affiché en span et input caché #}
 
                         <td>
-                            <a href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
+                            <a class="a-custom-sec-outline" href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
                             <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
-                                <button class="btn btn-danger btn-sm">Supprimer</button>
+                                <button class="a-custom-warn">Supprimer</button>
                             </form>
 
                         </td>
