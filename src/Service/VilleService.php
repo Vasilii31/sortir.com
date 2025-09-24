@@ -51,6 +51,11 @@ class VilleService
         return UpdateVilleResult::SUCCESS;
     }
 
+//    public function findFilteredVilles(string $nomRecherche): array
+//    {
+//        return $this->villeRepository->FindByFilter($nomRecherche);
+//    }
+
     public function searchByName(string $term): array
     {
         return $this->villeRepository->createQueryBuilder('s')

@@ -17,6 +17,21 @@ class VilleType extends AbstractType
         ;
     }
 
+//    public function buildForm(FormBuilderInterface $builder, array $options): void
+//    {
+//        $builder
+//            ->add('nom', TextType::class, [
+//                'required' => true,
+//                'label' => 'Nom ',
+//                'attr' => [
+//                    'placeholder' => 'Randonnée',
+//                    'class' => 'form-control'
+//                ],
+//            ]);
+//
+//
+//    }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

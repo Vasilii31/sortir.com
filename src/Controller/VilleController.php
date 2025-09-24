@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Ville;
+use App\Form\VilleFilterType;
 use App\Form\VilleType;
 use App\Service\VilleService;
 use App\ServiceResult\Ville\DeleteVilleResult;
@@ -21,10 +22,20 @@ final class VilleController extends AbstractController
     }
 
     #[Route(name: 'app_ville_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $form = $this->createForm(VilleFilterType::class);
+        $form->handleRequest($request);
+        $villes= [];
+        if ($form->isSubmitted() && $form->isValid()) {
+            $villes = $this->villeService->searchByName($form->get('nom')->getData());
+        }else{
+            $villes = $this->villeService->getAllVilles();
+        }
+
         return $this->render('ville/index.html.twig', [
-            'villes' => $this->villeService->getAllVilles(),
+            'villes' => $villes,
+            'form' => $form->createView(),
         ]);
     }
 

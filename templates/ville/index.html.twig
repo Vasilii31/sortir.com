@@ -1,14 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ville index{% endblock %}
+{% block title %}Gestion des villes{% endblock %}
 
 {% block body %}
-    <h1>Ville index</h1>
+    <h4 class="txt-custom-prim my-3">Filtrer les villes</h4>
+
+    <div class="pb-3">
+
+        <div class="card p-3 mb-4 shadow-sm">
+            {{ form_start(form, {'attr': {'class': 'row align-items-end'}}) }}
+
+            <div class="col-md-4">
+                {{ form_row(form.nom) }}
+            </div>
+
+            <div class="col-md-4">
+                {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+
                 <th>Nom_ville</th>
                 <th>Code_postal</th>
                 <th>actions</th>
@@ -17,11 +34,11 @@
         <tbody>
         {% for ville in villes %}
             <tr>
-                <td>{{ ville.id }}</td>
+
                 <td>{{ ville.nomVille }}</td>
                 <td>{{ ville.codePostal }}</td>
                 <td>
-                    <a href="{{ path('app_ville_edit', {'id': ville.id}) }}">edit</a>
+                    <a href="{{ path('app_ville_edit', {'id': ville.id}) }}">Modifier</a>
                     <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cette ville ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
                         <button class="btn btn-danger btn-sm">Supprimer</button>
@@ -36,5 +53,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_ville_new') }}">Créer une nouvelle ville</a>
+    <a class="a-custom-sec my-3" href="{{ path('app_ville_new') }}">Créer une nouvelle ville</a>
 {% endblock %}
