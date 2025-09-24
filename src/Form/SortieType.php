@@ -6,6 +6,7 @@ use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Service\LieuService;
 use App\Service\VilleService;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use Symfony\Component\Form\AbstractType;
@@ -40,7 +41,7 @@ class SortieType extends AbstractType
             ->add('datedebut', DateType::class, [
                 'widget' => 'single_text',
                 'html5' => true,
-                'required' => false,
+                'required' => true,
                 'label' => 'Date début',
                 'attr' => [
                     'class' => 'form-control',
@@ -49,14 +50,14 @@ class SortieType extends AbstractType
             ->add('datecloture', DateType::class, [
                 'widget' => 'single_text',
                 'html5' => true,
-                'required' => false,
+                'required' => true,
                 'label' => 'Date début',
                 'attr' => [
                     'class' => 'form-control',
                 ],
             ])
             ->add('nbInscriptionsMax', IntegerType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Nombre de places',
                 'attr' => [
                     'class' => 'form-control',
@@ -105,10 +106,22 @@ class SortieType extends AbstractType
                     ];
                 },
                 'placeholder' => 'Choisissez un lieu',
-                'required' => false,
+                'required' => true,
                 'label' => 'Lieu',
                 'attr' => ['class' => 'form-control'],
             ])
+            ->add('enregistrer', SubmitType::class, [
+                'label' => 'Enregistrer',
+                'attr' => ['class' => 'a-custom-sec']
+            ])
+            ->add('publier', SubmitType::class, [
+                'label' => 'Publier',
+                'attr' => ['class' => 'a-custom-prim']
+            ])
+//            ->add('annuler', SubmitType::class, [
+//                'label' => 'Annuler',
+//                'attr' => ['class' => 'a-custom-warn']
+//            ]);
            ;
 
     }

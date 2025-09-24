@@ -4,29 +4,60 @@
 
 {% block body %}
     <h4 class="txt-custom-prim my-3">Créer une nouvelle sortie</h4>
-    <div class="card my-3 p-3">
+    <div class="card my-3 p-4 shadow-sm">
         {{ form_start(form) }}
 
-        {{ form_row(form.nom) }}
-        {{ form_row(form.datedebut) }}
-        {{ form_row(form.datecloture) }}
-        {{ form_row(form.nbInscriptionsMax) }}
-        {{ form_row(form.duree) }}
-        {{ form_row(form.descriptionInfos) }}
-        {{ form_row(form.ville) }}
-        {{ form_row(form.lieu) }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(form.nom) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.nbInscriptionsMax) }}
+            </div>
+        </div>
 
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(form.datedebut) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.datecloture) }}
+            </div>
+        </div>
 
-        <div id="lieu-details" class="mt-3" style="display: none;">
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(form.duree) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.descriptionInfos) }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(form.ville) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.lieu) }}
+            </div>
+        </div>
+
+        <div id="lieu-details" class="mt-3">
             <p><strong>Rue :</strong> <span id="rue-display"></span></p>
             <p><strong>Code postal :</strong> <span id="ville-cp"></span></p>
             <p><strong>Latitude :</strong> <span id="latitude"></span></p>
             <p><strong>Longitude :</strong> <span id="longitude"></span></p>
         </div>
-        <button class="a-custom-sec">Enregistrer</button>
-        <button class="a-custom-prim">Publier</button>
-        <button class="a-custom-warn">Annuler</button>
+
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            {{ form_widget(form.enregistrer, {'attr': {'class': 'a-custom-sec'}}) }}
+            {{ form_widget(form.publier, {'attr': {'class': 'a-custom-prim'}}) }}
+            <a href="{{ path('app_sortie_index') }}" class="a-custom-warn">Annuler</a>
+        </div>
+
         {{ form_end(form) }}
+    </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -73,7 +104,7 @@
                     spanCp.textContent    = opt.dataset.cp || '';
                     spanLatitude.textContent = opt.dataset.latitude || '';
                     spanLongitude.textContent = opt.dataset.longitude || '';
-                    divDetails.style.display = spanRue.textContent ? 'block' : 'none';
+                    // divDetails.style.display = spanRue.textContent ? 'block' : 'none';
                 }
 
                 selectVille.addEventListener('change', updateLieuOptions);
