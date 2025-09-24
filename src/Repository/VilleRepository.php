@@ -9,35 +9,19 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Ville>
  */
-class VilleRepository extends BaseRepository
+class VilleRepository  extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Ville::class);
     }
+    public function findAll() : array
+    {
 
-    //    /**
-    //     * @return Ville[] Returns an array of Ville objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('v.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+        $qb = $this->createQueryBuilder('v')
+            ->orderBy('v.id', 'ASC');
 
-    //    public function findOneBySomeField($value): ?Ville
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $qb->getQuery()->getResult();
+
+    }
 }

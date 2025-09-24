@@ -6,6 +6,7 @@ use App\Entity\Sortie;
 use App\Form\SortieFilterType;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
+use App\Service\LieuService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,11 +37,13 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, LieuService $lieuService): Response
     {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
+
+        $lieux = $lieuService->getAllLieux();
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($sortie);
@@ -51,6 +54,7 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/new.html.twig', [
             'sortie' => $sortie,
+            'lieux' => $lieux,
             'form' => $form,
         ]);
     }
