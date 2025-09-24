@@ -14,7 +14,21 @@
                         <p><strong>Pseudo :</strong> {{ user.pseudo }}</p>
                         <p><strong>Email :</strong> {{ user.mail }}</p>
                         <p><strong>Site :</strong> {{ user.site ? user.site.nomSite : 'Aucun' }}</p>
+                        <div class="mt-4">
+                        <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+                        </div>
+                    {% else %}
+                        <h1 class="h3 text-muted">Bienvenue sur Sortir.com</h1>
+                        <p>Vous n'êtes pas connecté</p>
 
+                        <div class="mt-4">
+                            <a href="{{ path('app_login') }}" class="btn btn-primary me-2">Se connecter</a>
+                            <a href="{{ path('app_register') }}" class="btn btn-outline-primary">S'inscrire</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     <div>
         <h3>Filtrer les sorties</h3>
 
@@ -30,30 +44,13 @@
             <div class="col-md-4">
                 {{ form_row(form.datecloture) }}
             </div>
-
-                        <div class="mt-4">
-                            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
-                        </div>
-                    {% else %}
-                        <h1 class="h3 text-muted">Bienvenue sur Sortir.com</h1>
-                        <p>Vous n'êtes pas connecté</p>
-
-                        <div class="mt-4">
-                            <a href="{{ path('app_login') }}" class="btn btn-primary me-2">Se connecter</a>
-                            <a href="{{ path('app_register') }}" class="btn btn-outline-primary">S'inscrire</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
         </div>
-    </div>
-</div>
             <div class="col-12">
                 {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
             </div>
-
             {{ form_end(form) }}
         </div>
     </div>
+</div>
 
 {% endblock %}

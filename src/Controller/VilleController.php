@@ -12,12 +12,10 @@ final class VilleController extends AbstractController
     #[Route('/', name: 'list')]
     public function index(): Response
     {
+        $user = $this->getUser();
         return $this->render('villes/index.html.twig', [
             'controller_name' => 'VillesController',
-        $user = $this->getUser();
-
-        return $this->render('home/index.html.twig', [
-            'user' => $user,
+            'user' => $user
         ]);
     }
 }
