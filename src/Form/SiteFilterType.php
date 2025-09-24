@@ -2,31 +2,37 @@
 
 namespace App\Form;
 
-use App\Entity\Site;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SiteType extends AbstractType
+class SiteFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom_site', TextType::class, [
+            ->add('nom', TextType::class, [
                 'required' => true,
-                'label' => 'Nom du site',
+                'label' => 'Le nom du site contient :',
                 'attr' => [
-                    'placeholder' => 'Campus de Castelnau',
+                    'placeholder' => 'Rechercher par nom',
                     'class' => 'form-control'
-                ],])
-        ;
+                ]])
+            ->add('submit', SubmitType::class,[
+                'label' => 'Rechercher'
+            ]);
+
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Site::class,
+            'csrf_protection' => true,
+            'method' => 'GET',
+            'data_class' => null,
         ]);
     }
 }

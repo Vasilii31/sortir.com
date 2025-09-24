@@ -81,7 +81,7 @@ class SiteService
     public function searchByName(string $term): array
     {
         return $this->siteRepository->createQueryBuilder('s')
-            ->where('s.nomSite LIKE :term')
+            ->where('s.nom_site LIKE :term')
             ->setParameter('term', '%' . $term . '%')
             ->getQuery()
             ->getResult();
