@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Sortir.com{% endblock %}
+{% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
@@ -14,6 +14,22 @@
                         <p><strong>Pseudo :</strong> {{ user.pseudo }}</p>
                         <p><strong>Email :</strong> {{ user.mail }}</p>
                         <p><strong>Site :</strong> {{ user.site ? user.site.nomSite : 'Aucun' }}</p>
+
+    <div>
+        <h3>Filtrer les sorties</h3>
+
+        <div class="card p-3 mb-4 shadow-sm">
+            {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+
+            <div class="col-md-4">
+                {{ form_row(form.nom) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_row(form.datedebut) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_row(form.datecloture) }}
+            </div>
 
                         <div class="mt-4">
                             <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
@@ -32,4 +48,12 @@
         </div>
     </div>
 </div>
+            <div class="col-12">
+                {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
 {% endblock %}

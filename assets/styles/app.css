@@ -1,5 +1,115 @@
+/* Définitions des couleurs par défaut de l'app */
 
+:root{
+    --custom-white: #fff;
+    --custom-sec: #1a1b23;
+    --custom-ter: #c5c3cd;
+    --custom-blue: #667eea;
+    --custom-blue-dark: #4c5bd1;
+    --custom-violet: #764ba2;
+    --custom-violet-dark: #5a3f87;
+    --custom-warn: #973030;
+    --custom-warn-dark: #611a1a;
+}
 body{
-    background-color: #e3ded0;
+    background-color: var(--custom-sec);
     font-family: 'Roboto', sans-serif;
+}
+
+/* Couleurs custom pour les BACKGROUND */
+
+.bg-custom-white {
+    background-color: var(--custom-white)  !important;
+}
+.bg-custom-sec{
+    background-color: var(--custom-sec) !important ;
+}
+
+
+/* Couleurs custom pour les FONT */
+
+.txt-custom-prim{
+    color:  var(--custom-white)  !important;
+}
+.txt-custom-sec{
+    color: var(--custom-sec) !important;
+}
+
+/* BUTTON et LIENS */
+
+/* Liens remplis*/
+[class^="a-custom-"] {
+    text-decoration: none;
+    width: fit-content;
+    min-width: 100px;
+    text-align: center;
+    padding: 5px 15px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+/* Liens remplis */
+.a-custom-prim {
+    background: var(--custom-violet);
+    color: var(--custom-white);
+}
+.a-custom-prim:hover {
+    background: var(--custom-violet-dark);
+}
+
+.a-custom-sec {
+    background: var(--custom-blue);
+    color: var(--custom-white);
+}
+.a-custom-sec:hover {
+    background: var(--custom-blue-dark);
+}
+.a-custom-warn {
+
+    background: var(--custom-warn);
+    color: var(--custom-white);
+}
+.a-custom-warn:hover {
+    background: var(--custom-warn-dark);
+}
+
+/* Liens outlined */
+.a-custom-prim-outline {
+    background: transparent;
+    color: var(--custom-violet);
+    border-color: var(--custom-violet);
+}
+.a-custom-prim-outline:hover {
+    background: var(--custom-violet-dark);
+    color:  var(--custom-white);
+    border-color:  var(--custom-violet-dark);
+}
+
+.a-custom-sec-outline {
+    background: transparent;
+    color: var(--custom-blue);
+    border-color: var(--custom-blue);
+}
+.a-custom-sec-outline:hover {
+    background: var(--custom-blue-dark);
+    color: var(--custom-white);
+    border-color: var(--custom-blue-dark);
+}
+
+input, select{
+    text-decoration: none;
+    min-width: 200px;
+    max-width: 400px;
+    padding: 5px 15px;
+    border: 2px solid transparent;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+input::placeholder{
+    font-style: italic;
+    color: var(--custom-ter) !important;
 }
