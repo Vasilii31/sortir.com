@@ -27,7 +27,6 @@ final class VilleController extends AbstractController
     #[Route(name: 'app_ville_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        dump("coucou");
         $form = $this->createForm(VilleFilterType::class);
         $form->handleRequest($request);
         $villes= [];
