@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Création de nouvelle ville{% endblock %}
+
+{% block body %}
+    <h4 class="txt-custom-prim my-3">Créer une nouvelle ville</h4>
+
+{#    {{ include('ville/_form.html.twig') }}#}
+<div class="card my-3 p-3">
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button  class="a-custom-sec my-3">{{ button_label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+
+</div>
+    <a class="a-custom-sec-outline" href="{{ path('app_ville_index') }}">retourner aux villes</a>
+{% endblock %}

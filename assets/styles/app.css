@@ -76,6 +76,8 @@ body{
     background: var(--custom-warn-dark);
 }
 
+
+
 /* Liens outlined */
 .a-custom-prim-outline {
     background: transparent;
@@ -97,6 +99,17 @@ body{
     background: var(--custom-blue-dark);
     color: var(--custom-white);
     border-color: var(--custom-blue-dark);
+}
+
+.a-custom-warn-outline {
+    background: transparent;
+    color: var(--custom-warn);
+    border-color: var(--custom-warn);
+}
+.a-custom-warn-outline:hover {
+    background: var(--custom-warn-dark);
+    color:  var(--custom-white);
+    border-color:  var(--custom-warn-dark);
 }
 
 input, select{

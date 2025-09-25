@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification d'une ville existante{% endblock %}
+
+{% block body %}
+
+    <h4 class="txt-custom-prim my-3">Modifier une ville</h4>
+<div class="card my-3 p-3">
+    {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+    {{ form_row(form.nom_ville) }}
+    {{ form_row(form.code_postal) }}
+    <button type="submit" class="a-custom-sec my-3">Enregistrer</button>
+</div>
+    <a class="a-custom-sec-outline"  href="{{ path('app_ville_index') }}">Retourner aux villes</a>
+    {{ form_end(form) }}
+{% endblock %}

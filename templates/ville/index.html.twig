@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des villes{% endblock %}
+
+{% block body %}
+    <h4 class="txt-custom-prim my-3">Filtrer les villes</h4>
+
+    <div class="pb-3">
+
+        <div class="card p-3 mb-4 shadow-sm">
+            {{ form_start(form, {'attr': {'class': 'row align-items-end'}}) }}
+
+            <div class="col-md-4">
+                {{ form_row(form.nom) }}
+            </div>
+
+            <div class="col-md-1 me-5">
+                {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
+            </div>
+
+            <div class="col-md-1">
+                <a class="a-custom-warn-outline" href="{{ path('app_site_index') }}">Réinitialiser</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Nom_ville</th>
+                <th>Code_postal</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ville in villes %}
+            <tr>
+
+                <td>{{ ville.nomVille }}</td>
+                <td>{{ ville.codePostal }}</td>
+                <td>
+                    <a class="a-custom-sec-outline" href="{{ path('app_ville_edit', {'id': ville.id}) }}">Modifier</a>
+                    <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cette ville ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
+                        <button  class="a-custom-warn">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucune ville trouvée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="a-custom-sec my-3" href="{{ path('app_ville_new') }}">Créer une nouvelle ville</a>
+{% endblock %}

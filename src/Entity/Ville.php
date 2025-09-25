@@ -6,8 +6,14 @@ use App\Repository\VilleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VilleRepository::class)]
+#[UniqueEntity(
+    fields: ['nom_ville'],
+    message: 'Une ville avec ce nom existe déjà.'
+)]
 class Ville
 {
     #[ORM\Id]
@@ -19,6 +25,10 @@ class Ville
     private ?string $nom_ville = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\Regex(
+        pattern: '/^\d+$/',
+        message: 'Ce champ doit contenir uniquement des chiffres.'
+    )]
     private ?string $code_postal = null;
 
     /**

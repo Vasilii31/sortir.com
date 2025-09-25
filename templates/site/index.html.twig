@@ -3,53 +3,78 @@
 {% block title %}Gestion des sites{% endblock %}
 
 {% block body %}
-    <h1 class="text-center">Gestion des sites</h1>
-    <div class="w-75 p-5 ">
-        <h2>filtrer les sites</h2>
-        <input type="text" id="site-search" placeholder="Rechercher par nom..." class="form-control mb-3 ">
-        <table class="table">
-            <thead>
-                <tr>
+    <h1 class="text-center ">Gestion des sites</h1>
+    <h4 class="txt-custom-prim my-3">Filtrer les sites</h4>
+    <div class="pb-3">
 
-                    <th>Nom du site</th>
-                    <th>actions</th>
-                </tr>
-            </thead>
-            <tbody id="site-table">
-            {% for site in sites %}
-                <tr>
+        <div class="pb-3">
 
-                    <td>{{ site.nomSite }}</td>
-                    {# Nom affiché en span et input caché #}
+            <div class="card p-3 mb-4 shadow-sm">
+                {{ form_start(form, {'attr': {'class': 'row align-items-end'}}) }}
 
-                    <td>
-                        <a href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
-                        <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
-                            <button class="btn btn-danger btn-sm">Supprimer</button>
-                        </form>
+                <div class="col-md-4">
+                    {{ form_row(form.nom) }}
+                </div>
 
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="3">Aucun site trouvé</td>
-                </tr>
-            {% endfor %}
-            <a href="{{ path('app_site_new') }}">Créer un nouveau site</a>
+                <div class="col-md-1 me-5">
+                    {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
+                </div>
 
-            </tbody>
-        </table>
+                <div class="col-md-1">
+                    <a class="a-custom-warn-outline" href="{{ path('app_site_index') }}">Réinitialiser</a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+
+                        <th>Nom du site</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody id="site-table">
+                {% for site in sites %}
+                    <tr>
+
+                        <td>{{ site.nomSite }}</td>
+                        {# Nom affiché en span et input caché #}
+
+                        <td>
+                            <a class="a-custom-sec-outline" href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
+                            <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
+                                <button class="a-custom-warn">Supprimer</button>
+                            </form>
+
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">Aucun site trouvé</td>
+                    </tr>
+                {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+        <a class="a-custom-sec my-3" href="{{ path('app_site_new') }}">Créer un nouveau site</a>
     </div>
-    <script>
-        document.getElementById('site-search').addEventListener('keyup', function() {
-            let filter = this.value.toLowerCase();
-            document.querySelectorAll('#site-table tr').forEach(row => {
-                // On cible uniquement la première colonne <td> (nom du site)
-                let siteName = row.querySelector('td').innerText.toLowerCase();
-                row.style.display = siteName.includes(filter) ? '' : 'none';
-            });
-        });
-    </script>
+
+{#    <script>#}
+{#        document.getElementById('site-search').addEventListener('keyup', function() {#}
+{#            let filter = this.value.toLowerCase();#}
+{#            document.querySelectorAll('#site-table tr').forEach(row => {#}
+{#                // On cible uniquement la première colonne <td> (nom du site)#}
+{#                let siteName = row.querySelector('td').innerText.toLowerCase();#}
+{#                row.style.display = siteName.includes(filter) ? '' : 'none';#}
+{#            });#}
+{#        });#}
+{#    </script>#}
 
 {% endblock %}
