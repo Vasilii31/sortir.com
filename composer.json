@@ -10,6 +10,7 @@
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.16",
         "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/orm": "^3.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.3",
         "symfony/asset": "6.4.*",
@@ -94,7 +95,6 @@
         }
     },
     "require-dev": {
-        "doctrine/orm": "^3.5",
         "phpunit/phpunit": "^12.3",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",

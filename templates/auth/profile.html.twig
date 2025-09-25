@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="profile-page">
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-3">
+                <header class="text-center mb-3">
+                    <h1 class="h5 mb-2">Mon Profil</h1>
+                    {% if participant.photoProfil %}
+                        <img src="{{ asset('uploads/profiles/' ~ participant.photoProfil) }}" alt="Photo de profil" class="rounded-circle mx-auto d-block" style="width: 60px; height: 60px; object-fit: cover;">
+                    {% else %}
+                        <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold" style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                            {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                        </div>
+                    {% endif %}
+                </header>
+
+                {% if errors is defined and errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+
+                <form method="post" data-turbo="false" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                            <input type="text" name="nom" id="nom" class="form-control form-control-sm"
+                                   placeholder="Votre nom" maxlength="30"
+                                   value="{{ formData.nom|default(participant.nom) }}" required>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                            <input type="text" name="prenom" id="prenom" class="form-control form-control-sm"
+                                   placeholder="Votre prénom" maxlength="30"
+                                   value="{{ formData.prenom|default(participant.prenom) }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label for="pseudo" class="form-label">Pseudo <span class="text-danger">*</span></label>
+                            <input type="text" name="pseudo" id="pseudo" class="form-control form-control-sm"
+                                   autocomplete="username" placeholder="Votre pseudo" maxlength="30"
+                                   value="{{ formData.pseudo|default(participant.pseudo) }}" required>
+                            <small class="form-text text-muted">Votre identifiant de connexion</small>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="mail" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="mail" id="mail" class="form-control form-control-sm"
+                                   autocomplete="email" placeholder="votre.email@exemple.fr" maxlength="255"
+                                   value="{{ formData.mail|default(participant.mail) }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="tel" name="telephone" id="telephone" class="form-control form-control-sm"
+                                   placeholder="06 12 34 56 78" maxlength="15"
+                                   value="{{ formData.telephone|default(participant.telephone) }}">
+                            <small class="form-text text-muted">Optionnel</small>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="site_id" class="form-label">Site <span class="text-danger">*</span></label>
+                            <select name="site_id" id="site_id" class="form-select form-select-sm" required>
+                                <option value="">Choisissez votre site</option>
+                                {% for site in sites %}
+                                    <option value="{{ site.id }}"
+                                            {% if formData.site_id|default(participant.site.id) == site.id %}selected{% endif %}>
+                                        {{ site.nomSite }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label for="password" class="form-label">Nouveau mot de passe</label>
+                            <input type="password" name="password" id="password" class="form-control form-control-sm"
+                                   autocomplete="new-password" placeholder="Laisser vide pour conserver">
+                            <small class="form-text text-muted">Laisser vide pour conserver l'actuel</small>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="password_confirm" class="form-label">Confirmer</label>
+                            <input type="password" name="password_confirm" id="password_confirm"
+                                   class="form-control form-control-sm" autocomplete="new-password"
+                                   placeholder="Confirmer le nouveau">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="photo_profil" class="form-label">Photo de profil</label>
+                        {% if participant.photoProfil %}
+                            <div class="mb-2">
+                                <img src="{{ asset('uploads/profiles/' ~ participant.photoProfil) }}" alt="Photo actuelle" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                                <div class="form-check mt-1">
+                                    <input type="checkbox" name="delete_photo" id="delete_photo" class="form-check-input">
+                                    <label class="form-check-label small" for="delete_photo">Supprimer la photo actuelle</label>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="photo_profil" id="photo_profil" class="form-control form-control-sm" accept="image/jpeg,image/jpg,image/png,image/webp">
+                        <small class="form-text text-muted">JPG, PNG ou WebP (max 2MB)</small>
+                        <div id="photo-preview" class="mt-2" style="display: none;">
+                            <img id="photo-preview-img" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('profile') }}">
+
+                    <div class="text-center my-3">
+                        <button type="submit" class="btn btn-primary" style="width: 50%;">Mettre à jour</button>
+                    </div>
+                </form>
+
+                {% if app.user.administrateur %}
+                    <div class="text-center mb-3">
+                        <a href="{{ path('admin_users') }}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-shield-check me-1"></i>Gestion des utilisateurs
+                        </a>
+                    </div>
+                {% endif %}
+
+                <hr class="my-3">
+                <div class="text-center">
+                    <a href="{{ path('app_sortie_index') }}" class="btn btn-outline-secondary btn-sm">← Retour à l'accueil</a>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.getElementById('photo_profil').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('photo-preview');
+            const previewImg = document.getElementById('photo-preview-img');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}

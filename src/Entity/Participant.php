@@ -41,6 +41,9 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $actif = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoProfil = null;
+
     #[ORM\ManyToOne(inversedBy: 'participants')]
     private ?Site $site = null;
 
@@ -175,6 +178,18 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPhotoProfil(): ?string
+    {
+        return $this->photoProfil;
+    }
+
+    public function setPhotoProfil(?string $photoProfil): static
+    {
+        $this->photoProfil = $photoProfil;
+
+        return $this;
+    }
+
     public function getPassword(): ?string
     {
         return $this->mot_de_passe;
@@ -182,17 +197,24 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        // TODO: Implement getRoles() method.
+        $roles = ['ROLE_USER'];
+
+        if ($this->administrateur) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        return array_unique($roles);
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
-        // TODO: Implement eraseCredentials() method.
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->nom;
+        return (string) $this->pseudo;
     }
 
     /**
