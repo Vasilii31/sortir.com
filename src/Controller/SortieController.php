@@ -101,20 +101,23 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/edit', name: 'app_sortie_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
+        // 👉 On ne passe plus 'ville_selected' ni 'lieu_selected'
         $form = $this->createForm(SortieType::class, $sortie);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_sortie_index');
         }
 
         return $this->render('sortie/edit.html.twig', [
+            'form' => $form->createView(),
             'sortie' => $sortie,
-            'form' => $form,
         ]);
     }
+
 
     #[Route('/sortie/{id}', name: 'app_sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response

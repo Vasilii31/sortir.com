@@ -3,11 +3,18 @@
 {% block title %}Edit Sortie{% endblock %}
 
 {% block body %}
-    <h1>Edit Sortie</h1>
+    <h4 class="txt-custom-prim my-3">Modifier une sortie</h4>
+    <div class="card my-3 p-4 shadow-sm">
+        {{ form_start(form) }}
 
-    {{ include('sortie/_form.html.twig', {'button_label': 'Update'}) }}
+        {% include 'sortie/_form_fields.html.twig' %}
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            {{ form_widget(form.enregistrer, {'attr': {'class': 'a-custom-sec'}}) }}
+            {{ form_widget(form.publier, {'attr': {'class': 'a-custom-sec'}}) }}
+            <a href="{{ path('app_sortie_index') }}" class="a-custom-warn">Annuler</a>
+        </div>
 
-    <a href="{{ path('app_sortie_index') }}">back to list</a>
 
-    {{ include('sortie/_delete_form.html.twig') }}
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

@@ -113,3 +113,8 @@ input::placeholder{
     font-style: italic;
     color: var(--custom-ter) !important;
 }
+
+textarea{
+    min-width: 200px;
+    max-width: 400px;
+}
