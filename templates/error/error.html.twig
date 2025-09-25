@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur{% endblock %}
+
+{% block body %}
+
+    <div class="card mt-5">
+        {#        {% if app.environment == 'dev' %}#}
+        {#            <p><strong>Message :</strong> {{ message }}</p>#}
+        {#            <p><strong>Code :</strong> {{ code }}</p>#}
+        {#            <p><strong>Exception :</strong> {{ class }}</p>#}
+        {#        {% else %}#}
+        <p class="mx-auto my-auto"><strong>Une erreur est survenue. Veuillez réessayer plus tard.</strong></p>
+        {#        {% endif %}#}
+    </div>
+    <img src="{{ asset('oops.webp') }}" class="img-fluid mw-100 w-50 d-block mx-auto mt-5" alt="Erreur" >
+
+
+{% endblock %}
