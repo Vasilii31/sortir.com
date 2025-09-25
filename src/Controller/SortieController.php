@@ -21,6 +21,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(['/', '/sortie'])]
 final class SortieController extends AbstractController
 {
+    // INDEX ___________________________________________________________________________
+
     #[Route(name: 'app_sortie_index', methods: ['GET'])]
     public function index(Request $request, SortieService $sortieService): Response
     {
@@ -40,12 +42,14 @@ final class SortieController extends AbstractController
         ]);
     }
 
+
+    // NEW ___________________________________________________________________________
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
     public function new(
         Request                $request,
         EntityManagerInterface $entityManager,
         LieuService            $lieuService,
-        EtatService            $etatService,
+        EtatService            $etatService
     ): Response
     {
         $sortie = new Sortie();
@@ -61,22 +65,19 @@ final class SortieController extends AbstractController
             $etatsParId[$etat->getId()] = $etat;
         }
 
-
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // Gestion des boutons
             if ($form->get('enregistrer')->isClicked()) {
                 $sortie->setEtat($etatsParId[1] ?? null);  // Créée - id = 1
             } elseif ($form->get('publier')->isClicked()) {
                 $sortie->setEtat($etatsParId[2] ?? null); // Ouverte - id = 2
             }
 
-            // TODO Implémenter les data relatifs au user connecté
-
-            $user = $entityManager->getRepository(Participant::class)->find(1);
-
+            $user = $this->getUser();
+            if (!$user instanceof Participant) {
+                throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
+            }
             $sortie->setOrganisateur($user);
-
 
             $entityManager->persist($sortie);
             $entityManager->flush();
@@ -90,6 +91,7 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    // SHOW ___________________________________________________________________________
     #[Route('/sortie/{id}', name: 'app_sortie_show', methods: ['GET'])]
     public function show(Sortie $sortie): Response
     {
@@ -98,17 +100,25 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    // EDIT ___________________________________________________________________________
+
     #[Route('/sortie/{id}/edit', name: 'app_sortie_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        // 👉 On ne passe plus 'ville_selected' ni 'lieu_selected'
-        $form = $this->createForm(SortieType::class, $sortie);
+        $user = $this->getUser();
 
+        if ($sortie->getOrganisateur() !== $user) {
+            $this->addFlash('error', 'Vous n’êtes pas autorisé à modifier cette sortie.');
+            return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->addFlash('success', 'Sortie mise à jour avec succès.');
             return $this->redirectToRoute('app_sortie_index');
         }
 
@@ -119,17 +129,34 @@ final class SortieController extends AbstractController
     }
 
 
-    #[Route('/sortie/{id}', name: 'app_sortie_delete', methods: ['POST'])]
+    // DELETE ___________________________________________________________________________
+
+        #[
+        Route('/sortie/{id}', name: 'app_sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->getPayload()->getString('_token'))) {
+        $user = $this->getUser();
+
+        if ($sortie->getOrganisateur() !== $user) {
+            $this->addFlash('error', 'Vous n’êtes pas autorisé à supprimer cette sortie.');
+            return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->request->get('_token'))) {
             $entityManager->remove($sortie);
             $entityManager->flush();
+
+            $this->addFlash('success', 'La sortie a été supprimée.');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
         }
 
         return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
     }
+
 }
+
+
 
 
 
