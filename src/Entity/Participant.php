@@ -182,7 +182,14 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        // TODO: Implement getRoles() method.
+        $roles = ['ROLE_USER'];
+
+        if($this->administrateur)
+        {
+            $roles[] = ['ROLE_ADMIN'];
+        }
+
+        return $roles;
     }
 
     public function eraseCredentials()
