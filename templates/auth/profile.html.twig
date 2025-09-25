@@ -3,6 +3,7 @@
 {% block title %}Mon Profil - {{ parent() }}{% endblock %}
 
 {% block body %}
+<div class="profile-page">
 <div class="row justify-content-center">
     <div class="col-md-10 col-lg-8">
         <div class="card shadow-sm">
@@ -128,12 +129,13 @@
 
                 <hr class="my-3">
                 <div class="text-center">
-                    <a href="{{ path('app_home') }}" class="btn btn-outline-secondary btn-sm">← Retour à l'accueil</a>
+                    <a href="{{ path('app_sortie_index') }}" class="btn btn-outline-secondary btn-sm">← Retour à l'accueil</a>
                 </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block stylesheets %}

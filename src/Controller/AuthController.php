@@ -3,8 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Participant;
-use App\Form\RegistrationType;
-use App\Form\SimpleRegistrationType;
+use App\Entity\Site;
 use App\Repository\SiteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +24,7 @@ final class AuthController extends AbstractController
     {
         // Si l'utilisateur est déjà connecté, rediriger vers l'accueil
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_sortie_index');
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -56,7 +55,6 @@ final class AuthController extends AbstractController
         ImageUploadService $imageUploadService
     ): Response {
         $participant = new Participant();
-        $form = $this->createForm(RegistrationType::class, $participant);
         $sites = $siteRepository->findAll();
         $errors = [];
 
@@ -121,7 +119,6 @@ final class AuthController extends AbstractController
         }
 
         return $this->render('auth/register.html.twig', [
-            'registrationForm' => $form->createView(),
             'sites' => $sites,
             'errors' => $errors,
             'formData' => $request->request->all(),

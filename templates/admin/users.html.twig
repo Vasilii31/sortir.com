@@ -3,6 +3,7 @@
 {% block title %}Gestion des utilisateurs - {{ parent() }}{% endblock %}
 
 {% block body %}
+<div class="admin-page">
 <div class="row justify-content-center">
     <div class="col-md-11 col-lg-10">
         <div class="card shadow-sm">
@@ -24,15 +25,15 @@
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th width="60">Photo</th>
+                                <th>Photo</th>
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Pseudo</th>
                                 <th>Email</th>
                                 <th>Téléphone</th>
                                 <th>Site</th>
-                                <th width="80">Statut</th>
-                                <th width="120">Actions</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,11 +109,12 @@
 
                 <hr class="my-3">
                 <div class="text-center">
-                    <a href="{{ path('app_home') }}" class="btn btn-outline-secondary btn-sm">← Retour à l'accueil</a>
+                    <a href="{{ path('app_sortie_index') }}" class="btn btn-outline-secondary btn-sm">← Retour à l'accueil</a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 

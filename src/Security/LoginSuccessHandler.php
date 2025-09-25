@@ -28,7 +28,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         if ($user instanceof Participant) {
             $jwtToken = $this->jwtService->createToken($user);
 
-            $response = new RedirectResponse($this->router->generate('app_home'));
+            $response = new RedirectResponse($this->router->generate('app_sortie_index'));
             $response->headers->setCookie(
                 new Cookie(
                     'jwt_token',
@@ -44,6 +44,6 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
             return $response;
         }
 
-        return new RedirectResponse($this->router->generate('app_home'));
+        return new RedirectResponse($this->router->generate('app_sortie_index'));
     }
 }
