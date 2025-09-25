@@ -5,48 +5,41 @@
 {% block body %}
     <h1>Sortie</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ sortie.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ sortie.nom }}</td>
-            </tr>
-            <tr>
-                <th>Datedebut</th>
-                <td>{{ sortie.datedebut ? sortie.datedebut|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Duree</th>
-                <td>{{ sortie.duree }}</td>
-            </tr>
-            <tr>
-                <th>Datecloture</th>
-                <td>{{ sortie.datecloture ? sortie.datecloture|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>NbInscriptionsMax</th>
-                <td>{{ sortie.nbInscriptionsMax }}</td>
-            </tr>
-            <tr>
-                <th>DescriptionInfos</th>
-                <td>{{ sortie.descriptionInfos }}</td>
-            </tr>
-            <tr>
-                <th>Etatsortie</th>
-                <td>{{ sortie.etatsortie }}</td>
-            </tr>
-            <tr>
-                <th>UrlPhoto</th>
-                <td>{{ sortie.urlPhoto }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_sortie_index') }}">back to list</a>
+    <div class="card">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ sortie.nom }}</td>
+                </tr>
+                <tr>
+                    <th>Date de début</th>
+                    <td>{{ sortie.datedebut ? sortie.datedebut|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Durée</th>
+                    <td>{{ sortie.duree }}</td>
+                </tr>
+                <tr>
+                    <th>Date de clotûre</th>
+                    <td>{{ sortie.datecloture ? sortie.datecloture|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre maximum de participants</th>
+                    <td>{{ sortie.nbInscriptionsMax }}</td>
+                </tr>
+                <tr>
+                    <th>DescriptionInfos</th>
+                    <td>{{ sortie.descriptionInfos }}</td>
+                </tr>
+                <tr>
+                    <th>Etat de la sortie</th>
+                    <td>{{ sortie.Etat.libelle }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <a class="a-custom-sec-outline" href="{{ path('app_sortie_index') }}">Retourner aux sorties</a>
 
     <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">edit</a>
 
