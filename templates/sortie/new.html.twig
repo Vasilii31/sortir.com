@@ -4,90 +4,100 @@
 
 {% block body %}
     <h4 class="txt-custom-prim my-3">Créer une nouvelle sortie</h4>
-    <div class="card my-3 p-3">
+    <div class="card my-3 p-4 shadow-sm">
         {{ form_start(form) }}
 
-        {{ form_row(form.nom) }}
-        {{ form_row(form.datedebut) }}
-        {{ form_row(form.datecloture) }}
-        {{ form_row(form.nbInscriptionsMax) }}
-        {{ form_row(form.duree) }}
-        {{ form_row(form.descriptionInfos) }}
-        {{ form_row(form.ville) }}
-        {{ form_row(form.lieu) }}
+        {% include 'sortie/_form_fields.html.twig' %}
 
-
-        <div id="lieu-details" class="mt-3" style="display: none;">
-            <p><strong>Rue :</strong> <span id="rue-display"></span></p>
-            <p><strong>Code postal :</strong> <span id="ville-cp"></span></p>
-            <p><strong>Latitude :</strong> <span id="latitude"></span></p>
-            <p><strong>Longitude :</strong> <span id="longitude"></span></p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            {{ form_widget(form.enregistrer, {'attr': {'class': 'a-custom-sec'}}) }}
+            {{ form_widget(form.publier, {'attr': {'class': 'a-custom-sec'}}) }}
+            <a href="{{ path('app_sortie_index') }}" class="a-custom-warn">Annuler</a>
         </div>
-        <button class="a-custom-sec">Enregistrer</button>
-        <button class="a-custom-prim">Publier</button>
-        <button class="a-custom-warn">Annuler</button>
+
         {{ form_end(form) }}
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const selectVille = document.getElementById('{{ form.ville.vars.id }}');
-                const selectLieu  = document.getElementById('{{ form.lieu.vars.id }}');
-                const spanRue     = document.getElementById('rue-display');
-                const spanCp      = document.getElementById('ville-cp');
-                const spanLatitude = document.getElementById('latitude');
-                const spanLongitude = document.getElementById('longitude');
-                const divDetails  = document.getElementById('lieu-details');
 
-                const allOptions = Array.from(selectLieu.options);
 
-                // Désactiver le select Lieu au départ si aucune ville sélectionnée
-                selectLieu.disabled = !selectVille.value;
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectVille = document.getElementById('{{ form.ville.vars.id }}');
+            const selectLieu  = document.getElementById('{{ form.lieu.vars.id }}');
 
-                function updateLieuOptions() {
-                    const villeId = selectVille.value;
+            const spanRue      = document.getElementById('rue-display');
+            const spanCp       = document.getElementById('ville-cp');
+            const spanLatitude = document.getElementById('latitude');
+            const spanLongitude= document.getElementById('longitude');
+            const divDetails   = document.getElementById('lieu-details');
 
-                    selectLieu.innerHTML = '';
-                    selectLieu.appendChild(new Option('Choisissez un lieu', ''));
+            const allOptions = Array.from(selectLieu.options);
 
-                    if (!villeId) {
-                        selectLieu.disabled = true; // désactivé si pas de ville
-                        updateLieuDetails();
-                        return;
+            function resetLieu() {
+                selectLieu.innerHTML = '';
+                selectLieu.appendChild(new Option('Choisissez un lieu', ''));
+                selectLieu.value = '';
+                selectLieu.disabled = true;
+                updateLieuDetails();
+            }
+
+            function updateLieuOptions() {
+                const villeId = selectVille.value;
+
+                // toujours reset si aucune ville
+                if (!villeId) {
+                    resetLieu();
+                    return;
+                }
+
+                selectLieu.disabled = false;
+                selectLieu.innerHTML = '';
+
+                // 👉 placeholder désactivé
+                selectLieu.appendChild(new Option('Choisissez un lieu', '', true, true));
+                selectLieu.options[0].disabled = true;
+
+                allOptions.forEach(opt => {
+                    if (opt.dataset.villeId === villeId) {
+                        selectLieu.appendChild(opt);
                     }
+                });
 
-                    selectLieu.disabled = false; // activer le select
-                    allOptions.forEach(opt => {
-                        if (opt.dataset.villeId === villeId) {
-                            selectLieu.appendChild(opt);
-                        }
-                    });
+                // forcer à rester sur le placeholder tant qu'aucun choix n'est fait
+                selectLieu.value = '';
 
-                    updateLieuDetails();
+                updateLieuDetails();
+            }
+
+            function updateLieuDetails() {
+                const opt = selectLieu.options[selectLieu.selectedIndex];
+                if (!opt || !opt.value) {
+                    spanRue.textContent = '';
+                    spanCp.textContent = '';
+                    spanLatitude.textContent = '';
+                    spanLongitude.textContent = '';
+                    divDetails.style.display = 'none';
+                    return;
                 }
 
-                function updateLieuDetails() {
-                    const opt = selectLieu.options[selectLieu.selectedIndex];
-                    if (!opt) return;
+                spanRue.textContent      = opt.dataset.rue || '';
+                spanCp.textContent       = opt.dataset.cp || '';
+                spanLatitude.textContent = opt.dataset.latitude || '';
+                spanLongitude.textContent= opt.dataset.longitude || '';
+                divDetails.style.display = 'block';
+            }
 
-                    spanRue.textContent   = opt.dataset.rue || '';
-                    spanCp.textContent    = opt.dataset.cp || '';
-                    spanLatitude.textContent = opt.dataset.latitude || '';
-                    spanLongitude.textContent = opt.dataset.longitude || '';
-                    divDetails.style.display = spanRue.textContent ? 'block' : 'none';
-                }
+            // Events
+            selectVille.addEventListener('change', updateLieuOptions);
+            selectLieu.addEventListener('change', updateLieuDetails);
 
-                selectVille.addEventListener('change', updateLieuOptions);
-                selectLieu.addEventListener('change', updateLieuDetails);
-
-                // initialisation
-                updateLieuOptions();
-            });
+            // Init (utile en édition)
+            updateLieuOptions();
+        });
+    </script>
 
 
-
-        </script>
-
-        {% endblock %}
+{% endblock %}
 
 
 
