@@ -8,7 +8,8 @@ class SortieInscritsDTO
 {
     public function __construct(
         public readonly Sortie $sortie,
-        public readonly int $nbInscrits
+        public readonly int $nbInscrits,
+        public readonly bool $isUserParticipating
     )
     {
     }

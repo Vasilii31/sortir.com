@@ -10,6 +10,7 @@ use App\Form\SortieType;
 use App\Repository\SortieRepository;
 use App\Service\EtatService;
 use App\Service\LieuService;
+use App\Service\ParticipantService;
 use App\Service\SiteService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,8 +25,11 @@ final class SortieController extends AbstractController
     // INDEX ___________________________________________________________________________
 
     #[Route(name: 'app_sortie_index', methods: ['GET'])]
-    public function index(Request $request, SortieService $sortieService): Response
+    public function index(Request $request, SortieService $sortieService, ParticipantService $partipantService): Response
     {
+        $participant = $partipantService->getAllParticipants();
+        $user = $this->getUser();
+
 
         $form = $this->createForm(SortieFilterType::class);
         $form->handleRequest($request);
@@ -36,10 +40,24 @@ final class SortieController extends AbstractController
             $sortiesWithSub = $sortieService->findAllWithSubscribed();
         }
 
+
         return $this->render('sortie/index.html.twig', [
             'sortiesWithSub' => $sortiesWithSub,
             'form' => $form->createView(),
         ]);
+    }
+
+// src/Controller/SortieController.php
+    #[Route('/sortie/{id}/publier', name: 'app_sortie_publier', methods: ['POST'])]
+    public function publier(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $etatOuvert = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+        if ($etatOuvert) {
+            $sortie->setEtat($etatOuvert);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_sortie_index');
     }
 
 
@@ -59,19 +77,23 @@ final class SortieController extends AbstractController
         $lieux = $lieuService->getAllLieux();
         $etats = $etatService->getAllEtats();
 
-        // Créer un tableau associatif id => objet Etat
-        $etatsParId = [];
+        // Créer un tableau associatif libelle => objet Etat
+        $etatsParLibelle = [];
         foreach ($etats as $etat) {
-            $etatsParId[$etat->getId()] = $etat;
+            $etatsParLibelle[$etat->getLibelle()] = $etat;
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($form->get('enregistrer')->isClicked()) {
-                $sortie->setEtat($etatsParId[1] ?? null);  // Créée - id = 1
-            } elseif ($form->get('publier')->isClicked()) {
-                $sortie->setEtat($etatsParId[2] ?? null); // Ouverte - id = 2
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                if ($form->get('enregistrer')->isClicked()) {
+                    $sortie->setEtat($etatsParLibelle['Créée']);
+                } elseif ($form->get('publier')->isClicked()) {
+                    $sortie->setEtat($etatsParLibelle['Ouverte']);
+                }
             }
+
 
             $user = $this->getUser();
             if (!$user instanceof Participant) {
@@ -131,7 +153,7 @@ final class SortieController extends AbstractController
 
     // DELETE ___________________________________________________________________________
 
-        #[
+    #[
         Route('/sortie/{id}', name: 'app_sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
@@ -152,6 +174,24 @@ final class SortieController extends AbstractController
         }
 
         return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+
+    #[Route('/sortie/{id}/inscrire', name: 'app_sortie_inscrire', methods: ['POST'])]
+    public function inscrire(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        dd("TODO inscrire");
+    }
+
+    #[Route('/sortie/{id}/desister', name: 'app_sortie_desister', methods: ['POST'])]
+    public function desister(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        dd("TODO desister");
+    }
+    #[Route('/sortie/{id}/annuler', name: 'app_sortie_annuler', methods: ['POST'])]
+    public function annuler(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        dd("TODO annuler");
     }
 
 }

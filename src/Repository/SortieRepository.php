@@ -24,7 +24,7 @@ class SortieRepository extends BaseRepository
     }
 
     // Renvoie les sorties avec le nombre d'inscrits
-    public function findAllWithSubscribed(): array
+    public function findAllWithSubscribed(?User $user = null): array
     {
         $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
@@ -37,14 +37,27 @@ class SortieRepository extends BaseRepository
 
         $results = $qb->getQuery()->getResult();
 
-        return array_map(
-            fn($row) => new SortieInscritsDTO(
-                $row[0],
+        return array_map(function($row) use ($user) {
+            $sortie = $row[0];
+
+            $isParticipating = false;
+            if ($user !== null) {
+                foreach ($sortie->getInscriptions() as $inscription) {
+                    if ($inscription->getParticipant() === $user) {
+                        $isParticipating = true;
+                        break;
+                    }
+                }
+            }
+
+            return new SortieInscritsDTO(
+                $sortie,
                 (int)$row['nbInscrits'],
-            ),
-            $results
-        );
+                $isParticipating
+            );
+        }, $results);
     }
+
 
     // Renvoie les sorties filtrées
     public function FindByFilter(array $searchCriteria): array
