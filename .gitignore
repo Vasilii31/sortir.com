@@ -1,6 +1,6 @@
 
 ###> symfony/framework-bundle ###
-/.env.local
+/.env
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
@@ -24,3 +24,9 @@ package-lock.json
 
 .idea/
 /*.iml
+
+# Uploaded files
+/public/uploads/
+
+# Claude Code
+.claude/

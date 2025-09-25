@@ -22,3 +22,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Security\JWTService:
+        arguments:
+            $secret: '%kernel.secret%'
+            $defaultTtl: 86400  # 24 heures
+
+    App\Service\ImageUploadService:
+        arguments:
+            $uploadDirectory: '%kernel.project_dir%/public/uploads/profiles'
