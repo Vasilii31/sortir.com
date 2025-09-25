@@ -37,8 +37,9 @@ final class SortieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $sortiesWithSub = $sortieService->findFilteredSorties($form->getData());
         } else {
-            $sortiesWithSub = $sortieService->findAllWithSubscribed();
+            $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
         }
+
 
 
         return $this->render('sortie/index.html.twig', [

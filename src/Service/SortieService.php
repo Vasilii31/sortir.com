@@ -2,11 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\Participant;
 use App\Repository\SortieRepository;
 
 class SortieService
 {
-    private  readonly SortieRepository $sortieRepository;
+    private readonly SortieRepository $sortieRepository;
 
     public function __construct(SortieRepository $sortieRepository)
     {
@@ -22,8 +23,9 @@ class SortieService
     {
         return $this->sortieRepository->findAll();
     }
-    public function findAllWithSubscribed(): array
+
+    public function findAllWithSubscribed(?Participant $user = null): array
     {
-        return $this->sortieRepository->findAllWithSubscribed();
+        return $this->sortieRepository->findAllWithSubscribed($user);
     }
 }

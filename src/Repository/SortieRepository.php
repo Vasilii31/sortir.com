@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Dto\SortieInscritsDTO;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use Doctrine\Persistence\ManagerRegistry;
+use http\Client\Curl\User;
 
 class SortieRepository extends BaseRepository
 {
@@ -24,7 +26,7 @@ class SortieRepository extends BaseRepository
     }
 
     // Renvoie les sorties avec le nombre d'inscrits
-    public function findAllWithSubscribed(?User $user = null): array
+    public function findAllWithSubscribed(?Participant $user = null): array
     {
         $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
@@ -37,7 +39,7 @@ class SortieRepository extends BaseRepository
 
         $results = $qb->getQuery()->getResult();
 
-        return array_map(function($row) use ($user) {
+        return array_map(function ($row) use ($user) {
             $sortie = $row[0];
 
             $isParticipating = false;

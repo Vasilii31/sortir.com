@@ -53,7 +53,7 @@
                     <td class="text-center">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y H:i') : '' }}</td>
                     <td class="text-center">{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
                     <td class="text-center">{{ item.sortie.etat.libelle }}</td>
-                    <td class="text-center">?</td>
+                    <td class="text-center">{{ item.isUserParticipating ? "x" : "" }}</td>
                     <td class="text-center"> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}
                         .
                     </td>
