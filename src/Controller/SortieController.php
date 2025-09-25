@@ -35,7 +35,7 @@ final class SortieController extends AbstractController
         $form->handleRequest($request);
         $sortiesWithSub = [];
         if ($form->isSubmitted() && $form->isValid()) {
-            $sortiesWithSub = $sortieService->findFilteredSorties($form->getData());
+            $sortiesWithSub = $sortieService->findFilteredSorties($form->getData(), $user);
         } else {
             $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
         }
