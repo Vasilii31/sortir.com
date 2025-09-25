@@ -29,6 +29,7 @@ security:
                 delete_cookies:
                     jwt_token: { path: / }
             access_denied_handler: App\Security\AccessDeniedHandler
+            stateless: true
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
