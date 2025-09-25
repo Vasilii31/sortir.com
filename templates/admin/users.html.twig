@@ -75,12 +75,16 @@
                                                 <!-- Toggle Admin -->
                                                 <form method="post" action="{{ path('admin_toggle_admin', {id: user.id}) }}" style="display: inline;">
                                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('toggle_admin_' ~ user.id) }}">
-                                                    <button type="submit" class="btn btn-outline-{% if user.administrateur %}warning{% else %}success{% endif %} btn-sm"
+                                                    <button type="submit" class="btn btn-outline-{% if user.administrateur %}warning{% else %}success{% endif %} btn-sm me-2"
                                                             onclick="return confirm('{% if user.administrateur %}Retirer les droits administrateur à{% else %}Promouvoir comme administrateur{% endif %} {{ user.pseudo }} ?')">
                                                         {% if user.administrateur %}
-                                                            <i class="bi bi-shield-minus"></i>
+                                                            <span class="material-icons-outlined">
+                                                                add_moderator
+                                                            </span>
                                                         {% else %}
-                                                            <i class="bi bi-shield-plus"></i>
+                                                            <span class="material-icons-outlined">
+                                                                remove_moderator
+                                                            </span>
                                                         {% endif %}
                                                     </button>
                                                 </form>
@@ -89,7 +93,9 @@
                                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm"
                                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer {{ user.pseudo }} ? Cette action est irréversible.')">
-                                                        <i class="bi bi-trash"></i>
+                                                        <span class="material-icons-outlined">
+                                                            person_off
+                                                        </span>
                                                     </button>
                                                 </form>
                                             </div>

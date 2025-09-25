@@ -136,6 +136,7 @@ body.auth-page .text-danger {
     font-weight: 500;
 }
 
+
 @media (max-height: 800px) {
     body.auth-page {
         align-items: flex-start;

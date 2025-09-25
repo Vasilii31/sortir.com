@@ -31,3 +31,8 @@ services:
     App\Service\ImageUploadService:
         arguments:
             $uploadDirectory: '%kernel.project_dir%/public/uploads/profiles'
+
+
+    App\Security\AccessDeniedHandler:
+        autowire: true
+        autoconfigure: true
