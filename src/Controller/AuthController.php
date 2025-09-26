@@ -5,17 +5,13 @@ namespace App\Controller;
 use App\Entity\Participant;
 use App\Entity\Site;
 use App\Repository\SiteRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ParticipantService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use App\Service\ImageUploadService;
 
 final class AuthController extends AbstractController
 {
@@ -48,13 +44,9 @@ final class AuthController extends AbstractController
     public function register(
         Request $request,
         SiteRepository $siteRepository,
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher,
-        ValidatorInterface $validator,
-        CsrfTokenManagerInterface $csrfTokenManager,
-        ImageUploadService $imageUploadService
+        ParticipantService $participantService,
+        CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
-        $participant = new Participant();
         $sites = $siteRepository->findAll();
         $errors = [];
 
@@ -64,10 +56,10 @@ final class AuthController extends AbstractController
             if (!$csrfTokenManager->isTokenValid(new \Symfony\Component\Security\Csrf\CsrfToken('register', $csrfToken))) {
                 $errors[] = 'Token de sécurité invalide';
             } else {
-                // Validation des données
+                // Extraction des données
                 $data = $this->extractFormData($request);
                 $errors = $this->validateParticipantData($data);
-                $errors = array_merge($errors, $this->checkUniqueFields($data, $entityManager));
+                $errors = array_merge($errors, $participantService->checkUniqueFields($data['pseudo'], $data['mail']));
 
                 // Vérifier que le site existe
                 $site = null;
@@ -80,39 +72,22 @@ final class AuthController extends AbstractController
 
                 // Si pas d'erreurs, créer le participant
                 if (empty($errors)) {
-                    $this->populateParticipant($participant, $data, $site, $passwordHasher);
+                    try {
+                        $participantService->createParticipant(
+                            $data['nom'],
+                            $data['prenom'],
+                            $data['pseudo'],
+                            $data['mail'],
+                            $data['password'],
+                            $data['telephone'],
+                            $site,
+                            $data['photo_file']
+                        );
 
-                    // Gestion de l'upload d'image
-                    $imageResult = $this->handleImageUpload($data, $imageUploadService);
-                    if (!empty($imageResult['errors'])) {
-                        $errors = array_merge($errors, $imageResult['errors']);
-                    } else {
-                        $participant->setPhotoProfil($imageResult['photo_filename']);
-                    }
-
-                    // Validation avec les contraintes de l'entité
-                    if (empty($errors)) {
-                        $violations = $validator->validate($participant);
-                        if (count($violations) > 0) {
-                            foreach ($violations as $violation) {
-                                $errors[] = $violation->getMessage();
-                            }
-                        } else {
-                            // Sauvegarder en base
-                            try {
-                                $entityManager->persist($participant);
-                                $entityManager->flush();
-
-                                $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.');
-                                return $this->redirectToRoute('app_login');
-                            } catch (\Exception $e) {
-                                $errors[] = 'Erreur lors de la création du compte. Veuillez réessayer.';
-                                // Nettoyer l'image uploadée en cas d'erreur
-                                if ($imageResult['photo_filename']) {
-                                    $imageUploadService->delete($imageResult['photo_filename']);
-                                }
-                            }
-                        }
+                        $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.');
+                        return $this->redirectToRoute('app_login');
+                    } catch (\Exception $e) {
+                        $errors[] = 'Erreur lors de la création du compte. Veuillez réessayer.';
                     }
                 }
             }
@@ -129,11 +104,8 @@ final class AuthController extends AbstractController
     public function profile(
         Request $request,
         SiteRepository $siteRepository,
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher,
-        ValidatorInterface $validator,
-        CsrfTokenManagerInterface $csrfTokenManager,
-        ImageUploadService $imageUploadService
+        ParticipantService $participantService,
+        CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
         // Vérifier que l'utilisateur est connecté
         $participant = $this->getUser();
@@ -143,7 +115,6 @@ final class AuthController extends AbstractController
 
         $sites = $siteRepository->findAll();
         $errors = [];
-        $success = false;
 
         if ($request->isMethod('POST')) {
             // Vérifier le token CSRF
@@ -151,10 +122,10 @@ final class AuthController extends AbstractController
             if (!$csrfTokenManager->isTokenValid(new \Symfony\Component\Security\Csrf\CsrfToken('profile', $csrfToken))) {
                 $errors[] = 'Token de sécurité invalide';
             } else {
-                // Validation des données
+                // Extraction et validation des données
                 $data = $this->extractFormData($request);
-                $errors = $this->validateParticipantData($data, true, $participant);
-                $errors = array_merge($errors, $this->checkUniqueFields($data, $entityManager, $participant));
+                $errors = $this->validateParticipantData($data, true);
+                $errors = array_merge($errors, $participantService->checkUniqueFields($data['pseudo'], $data['mail'], $participant->getId()));
 
                 // Vérifier que le site existe
                 $site = null;
@@ -167,33 +138,23 @@ final class AuthController extends AbstractController
 
                 // Si pas d'erreurs, mettre à jour le participant
                 if (empty($errors)) {
-                    $this->updateParticipant($participant, $data, $site, $passwordHasher);
+                    try {
+                        $participantService->updateParticipant(
+                            $participant,
+                            $data['nom'],
+                            $data['prenom'],
+                            $data['pseudo'],
+                            $data['mail'],
+                            $data['telephone'],
+                            $site,
+                            $data['password'] ?: null,
+                            $data['photo_file'],
+                            $data['delete_photo']
+                        );
 
-                    // Gestion de l'upload d'image
-                    $imageResult = $this->handleImageUpload($data, $imageUploadService, $participant->getPhotoProfil());
-                    if (!empty($imageResult['errors'])) {
-                        $errors = array_merge($errors, $imageResult['errors']);
-                    } else {
-                        $participant->setPhotoProfil($imageResult['photo_filename']);
-                    }
-
-                    // Validation avec les contraintes de l'entité
-                    if (empty($errors)) {
-                        $violations = $validator->validate($participant);
-                        if (count($violations) > 0) {
-                            foreach ($violations as $violation) {
-                                $errors[] = $violation->getMessage();
-                            }
-                        } else {
-                            // Sauvegarder en base
-                            try {
-                                $entityManager->flush();
-                                $success = true;
-                                $this->addFlash('success', 'Votre profil a été mis à jour avec succès !');
-                            } catch (\Exception $e) {
-                                $errors[] = 'Erreur lors de la mise à jour du profil. Veuillez réessayer.';
-                            }
-                        }
+                        $this->addFlash('success', 'Votre profil a été mis à jour avec succès !');
+                    } catch (\Exception $e) {
+                        $errors[] = 'Erreur lors de la mise à jour du profil. Veuillez réessayer.';
                     }
                 }
             }
@@ -203,12 +164,11 @@ final class AuthController extends AbstractController
             'participant' => $participant,
             'sites' => $sites,
             'errors' => $errors,
-            'success' => $success,
             'formData' => $request->request->all(),
         ]);
     }
 
-    private function validateParticipantData(array $data, bool $isUpdate = false, ?Participant $currentParticipant = null): array
+    private function validateParticipantData(array $data, bool $isUpdate = false): array
     {
         $errors = [];
 
@@ -270,73 +230,4 @@ final class AuthController extends AbstractController
         ];
     }
 
-    private function checkUniqueFields(array $data, EntityManagerInterface $entityManager, ?Participant $currentParticipant = null): array
-    {
-        $errors = [];
-
-        if (!empty($data['pseudo'])) {
-            $existing = $entityManager->getRepository(Participant::class)->findOneBy(['pseudo' => $data['pseudo']]);
-            if ($existing && (!$currentParticipant || $existing->getId() !== $currentParticipant->getId())) {
-                $errors[] = 'Ce pseudo est déjà utilisé';
-            }
-        }
-
-        return $errors;
-    }
-
-    private function handleImageUpload(array $data, ImageUploadService $imageUploadService, ?string $currentPhoto = null): array
-    {
-        $result = ['photo_filename' => $currentPhoto, 'errors' => []];
-
-        // Supprimer la photo si demandé
-        if ($data['delete_photo'] && $currentPhoto) {
-            $imageUploadService->delete($currentPhoto);
-            $result['photo_filename'] = null;
-        }
-
-        // Upload nouvelle photo
-        if ($data['photo_file']) {
-            if ($imageUploadService->isValidImageFile($data['photo_file'])) {
-                try {
-                    $result['photo_filename'] = $imageUploadService->upload($data['photo_file'], $currentPhoto);
-                } catch (\Exception $e) {
-                    $result['errors'][] = $e->getMessage();
-                }
-            } else {
-                $result['errors'][] = 'Format d\'image invalide ou fichier trop volumineux (max 2MB)';
-            }
-        }
-
-        return $result;
-    }
-
-    private function populateParticipant(Participant $participant, array $data, Site $site, UserPasswordHasherInterface $passwordHasher): void
-    {
-        $participant->setPseudo($data['pseudo']);
-        $participant->setNom($data['nom']);
-        $participant->setPrenom($data['prenom']);
-        $participant->setMail($data['mail']);
-        $participant->setTelephone($data['telephone']);
-        $participant->setSite($site);
-        $participant->setAdministrateur(false);
-        $participant->setActif(true);
-
-        $hashedPassword = $passwordHasher->hashPassword($participant, $data['password']);
-        $participant->setMotDePasse($hashedPassword);
-    }
-
-    private function updateParticipant(Participant $participant, array $data, Site $site, UserPasswordHasherInterface $passwordHasher): void
-    {
-        $participant->setPseudo($data['pseudo']);
-        $participant->setNom($data['nom']);
-        $participant->setPrenom($data['prenom']);
-        $participant->setMail($data['mail']);
-        $participant->setTelephone($data['telephone']);
-        $participant->setSite($site);
-
-        if (!empty($data['password'])) {
-            $hashedPassword = $passwordHasher->hashPassword($participant, $data['password']);
-            $participant->setMotDePasse($hashedPassword);
-        }
-    }
 }
