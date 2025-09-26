@@ -65,24 +65,17 @@ final class SortieController extends AbstractController
     // NEW ___________________________________________________________________________
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
     public function new(
-        Request                $request,
+        Request $request,
         EntityManagerInterface $entityManager,
-        LieuService            $lieuService,
-        EtatService            $etatService
-    ): Response
-    {
+        LieuService $lieuService,
+        SortieService $sortieService
+    ): Response {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         $lieux = $lieuService->getAllLieux();
-        $etats = $etatService->getAllEtats();
 
-        // Créer un tableau associatif libelle => objet Etat
-        $etatsParLibelle = [];
-        foreach ($etats as $etat) {
-            $etatsParLibelle[$etat->getLibelle()] = $etat;
-        }
         $user = $this->getUser();
         if (!$user instanceof Participant) {
             throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
@@ -91,17 +84,13 @@ final class SortieController extends AbstractController
         $sortie->setOrganisateur($user);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->isSubmitted() && $form->isValid()) {
+            $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
+            $sortieService->setEtatBasedOnButton($sortie, $bouton);
 
-                if ($form->get('enregistrer')->isClicked()) {
-                    $sortie->setEtat($etatsParLibelle['Créée']);
-                } elseif ($form->get('publier')->isClicked()) {
-                    $sortie->setEtat($etatsParLibelle['Ouverte']);
-                }
-            }
             $entityManager->persist($sortie);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Votre sortie a été ' . ($bouton === 'enregistrer' ? 'créée.' : 'publiée.'));
             return $this->redirectToRoute('app_sortie_index');
         }
 

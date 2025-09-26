@@ -4,17 +4,41 @@ namespace App\Service;
 
 use App\Dto\SortieInscritsDTO;
 use App\Entity\Participant;
+use App\Entity\Sortie;
 use App\Repository\SortieRepository;
 
 class SortieService
 {
     private readonly SortieRepository $sortieRepository;
 
-    public function __construct(SortieRepository $sortieRepository)
+    public function __construct(SortieRepository $sortieRepository, EtatService $etatService)
     {
         $this->sortieRepository = $sortieRepository;
+        $this->etatService = $etatService;
+
     }
 
+    /**
+     * Assigne l'état d'une sortie selon le bouton cliqué.
+     */
+    public function setEtatBasedOnButton(Sortie $sortie, string $bouton): void
+    {
+        $etats = $this->etatService->getAllEtats();
+        $etatsParLibelle = [];
+        foreach ($etats as $etat) {
+            $etatsParLibelle[$etat->getLibelle()] = $etat;
+        }
+
+        if ($bouton === 'enregistrer') {
+            $sortie->setEtat($etatsParLibelle['Créée']);
+        } elseif ($bouton === 'publier') {
+            $sortie->setEtat($etatsParLibelle['Ouverte']);
+        }
+    }
+
+    /**
+     * Retourne les sorties filtrées avec le nombre d'inscrits et la participation de l'utilisateur.
+     */
     public function findFilteredSorties(array $criteria, ?Participant $user = null): array
     {
         $rawResults = $this->sortieRepository->findByFilter($criteria);
