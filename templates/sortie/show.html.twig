@@ -3,7 +3,7 @@
 {% block title %}Sortie{% endblock %}
 
 {% block body %}
-    <h1>Sortie</h1>
+    <h1 class="txt-custom-prim my-3 ">Sortie</h1>
 
     <div class="card">
         <table class="table">
@@ -13,8 +13,12 @@
                     <td>{{ sortie.nom }}</td>
                 </tr>
                 <tr>
+                    <th>Organisée par :</th>
+                    <td>{{ sortie.organisateur }}</td>
+                </tr>
+                <tr>
                     <th>Date de début</th>
-                    <td>{{ sortie.datedebut ? sortie.datedebut|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
                 </tr>
                 <tr>
                     <th>Durée</th>
@@ -24,21 +28,79 @@
                     <th>Date de clotûre</th>
                     <td>{{ sortie.datecloture ? sortie.datecloture|date('Y-m-d H:i:s') : '' }}</td>
                 </tr>
-                <tr>
-                    <th>Nombre maximum de participants</th>
-                    <td>{{ sortie.nbInscriptionsMax }}</td>
-                </tr>
+{#                <tr>#}
+{#                    <th>Nombre maximum de participants</th>#}
+{#                    <td>{{ sortie.nbInscriptionsMax }}</td>#}
+{#                </tr>#}
                 <tr>
                     <th>DescriptionInfos</th>
-                    <td>{{ sortie.descriptionInfos }}</td>
+                    <td>{{ sortie.description }}</td>
                 </tr>
                 <tr>
                     <th>Etat de la sortie</th>
-                    <td>{{ sortie.Etat.libelle }}</td>
+                    <td>{{ sortie.etat }}</td>
+                </tr>
+                <tr>
+                    <th>Lieu</th>
+                    <td>{{ sortie.lieu.NomLieu  ~ ' - ' ~ sortie.lieu.rue  ~ ' - ' ~ sortie.ville }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <h4 class="txt-custom-prim my-3">Utilisateurs inscrits</h4>
+    <div class="card">
+        {% set maxVisible = 10 %}
+        {% set totalParticipants = sortie.participants|length %}
+        <div class="row">
+            {% for participant in sortie.participants|slice(0, maxVisible) %}
+                <div class="col-md-2 my-3">
+                    <div class="card shadow-sm h-100">
+                        {% if participant.urlPhoto %}
+                            <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}" alt="Photo de profil" class="rounded-circle mx-auto d-block mt-1" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                            <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-1" style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                                {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title text-center">{{ participant.pseudo }}</h5>
+                            <p class="card-text text-center">
+                                {{ participant.prenom }} {{ participant.nom }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+{#                <table class="table">#}
+{#                    <tbody>#}
+{#                    <tr>#}
+
+{#                    </tr>#}
+{#                    </tbody>#}
+{#                </table>#}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        Aucun participant inscrit pour l’instant.
+                    </div>
+                </div>
+            {% endfor %}
+            {% if totalParticipants > maxVisible %}
+                <div class="col-12 mt-2">
+                    <div class="text-muted">
+                        + {{ totalParticipants - maxVisible }} autres participants...
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+    <form action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}" method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ sortie.id) }}">
+        <button type="submit" class="btn btn-success">
+            S'inscrire à la sortie
+        </button>
+    </form>
+
     <a class="a-custom-sec-outline" href="{{ path('app_sortie_index') }}">Retourner aux sorties</a>
 
     <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">edit</a>

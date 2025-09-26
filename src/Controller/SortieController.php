@@ -6,6 +6,7 @@ use App\Entity\Sortie;
 use App\Form\SortieFilterType;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
+use App\Service\InscriptionService;
 use App\Service\LieuService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +18,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(['/', '/sortie'])]
 final class SortieController extends AbstractController
 {
+    private $inscriptionService;
+
+    public function __construct(InscriptionService $inscriptionService)
+    {
+        $this->inscriptionService = $inscriptionService;
+    }
     #[Route(name: 'app_sortie_index', methods: ['GET'])]
     public function index(Request $request, SortieService $sortieService): Response
     {
@@ -60,10 +67,18 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_sortie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(Sortie $sortie): Response
+    public function show(Sortie $sortie, SortieService $sortieService): Response
     {
+        $sortieFull = $sortieService->getSortieWithParticipants($sortie->getId());
+
+        if(!$sortie)
+        {
+            throw $this->createNotFoundException("Sortie non trouvée");
+        }
+
+
         return $this->render('sortie/show.html.twig', [
-            'sortie' => $sortie,
+            'sortie' => $sortieFull,
         ]);
     }
 
@@ -95,4 +110,6 @@ final class SortieController extends AbstractController
 
         return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
 }

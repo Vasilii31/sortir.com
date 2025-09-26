@@ -15,21 +15,21 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface
         $lieuxData = [
             [
                 'nom' => 'Stade de France',
-                'rue' => 'Saint-Denis',
+                'rue' => 'Rue de Saint-Denis',
                 'ville' => 'Paris',
                 'latitude' => 48.9244,
                 'longitude' => 2.3601
             ],
             [
                 'nom' => 'Parc OL',
-                'rue' => 'Décines',
+                'rue' => 'Rue des Décines',
                 'ville' => 'Lyon',
                 'latitude' => 45.7640,
                 'longitude' => 4.9990
             ],
             [
                 'nom' => 'Vélodrome',
-                'rue' => 'Marseille',
+                'rue' => 'Rue de la brancardière',
                 'ville' => 'Marseille',
                 'latitude' => 43.2697,
                 'longitude' => 5.3950
