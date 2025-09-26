@@ -78,13 +78,9 @@
                                                     <button type="submit" class="btn btn-outline-{% if user.administrateur %}warning{% else %}success{% endif %} btn-sm me-2"
                                                             onclick="return confirm('{% if user.administrateur %}Retirer les droits administrateur à{% else %}Promouvoir comme administrateur{% endif %} {{ user.pseudo }} ?')">
                                                         {% if user.administrateur %}
-                                                            <span class="material-icons-outlined">
-                                                                add_moderator
-                                                            </span>
+                                                            <i class="bi bi-shield-minus text-warning"></i>
                                                         {% else %}
-                                                            <span class="material-icons-outlined">
-                                                                remove_moderator
-                                                            </span>
+                                                            <i class="bi bi-shield-plus text-success"></i>
                                                         {% endif %}
                                                     </button>
                                                 </form>
@@ -93,9 +89,7 @@
                                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm"
                                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer {{ user.pseudo }} ? Cette action est irréversible.')">
-                                                        <span class="material-icons-outlined">
-                                                            person_off
-                                                        </span>
+                                                        <i class="bi bi-trash text-danger"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -126,7 +120,6 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <style>
         .avatar-initials {
             font-size: 0.75rem !important;

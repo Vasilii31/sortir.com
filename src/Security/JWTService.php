@@ -8,11 +8,22 @@ class JWTService
 {
     private string $secret;
     private int $defaultTtl;
+    private int $rememberMeTtl;
 
-    public function __construct(string $secret = 'your-secret-key', int $defaultTtl = 86400)
+    public function __construct(string $secret = 'your-secret-key', int $defaultTtl = 86400, int $rememberMeTtl = 2592000)
     {
         $this->secret = $secret;
         $this->defaultTtl = $defaultTtl; // 24h par défaut
+        $this->rememberMeTtl = $rememberMeTtl; // 30 jours si "remember me"
+    }
+
+    /**
+     * Créer un JWT pour un participant avec gestion "remember me"
+     */
+    public function createTokenWithRememberMe(Participant $participant, bool $rememberMe = false): string
+    {
+        $ttl = $rememberMe ? $this->rememberMeTtl : $this->defaultTtl;
+        return $this->createToken($participant, $ttl);
     }
 
     /**

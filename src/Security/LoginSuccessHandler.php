@@ -26,14 +26,22 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         $user = $token->getUser();
 
         if ($user instanceof Participant) {
-            $jwtToken = $this->jwtService->createToken($user);
+            // Récupérer la valeur "remember me"
+            $rememberMe = $request->request->getBoolean('_remember_me', false);
+
+            // Créer le token avec la durée appropriée
+            $jwtToken = $this->jwtService->createTokenWithRememberMe($user, $rememberMe);
 
             $response = new RedirectResponse($this->router->generate('app_sortie_index'));
+
+            // Durée du cookie correspond à la durée du token
+            $cookieExpiry = $rememberMe ? time() + 2592000 : time() + 86400; // 30 jours ou 24h
+
             $response->headers->setCookie(
                 new Cookie(
                     'jwt_token',
                     $jwtToken,
-                    time() + 86400, // 24h
+                    $cookieExpiry,
                     '/',
                     null,
                     false, // secure (false pour dev)
