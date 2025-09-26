@@ -10,6 +10,7 @@ use App\Form\SortieFilterType;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
 use App\Service\EtatService;
+use App\Service\InscriptionService;
 use App\Service\LieuService;
 use App\Service\ParticipantService;
 use App\Service\SiteService;
@@ -68,7 +69,8 @@ final class SortieController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         LieuService $lieuService,
-        SortieService $sortieService
+        SortieService $sortieService,
+        InscriptionService $inscriptionService,
     ): Response {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
@@ -82,6 +84,7 @@ final class SortieController extends AbstractController
         }
 
         $sortie->setOrganisateur($user);
+        $inscriptionService->registerParticipant($sortie, $user);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
@@ -164,17 +167,7 @@ final class SortieController extends AbstractController
     }
 
 
-    #[Route('/sortie/{id}/inscrire', name: 'app_sortie_inscrire', methods: ['POST'])]
-    public function inscrire(Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        dd("TODO inscrire");
-    }
 
-    #[Route('/sortie/{id}/desister', name: 'app_sortie_desister', methods: ['POST'])]
-    public function desister(Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        dd("TODO desister");
-    }
 
     #[Route('/sortie/{id}/annuler', name: 'app_sortie_annuler', methods: ['POST'])]
     public function annuler(Sortie $sortie, EntityManagerInterface $em): Response

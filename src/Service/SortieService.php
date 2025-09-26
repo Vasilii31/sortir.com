@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Dto\SortieInscritsDTO;
+use App\Entity\Inscription;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Repository\SortieRepository;
