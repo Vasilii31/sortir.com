@@ -73,7 +73,7 @@ class SortieType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => true,
                 'required' => true,
-                'label' => 'Date de fin',
+                'label' => 'Date de cloture',
                 'attr' => [
                     'class' => 'form-control',
                 ],

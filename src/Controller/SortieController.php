@@ -123,9 +123,13 @@ final class SortieController extends AbstractController
     }
 
     // EDIT ___________________________________________________________________________
-
     #[Route('/sortie/{id}/edit', name: 'app_sortie_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request $request,
+        Sortie $sortie,
+        EntityManagerInterface $entityManager,
+        SortieService $sortieService
+    ): Response
     {
         $user = $this->getUser();
 
@@ -134,10 +138,29 @@ final class SortieController extends AbstractController
             return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        // Récupérer les données de session si existantes (en cas d'erreur précédente)
+        $sessionData = $request->getSession()->get('sortie_data');
+        if ($sessionData) {
+            $sortie = $sessionData;
+            $request->getSession()->remove('sortie_data');
+        }
+
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérification des dates via le service
+            $dateError = $sortieService->validateDates($sortie);
+
+            if ($dateError) {
+                $this->addFlash('error', $dateError);
+
+                // Conserver les données du formulaire pour le redirect
+                $request->getSession()->set('sortie_data', $form->getData());
+
+                return $this->redirectToRoute('app_sortie_edit', ['id' => $sortie->getId()]);
+            }
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Sortie mise à jour avec succès.');
