@@ -57,16 +57,7 @@ class SortieType extends AbstractType
                 'mapped' => false,
                 'data' => $villeInitiale, // <-- pré-remplit la ville en edit
             ])
-            ->add('site', ChoiceType::class, [
-                'choices' => $sites,
-                'choice_label' => fn($site) => $site->getNomSite(),
-                'choice_value' => fn($site) => $site ? $site->getId() : '',
-                'placeholder' => 'Choisissez un site',
-                'required' => true,
-                'label' => 'Ville organisatrice',
-                'attr' => ['class' => 'form-control'],
-                'mapped' => false,
-            ])
+
             ->add('datedebut', DateType::class, [
                 'widget' => 'single_text',
                 'html5' => true,

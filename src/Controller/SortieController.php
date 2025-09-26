@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Site;
 use App\Entity\Sortie;
@@ -39,7 +40,6 @@ final class SortieController extends AbstractController
         } else {
             $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
         }
-
 
 
         return $this->render('sortie/index.html.twig', [
@@ -83,7 +83,12 @@ final class SortieController extends AbstractController
         foreach ($etats as $etat) {
             $etatsParLibelle[$etat->getLibelle()] = $etat;
         }
+        $user = $this->getUser();
+        if (!$user instanceof Participant) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
+        }
 
+        $sortie->setOrganisateur($user);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->isSubmitted() && $form->isValid()) {
@@ -94,14 +99,6 @@ final class SortieController extends AbstractController
                     $sortie->setEtat($etatsParLibelle['Ouverte']);
                 }
             }
-
-
-            $user = $this->getUser();
-            if (!$user instanceof Participant) {
-                throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
-            }
-            $sortie->setOrganisateur($user);
-
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -189,6 +186,7 @@ final class SortieController extends AbstractController
     {
         dd("TODO desister");
     }
+
     #[Route('/sortie/{id}/annuler', name: 'app_sortie_annuler', methods: ['POST'])]
     public function annuler(Sortie $sortie, EntityManagerInterface $em): Response
     {
