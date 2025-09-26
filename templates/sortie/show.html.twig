@@ -3,6 +3,14 @@
 {% block title %}Sortie{% endblock %}
 
 {% block body %}
+    {% set maxVisible = 10 %}
+    {% set totalParticipants = sortie.participants|length %}
+    {% set isInscrit = false %}
+    {% for participant in sortie.participants %}
+        {% if participant.id == app.user.id %}
+            {% set isInscrit = true %}
+        {% endif %}
+    {% endfor %}
     <h1 class="txt-custom-prim my-3 ">Sortie</h1>
 
     <div class="card">
@@ -14,7 +22,7 @@
                 </tr>
                 <tr>
                     <th>Organisée par :</th>
-                    <td>{{ sortie.organisateur }}</td>
+                    <td>{{ sortie.organisateur.pseudo }}</td>
                 </tr>
                 <tr>
                     <th>Date de début</th>
@@ -22,7 +30,7 @@
                 </tr>
                 <tr>
                     <th>Durée</th>
-                    <td>{{ sortie.duree }}</td>
+                    <td>{{ sortie.duree ~ ' minutes '}}</td>
                 </tr>
                 <tr>
                     <th>Date de clotûre</th>
@@ -46,37 +54,88 @@
                 </tr>
             </tbody>
         </table>
+
+        {% if app.user %}
+{#            <h1 class="text-white">{{ sortie.organisateur.id }}</h1>#}
+            {# --- Cas : Organisateur --- #}
+            {% if sortie.organisateur.id == app.user.id %}
+
+{#                <h1 class="text-white">coucou</h1>#}
+                {% if sortie.etat == 'Ouverte' %}
+                    <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
+                          method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
+                        <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
+                    </form>
+                {% elseif sortie.etat == 'Créée' %}
+                    <a class="a-custom-sec-outline"
+                       href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">Modifier</a>
+
+                    <form class="text-center my-1" action="{{ path('app_sortie_publier', {'id': sortie.id}) }}"
+                          method="POST" style="display:inline">
+                        <button type="submit" class="a-custom-prim w-25">Publier</button>
+                    </form>
+
+                {% endif %}
+
+                {# --- Cas : Pas organisateur --- #}
+            {% else %}
+                {% if sortie.etat == 'En cours' %}
+
+                {% else %}
+                    {{ isInscrit }}
+                    {% if isInscrit %}
+                        <form class="text-center my-1" action="{{ path('app_sortie_desister', {'id': sortie.id}) }}"
+                              method="POST" style="display:inline">
+                            <button type="submit" class="a-custom-warn w-25">Se désister</button>
+                        </form>
+                    {% else %}
+                        {% if sortie.etat =="Ouverte" %}
+                            <form class="text-center my-1" action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}"
+                                  method="POST" style="display:inline">
+                                <button type="submit" class="a-custom-sec w-25">S'inscrire</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
+                              method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
+                            <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
+                        </form>
+                    {% endif %}
+
+                {% endif %}
+            {% endif %}
+        {% endif %}
     </div>
-    <h4 class="txt-custom-prim my-3">Utilisateurs inscrits</h4>
-    <div class="card">
-        {% set maxVisible = 10 %}
-        {% set totalParticipants = sortie.participants|length %}
-        <div class="row">
-            {% for participant in sortie.participants|slice(0, maxVisible) %}
-                <div class="col-md-2 my-3">
+
+
+
+    <h4 class="txt-custom-prim my-3">Utilisateurs inscrits : {{  totalParticipants ~ ' sur ' ~ sortie.nbInscriptionMax }}</h4>
+
+
+    <div class="card p-3">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3"
+             style="max-height: 400px; overflow-y: auto;">
+            {% for participant in sortie.participants %}
+                <div class="col">
                     <div class="card shadow-sm h-100">
                         {% if participant.urlPhoto %}
-                            <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}" alt="Photo de profil" class="rounded-circle mx-auto d-block mt-1" style="width: 60px; height: 60px; object-fit: cover;">
+                            <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}"
+                                 alt="Photo de profil"
+                                 class="rounded-circle mx-auto d-block mt-2"
+                                 style="width: 60px; height: 60px; object-fit: cover;">
                         {% else %}
-                            <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-1" style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                            <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-2"
+                                 style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
                                 {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
                             </div>
                         {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title text-center">{{ participant.pseudo }}</h5>
-                            <p class="card-text text-center">
-                                {{ participant.prenom }} {{ participant.nom }}
-                            </p>
+                        <div class="card-body p-2 text-center">
+                            <h6 class="card-title mb-1">{{ participant.pseudo }}</h6>
+                            <small class="text-muted">{{ participant.prenom }} {{ participant.nom }}</small>
                         </div>
                     </div>
                 </div>
-{#                <table class="table">#}
-{#                    <tbody>#}
-{#                    <tr>#}
-
-{#                    </tr>#}
-{#                    </tbody>#}
-{#                </table>#}
             {% else %}
                 <div class="col-12">
                     <div class="alert alert-info">
@@ -84,26 +143,11 @@
                     </div>
                 </div>
             {% endfor %}
-            {% if totalParticipants > maxVisible %}
-                <div class="col-12 mt-2">
-                    <div class="text-muted">
-                        + {{ totalParticipants - maxVisible }} autres participants...
-                    </div>
-                </div>
-            {% endif %}
         </div>
-
     </div>
-    <form action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}" method="post">
-        <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ sortie.id) }}">
-        <button type="submit" class="btn btn-success">
-            S'inscrire à la sortie
-        </button>
-    </form>
 
-    <a class="a-custom-sec-outline" href="{{ path('app_sortie_index') }}">Retourner aux sorties</a>
 
-    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">edit</a>
 
-    {{ include('sortie/_delete_form.html.twig') }}
+    <a class="a-custom-sec text-center my-2" href="{{ path('app_sortie_index') }}">Retourner aux sorties</a>
+
 {% endblock %}

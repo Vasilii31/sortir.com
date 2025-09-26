@@ -10,9 +10,10 @@ class SortieFullDTO
     public string $nom;
     public \DateTimeInterface $dateDebut;
     public \DateTimeInterface $datecloture;
+    public int $nbInscriptionMax;
     public int $duree;
     public string $etat;
-    public string $organisateur;
+    public ParticipantDTO $organisateur;
 
     public ?string $description = null;
     public ?Lieu $lieu;
