@@ -5,32 +5,154 @@
 {% block body %}
 
     <h4 class="txt-custom-prim my-3">Filtrer les sorties</h4>
-    <div class="pb-3">
+{#    <div class="pb-3">#}
+{#        <div class="card p-3 mb-4 shadow-sm">#}
+{#            {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}#}
 
-        <div class="card p-3 mb-4 shadow-sm">
+{#            <div class="row">#}
+{#                <div class="col-md-6 flex-column">#}
+{#                    {{ form_label(form.site) }}#}
+{#                    {{ form_widget(form.site, {'attr': {'class': 'form-control custom-select'}}) }}#}
+{#                </div>#}
+
+{#                <div class="col-md-6">#}
+{#                    <div class="form-check flex-row justify-content-start ">#}
+{#                        {{ form_widget(form.sortieCreator, {'attr': {'class': 'form-check-input'}}) }}#}
+{#                        {{ form_label(form.sortieCreator, null, {'label_attr': {'class': 'form-check-label'}}) }}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="row">#}
+{#                <div class="col-md-6 flex-column">#}
+{#                    {{ form_label(form.nom) }}#}
+{#                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}#}
+{#                </div>#}
+
+{#                <div class="col-md-6">#}
+{#                    <div class="form-check flex-row justify-content-start ">#}
+{#                        {{ form_widget(form.sortieInscrit, {'attr': {'class': 'form-check-input'}}) }}#}
+{#                        {{ form_label(form.sortieInscrit, null, {'label_attr': {'class': 'form-check-label'}}) }}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="row">#}
+{#                <div class="col-md-6 flex-column">#}
+{#                    {{ form_label(form.datedebut) }}#}
+{#                    {{ form_widget(form.datedebut, {'attr': {'class': 'form-control datepicker'}}) }}#}
+{#                </div>#}
+
+{#                <div class="col-md-6 ">#}
+{#                    <div class="form-check flex-row justify-content-start">#}
+{#                        {{ form_widget(form.sortieNonInscrit, {'attr': {'class': 'form-check-input'}}) }}#}
+{#                        {{ form_label(form.sortieNonInscrit, null, {'label_attr': {'class': 'form-check-label'}}) }}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="row">#}
+{#                <div class="col-md-6 flex-column">#}
+{#                    {{ form_label(form.datecloture) }}#}
+{#                    {{ form_widget(form.datecloture, {'attr': {'class': 'form-control datepicker'}}) }}#}
+{#                </div>#}
+
+{#                <div class="col-md-6 flex-column">#}
+{#                    <div class="form-check flex-row justify-content-start">#}
+{#                        {{ form_widget(form.sortiesPassees, {'attr': {'class': 'form-check-input'}}) }}#}
+{#                        {{ form_label(form.sortiesPassees, null, {'label_attr': {'class': 'form-check-label'}}) }}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="col-12">#}
+{#                {{ form_widget(form.submit, {'attr': {'class': 'a-custom-sec'}}) }}#}
+{#            </div>#}
+
+{#            {{ form_end(form) }}#}
+{#        </div>#}
+{#    </div>#}
+
+
+
+
+
+
+
+
+    <div class="pb-3">
+        <div class="card p-4  shadow-sm">
             {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
 
-            <div class="col-md-4">
-                {{ form_row(form.site) }}
-            </div>
-            <div class="col-md-4">
-                {{ form_row(form.nom) }}
-            </div>
-            <div class="col-md-4">
-                {{ form_row(form.datedebut) }}
-            </div>
-            <div class="col-md-4">
-                {{ form_row(form.datecloture) }}
+            <div class="row">
+                <div class="col-md-6 flex-column">
+                    {{ form_label(form.site) }}
+                    {{ form_widget(form.site, {'attr': {'class': 'form-control custom-select'}}) }}
+                </div>
+
+                <div class="col-md-6 flex-column">
+                    {{ form_label(form.nom) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
             </div>
 
+            <div class="row">
+                <div class="col-md-6 flex-column">
+                    {{ form_label(form.datedebut) }}
+                    {{ form_widget(form.datedebut, {'attr': {'class': 'form-control datepicker'}}) }}
+                </div>
+                <div class="col-md-6 flex-column">
+                    {{ form_label(form.datecloture) }}
+                    {{ form_widget(form.datecloture, {'attr': {'class': 'form-control datepicker'}}) }}
+                </div>
 
-            <div class="col-12">
-                {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
+            </div>
+
+            <div class="row">
+
+
+                <div class="col-md-6">
+                    <div class="form-check flex-row justify-content-start ">
+                        {{ form_widget(form.sortieCreator, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.sortieCreator, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 ">
+                    <div class="form-check flex-row justify-content-start">
+                        {{ form_widget(form.sortieNonInscrit, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.sortieNonInscrit, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check flex-row justify-content-start ">
+                        {{ form_widget(form.sortieInscrit, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.sortieInscrit, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                </div>
+
+
+                <div class="col-md-6 flex-column">
+                    <div class="form-check flex-row justify-content-start">
+                        {{ form_widget(form.sortiesPassees, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.sortiesPassees, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+            <div class="col-12 ">
+                {{ form_widget(form.submit, {'attr': {'class': 'a-custom-sec'}}) }}
             </div>
 
             {{ form_end(form) }}
-        </div>
     </div>
+
     <div class="card">
         <table class="table ">
             <thead>
@@ -48,28 +170,27 @@
             <tbody>
             {% for item in sortiesWithSub %}
                 <tr>
-                    <td class="text-center">{{ item.sortie.nom }}</td>
-                    <td class="text-center">{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
-                    <td class="text-center">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y') : '' }}</td>
-                    <td class="text-center">{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
-                    <td class="text-center">{{ item.sortie.etat.libelle }}</td>
-                    <td class="text-center">{{ item.isUserParticipating ? "x" : "" }}</td>
-                    <td class="text-center"> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}
-                        .
-                    </td>
+                    <td class="text-center align-middle">{{ item.sortie.nom }}</td>
+                    <td class="text-center align-middle">{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
+                    <td class="text-center align-middle">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y') : '' }}</td>
+                    <td class="text-center align-middle">{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
+                    <td class="text-center align-middle">{{ item.sortie.etat.libelle }}</td>
+                    <td class="text-center align-middle">{{ item.isUserParticipating ? "x" : "" }}</td>
+                    <td class="text-center align-middle"> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}.</td>
 
+                    <td class="text-center">
+                        <div class="d-flex flex-column flex-md-column flex-lg-row gap-1 gap-md-2 justify-content-center">
 
-                    <td class="text-center ">
                         {% if app.user %}
                             {# --- Cas : Organisateur --- #}
                             {% if item.sortie.organisateur == app.user %}
 
                                 {% if item.sortie.etat.libelle == 'Ouverte' %}
-                                    <a class="a-custom-prim-outline"
+                                    <a class="a-custom-sec-outline"
                                        href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                                     <form action="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}"
                                           method="POST" style="display:inline">
-                                        <button type="submit" class="a-custom-sec-outline">Annuler</button>
+                                        <button type="submit" class="a-custom-warn">Annuler</button>
                                     </form>
                                 {% elseif item.sortie.etat.libelle == 'Créée' %}
                                     <a class="a-custom-sec-outline"
@@ -85,34 +206,35 @@
                                 {# --- Cas : Pas organisateur --- #}
                             {% else %}
                                 {% if item.sortie.etat.libelle == 'En cours' %}
-                                    <a class="a-custom-prim-outline"
+                                    <a class="a-custom-sec-outline"
                                        href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
 
                                 {% else %}
                                     {% if item.isUserParticipating %}
-                                        <a class="a-custom-prim-outline"
+                                        <a class="a-custom-sec-outline"
                                            href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
 
                                         <form action="{{ path('app_sortie_desister', {'id': item.sortie.id}) }}"
                                               method="POST" style="display:inline">
-                                            <button type="submit" class="a-custom-sec-outline">Se désister</button>
+                                            <button type="submit" class="a-custom-warn">Se désister</button>
                                         </form>
                                     {% else %}
-                                        <a class="a-custom-prim-outline"
+                                        <a class="a-custom-sec-outline"
                                            href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                                         {% if item.sortie.etat.libelle =="Ouverte" %}
                                             <form action="{{ path('app_sortie_inscrire', {'id': item.sortie.id}) }}"
                                                   method="POST" style="display:inline">
-                                                <button type="submit" class="a-custom-sec-outline">S'inscrire</button>
+                                                <button type="submit" class="a-custom-prim-outline">S'inscrire</button>
                                             </form>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                         {% else %}
-                            <a class="a-custom-prim-outline"
+                            <a class="a-custom-sec-outline"
                                href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                         {% endif %}
+                        </div>
                     </td>
 
 
@@ -126,5 +248,8 @@
         </table>
 
     </div>
-    <a class="a-custom-sec my-3" href="{{ path('app_sortie_new') }}">Créer une sortie</a>
+    {% if app.user %}
+        <a class="a-custom-sec my-3" href="{{ path('app_sortie_new') }}">Créer une sortie</a>
+    {% endif %}
+
 {% endblock %}

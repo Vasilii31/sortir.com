@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -38,10 +39,12 @@ class SortieRepository extends BaseRepository
 
 
     // Renvoie les sorties filtrées
-    public function findByFilter(array $criteria): array
+    public function findByFilter(array $criteria, Participant $user): array
     {
         $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
+            ->leftJoin('s.organisateur', 'o')
+            ->leftJoin('o.site', 'site')
             ->leftJoin('s.etat', 'e')
             ->addSelect('COUNT(i.id) AS nbInscrits')
             ->addSelect('e.libelle AS etatLibelle')
@@ -49,10 +52,19 @@ class SortieRepository extends BaseRepository
             ->addGroupBy('e.id')
             ->orderBy('s.id', 'ASC');
 
+        // Filtre site
+        if (!empty($criteria['site'])) {
+            $qb->andWhere('site.id = :siteId')
+                ->setParameter('siteId', $criteria['site']);
+        }
+
+        // Filtre nom (LIKE pour correspondance partielle)
         if (!empty($criteria['nom'])) {
             $qb->andWhere('s.nom LIKE :nom')
                 ->setParameter('nom', '%' . $criteria['nom'] . '%');
         }
+
+        // Filtre dates
         if (!empty($criteria['datedebut'])) {
             $qb->andWhere('s.datedebut >= :datedebut')
                 ->setParameter('datedebut', $criteria['datedebut']);
@@ -62,8 +74,39 @@ class SortieRepository extends BaseRepository
                 ->setParameter('datecloture', $criteria['datecloture']);
         }
 
+        // Checkbox : sorties dont je suis l’organisateur
+        if (!empty($criteria['sortieCreator'])) {
+            $qb->andWhere('s.organisateur = :user')
+                ->setParameter('user', $user);
+        }
+
+        // Sorties auxquelles je suis inscrit
+        if (!empty($criteria['sortieInscrit'])) {
+            $qb->andWhere(':user MEMBER OF s.inscriptions')
+                ->setParameter('user', $user);
+        }
+
+        // Sorties auxquelles je ne suis pas inscrit
+        if (!empty($criteria['sortieNonInscrit'])) {
+            $qb->andWhere(':user NOT MEMBER OF s.inscriptions')
+                ->setParameter('user', $user);
+        }
+
+        // Sorties passées
+        if (!empty($criteria['sortiesPassees'])) {
+            $qb->andWhere('s.datedebut < :now')
+                ->setParameter('now', new \DateTime());
+        } else {
+            // Si non cochée, on ne renvoie que les sorties futures
+            $qb->andWhere('s.datedebut >= :now')
+                ->setParameter('now', new \DateTime());
+        }
+
         return $qb->getQuery()->getResult();
     }
+
+
+
 
 
 }

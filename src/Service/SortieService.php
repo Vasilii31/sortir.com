@@ -40,9 +40,9 @@ class SortieService
     /**
      * Retourne les sorties filtrées avec le nombre d'inscrits et la participation de l'utilisateur.
      */
-    public function findFilteredSorties(array $criteria, ?Participant $user = null): array
+    public function findFilteredSorties(array $criteria, Participant $user = null): array
     {
-        $rawResults = $this->sortieRepository->findByFilter($criteria);
+        $rawResults = $this->sortieRepository->findByFilter($criteria, $user);
 
         return array_map(function($row) use ($user) {
             $sortie = $row[0];

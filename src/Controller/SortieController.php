@@ -4,16 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Etat;
 use App\Entity\Participant;
-use App\Entity\Site;
 use App\Entity\Sortie;
 use App\Form\SortieFilterType;
 use App\Form\SortieType;
-use App\Repository\SortieRepository;
-use App\Service\EtatService;
 use App\Service\InscriptionService;
 use App\Service\LieuService;
-use App\Service\ParticipantService;
-use App\Service\SiteService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,16 +26,31 @@ final class SortieController extends AbstractController
     {
         $user = $this->getUser();
 
-
         $form = $this->createForm(SortieFilterType::class);
         $form->handleRequest($request);
+
         $sortiesWithSub = [];
+
+        // Récupération des critères du formulaire
+        $criteria = [];
         if ($form->isSubmitted() && $form->isValid()) {
-            $sortiesWithSub = $sortieService->findFilteredSorties($form->getData(), $user);
+            $data = $form->getData();
+
+            $criteria['site'] = $data['site'] ?? null;
+            $criteria['nom'] = $data['nom'] ?? null;
+            $criteria['datedebut'] = $data['datedebut'] ?? null;
+            $criteria['datecloture'] = $data['datecloture'] ?? null;
+
+            // Checkbox (mapped => false)
+            $criteria['sortieCreator']    = $form->get('sortieCreator')->getData();
+            $criteria['sortieInscrit']    = $form->get('sortieInscrit')->getData();
+            $criteria['sortieNonInscrit'] = $form->get('sortieNonInscrit')->getData();
+            $criteria['sortiesPassees']   = $form->get('sortiesPassees')->getData();
+
+            $sortiesWithSub = $sortieService->findFilteredSorties($criteria, $user);
         } else {
             $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
         }
-
 
         return $this->render('sortie/index.html.twig', [
             'sortiesWithSub' => $sortiesWithSub,
@@ -50,17 +60,11 @@ final class SortieController extends AbstractController
 
 
 
-
     // NEW ___________________________________________________________________________
     // src/Controller/SortieController.php
 
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
-    public function new(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        LieuService $lieuService,
-        SortieService $sortieService,
-        InscriptionService $inscriptionService,
+    public function new(Request $request, EntityManagerInterface $entityManager, LieuService $lieuService, SortieService $sortieService, InscriptionService $inscriptionService,
     ): Response {
         $sortie = new Sortie();
         $lieux = $lieuService->getAllLieux();

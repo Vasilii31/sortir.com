@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Site;
 use App\Service\SiteService;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,7 +29,7 @@ class SortieFilterType extends AbstractType
                 'required' => false,
                 'label' => 'Site :',
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control custom-select',
                 ],
             ])
             ->add('nom', TextType::class, [
@@ -53,19 +54,39 @@ class SortieFilterType extends AbstractType
                 'label' => 'Date clôture',
                 'attr' => ['class' => 'form-control datepicker'],
             ])
-//            ->add('etatsortie')
-//            ->add('etat', EntityType::class, [
-//                'class' => Etat::class,
-//                'choice_label' => 'id',
-//            ])
-//            ->add('organisateur', EntityType::class, [
-//                'class' => Participant::class,
-//                'choice_label' => 'id',
-//            ])
-//            ->add('Lieu', EntityType::class, [
-//                'class' => Lieu::class,
-//                'choice_label' => 'id',
-//            ])
+            ->add('sortieCreator', CheckboxType::class, [
+                'required'   => false,
+                'mapped'     => false,
+                'label'      => "Sorties dont je suis l'organisateur",
+                'row_attr'   => ['class' => 'form-check'],
+                'label_attr' => ['class' => 'form-check-label'],
+                'attr'       => ['class' => 'form-check-input'],
+            ])
+            ->add('sortieInscrit', CheckboxType::class, [
+                'required'   => false,
+                'mapped'     => false,
+                'label'      => "Sorties auxquelles je suis inscrit",
+                'row_attr'   => ['class' => 'form-check'],
+                'label_attr' => ['class' => 'form-check-label'],
+                'attr'       => ['class' => 'form-check-input'],
+            ])
+            ->add('sortieNonInscrit', CheckboxType::class, [
+                'required'   => false,
+                'mapped'     => false,
+                'label'      => "Sorties auxquelles je ne suis pas inscrit",
+                'row_attr'   => ['class' => 'form-check'],
+                'label_attr' => ['class' => 'form-check-label'],
+                'attr'       => ['class' => 'form-check-input'],
+            ])
+            ->add('sortiesPassees', CheckboxType::class, [
+                'required' => false,
+                'mapped' => false,
+                'label' => "Sorties passées",
+                'row_attr' => ['class' => 'form-check'],
+                'label_attr' => ['class' => 'form-check-label'],
+                'attr' => ['class' => 'form-check-input'],
+            ])
+
             ->add('submit', SubmitType::class, [
                 'label' => 'Rechercher'
             ]);;
