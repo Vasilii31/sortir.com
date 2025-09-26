@@ -9,6 +9,7 @@ use App\Service\SiteService;
 use App\Service\VilleService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -58,11 +59,11 @@ class SortieType extends AbstractType
                 'data' => $villeInitiale, // <-- pré-remplit la ville en edit
             ])
 
-            ->add('datedebut', DateType::class, [
+            ->add('datedebut', DateTimeType::class, [
                 'widget' => 'single_text',
                 'html5' => true,
                 'required' => true,
-                'label' => 'Date de début',
+                'label' => 'Date et heure de début',
                 'attr' => [
                     'class' => 'form-control',
                 ],

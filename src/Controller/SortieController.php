@@ -49,18 +49,7 @@ final class SortieController extends AbstractController
         ]);
     }
 
-// src/Controller/SortieController.php
-    #[Route('/sortie/{id}/publier', name: 'app_sortie_publier', methods: ['POST'])]
-    public function publier(Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        $etatOuvert = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
-        if ($etatOuvert) {
-            $sortie->setEtat($etatOuvert);
-            $em->flush();
-        }
 
-        return $this->redirectToRoute('app_sortie_index');
-    }
 
 
     // NEW ___________________________________________________________________________
@@ -168,11 +157,33 @@ final class SortieController extends AbstractController
 
 
 
-
+    // ANNULER ___________________________________________________________________
     #[Route('/sortie/{id}/annuler', name: 'app_sortie_annuler', methods: ['POST'])]
     public function annuler(Sortie $sortie, EntityManagerInterface $em): Response
     {
-        dd("TODO annuler");
+        $etat = $sortie->getEtat()->getLibelle();
+        $etatsNonAnnulables = ["Activité en cours", "Passée", "Historisée"];
+
+        if (!in_array($etat, $etatsNonAnnulables, true)) {
+            $etatAnnulee = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Annulée']);
+            $sortie->setEtat($etatAnnulee);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_sortie_index');
+    }
+
+    // PUBLIER ___________________________________________________________________
+    #[Route('/sortie/{id}/publier', name: 'app_sortie_publier', methods: ['POST'])]
+    public function publier(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $etatOuvert = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+        if ($etatOuvert) {
+            $sortie->setEtat($etatOuvert);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_sortie_index');
     }
 
 }

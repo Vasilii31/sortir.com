@@ -50,7 +50,7 @@
                 <tr>
                     <td class="text-center">{{ item.sortie.nom }}</td>
                     <td class="text-center">{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
-                    <td class="text-center">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y H:i') : '' }}</td>
+                    <td class="text-center">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y') : '' }}</td>
                     <td class="text-center">{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
                     <td class="text-center">{{ item.sortie.etat.libelle }}</td>
                     <td class="text-center">{{ item.isUserParticipating ? "x" : "" }}</td>
@@ -67,14 +67,22 @@
                                 {% if item.sortie.etat.libelle == 'Ouverte' %}
                                     <a class="a-custom-prim-outline"
                                        href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
-                                    <a class="a-custom-sec-outline"
-                                       href="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}">Annuler</a>
+                                    <form action="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}"
+                                          method="POST" style="display:inline">
+                                        <button type="submit" class="a-custom-sec-outline">Annuler</button>
+                                    </form>
+
+
 
                                 {% elseif item.sortie.etat.libelle == 'Créée' %}
                                     <a class="a-custom-sec-outline"
                                        href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">Modifier</a>
-                                    <a class="a-custom-prim-outline"
-                                       href="{{ path('app_sortie_publier', {'id': item.sortie.id}) }}">Publier</a>
+
+                                    <form action="{{ path('app_sortie_publier', {'id': item.sortie.id}) }}"
+                                          method="POST" style="display:inline">
+                                        <button type="submit" class="a-custom-prim-outline">Publier</button>
+                                    </form>
+
                                 {% endif %}
 
                                 {# --- Cas : Pas organisateur --- #}

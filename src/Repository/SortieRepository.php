@@ -2,11 +2,8 @@
 
 namespace App\Repository;
 
-use App\Dto\SortieInscritsDTO;
-use App\Entity\Participant;
 use App\Entity\Sortie;
 use Doctrine\Persistence\ManagerRegistry;
-use http\Client\Curl\User;
 
 class SortieRepository extends BaseRepository
 {
@@ -32,6 +29,8 @@ class SortieRepository extends BaseRepository
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.etat', 'e')
             ->addSelect('COUNT(i.id) AS nbInscrits')
+            ->where('e.libelle NOT IN (:excludedEtats)')
+            ->setParameter('excludedEtats', ['Annulée', 'Historisée'])
             ->groupBy('s.id')
             ->getQuery()
             ->getResult();
@@ -65,7 +64,6 @@ class SortieRepository extends BaseRepository
 
         return $qb->getQuery()->getResult();
     }
-
 
 
 }
