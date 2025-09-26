@@ -27,9 +27,8 @@ final class SortieController extends AbstractController
     // INDEX ___________________________________________________________________________
 
     #[Route(name: 'app_sortie_index', methods: ['GET'])]
-    public function index(Request $request, SortieService $sortieService, ParticipantService $partipantService): Response
+    public function index(Request $request, SortieService $sortieService): Response
     {
-        $participant = $partipantService->getAllParticipants();
         $user = $this->getUser();
 
 
