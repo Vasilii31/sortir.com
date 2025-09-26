@@ -2,21 +2,64 @@
 
 namespace App\Service;
 
+use App\Dto\SortieInscritsDTO;
+use App\Entity\Inscription;
 use App\Entity\Participant;
+use App\Entity\Sortie;
 use App\Repository\SortieRepository;
 
 class SortieService
 {
     private readonly SortieRepository $sortieRepository;
 
-    public function __construct(SortieRepository $sortieRepository)
+    public function __construct(SortieRepository $sortieRepository, EtatService $etatService)
     {
         $this->sortieRepository = $sortieRepository;
+        $this->etatService = $etatService;
+
     }
 
-    public function findFilteredSorties(array $searchCriteria): array
+    /**
+     * Assigne l'état d'une sortie selon le bouton cliqué.
+     */
+    public function setEtatBasedOnButton(Sortie $sortie, string $bouton): void
     {
-        return $this->sortieRepository->FindByFilter($searchCriteria);
+        $etats = $this->etatService->getAllEtats();
+        $etatsParLibelle = [];
+        foreach ($etats as $etat) {
+            $etatsParLibelle[$etat->getLibelle()] = $etat;
+        }
+
+        if ($bouton === 'enregistrer') {
+            $sortie->setEtat($etatsParLibelle['Créée']);
+        } elseif ($bouton === 'publier') {
+            $sortie->setEtat($etatsParLibelle['Ouverte']);
+        }
+    }
+
+    /**
+     * Retourne les sorties filtrées avec le nombre d'inscrits et la participation de l'utilisateur.
+     */
+    public function findFilteredSorties(array $criteria, ?Participant $user = null): array
+    {
+        $rawResults = $this->sortieRepository->findByFilter($criteria);
+
+        return array_map(function($row) use ($user) {
+            $sortie = $row[0];
+            $nbInscrits = (int)$row['nbInscrits'];
+
+            $isParticipating = false;
+            if ($user) {
+                foreach ($sortie->getInscriptions() as $inscription) {
+                    if ($inscription->getParticipant() === $user) {
+                        $isParticipating = true;
+                        break;
+                    }
+                }
+            }
+
+            return new SortieInscritsDTO($sortie, $nbInscrits, $isParticipating);
+        }, $rawResults);
     }
 
     public function findAll(): array
@@ -26,6 +69,23 @@ class SortieService
 
     public function findAllWithSubscribed(?Participant $user = null): array
     {
-        return $this->sortieRepository->findAllWithSubscribed($user);
+        $rawResults = $this->sortieRepository->findAllWithSubscribed();
+
+        return array_map(function($row) use ($user) {
+            $sortie = $row[0];
+            $nbInscrits = (int)$row['nbInscrits'];
+
+            $isParticipating = false;
+            if ($user) {
+                foreach ($sortie->getInscriptions() as $inscription) {
+                    if ($inscription->getParticipant() === $user) {
+                        $isParticipating = true;
+                        break;
+                    }
+                }
+            }
+
+            return new SortieInscritsDTO($sortie, $nbInscrits, $isParticipating);
+        }, $rawResults);
     }
 }

@@ -4,9 +4,9 @@
         {{ form_row(form.nom) }}
     </div>
     <div class="col-md-6">
-        {{ form_row(form.site) }}
+        <p class=" my-1">Ville organisatrice :</p>
+        <p>{{ form.vars.data.organisateur.site.nomSite }}</p>
     </div>
-
 </div>
 
 <div class="row">

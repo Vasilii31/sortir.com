@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Site;
 use App\Entity\Sortie;
@@ -9,6 +10,7 @@ use App\Form\SortieFilterType;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
 use App\Service\EtatService;
+use App\Service\InscriptionService;
 use App\Service\LieuService;
 use App\Service\ParticipantService;
 use App\Service\SiteService;
@@ -25,9 +27,8 @@ final class SortieController extends AbstractController
     // INDEX ___________________________________________________________________________
 
     #[Route(name: 'app_sortie_index', methods: ['GET'])]
-    public function index(Request $request, SortieService $sortieService, ParticipantService $partipantService): Response
+    public function index(Request $request, SortieService $sortieService): Response
     {
-        $participant = $partipantService->getAllParticipants();
         $user = $this->getUser();
 
 
@@ -35,11 +36,10 @@ final class SortieController extends AbstractController
         $form->handleRequest($request);
         $sortiesWithSub = [];
         if ($form->isSubmitted() && $form->isValid()) {
-            $sortiesWithSub = $sortieService->findFilteredSorties($form->getData());
+            $sortiesWithSub = $sortieService->findFilteredSorties($form->getData(), $user);
         } else {
             $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
         }
-
 
 
         return $this->render('sortie/index.html.twig', [
@@ -48,63 +48,40 @@ final class SortieController extends AbstractController
         ]);
     }
 
-// src/Controller/SortieController.php
-    #[Route('/sortie/{id}/publier', name: 'app_sortie_publier', methods: ['POST'])]
-    public function publier(Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        $etatOuvert = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
-        if ($etatOuvert) {
-            $sortie->setEtat($etatOuvert);
-            $em->flush();
-        }
 
-        return $this->redirectToRoute('app_sortie_index');
-    }
 
 
     // NEW ___________________________________________________________________________
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
     public function new(
-        Request                $request,
+        Request $request,
         EntityManagerInterface $entityManager,
-        LieuService            $lieuService,
-        EtatService            $etatService
-    ): Response
-    {
+        LieuService $lieuService,
+        SortieService $sortieService,
+        InscriptionService $inscriptionService,
+    ): Response {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         $lieux = $lieuService->getAllLieux();
-        $etats = $etatService->getAllEtats();
 
-        // Créer un tableau associatif libelle => objet Etat
-        $etatsParLibelle = [];
-        foreach ($etats as $etat) {
-            $etatsParLibelle[$etat->getLibelle()] = $etat;
+        $user = $this->getUser();
+        if (!$user instanceof Participant) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
         }
 
+        $sortie->setOrganisateur($user);
+        $inscriptionService->registerParticipant($sortie, $user);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                if ($form->get('enregistrer')->isClicked()) {
-                    $sortie->setEtat($etatsParLibelle['Créée']);
-                } elseif ($form->get('publier')->isClicked()) {
-                    $sortie->setEtat($etatsParLibelle['Ouverte']);
-                }
-            }
-
-
-            $user = $this->getUser();
-            if (!$user instanceof Participant) {
-                throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
-            }
-            $sortie->setOrganisateur($user);
+            $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
+            $sortieService->setEtatBasedOnButton($sortie, $bouton);
 
             $entityManager->persist($sortie);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Votre sortie a été ' . ($bouton === 'enregistrer' ? 'créée.' : 'publiée.'));
             return $this->redirectToRoute('app_sortie_index');
         }
 
@@ -178,21 +155,34 @@ final class SortieController extends AbstractController
     }
 
 
-    #[Route('/sortie/{id}/inscrire', name: 'app_sortie_inscrire', methods: ['POST'])]
-    public function inscrire(Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        dd("TODO inscrire");
-    }
 
-    #[Route('/sortie/{id}/desister', name: 'app_sortie_desister', methods: ['POST'])]
-    public function desister(Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        dd("TODO desister");
-    }
+    // ANNULER ___________________________________________________________________
     #[Route('/sortie/{id}/annuler', name: 'app_sortie_annuler', methods: ['POST'])]
     public function annuler(Sortie $sortie, EntityManagerInterface $em): Response
     {
-        dd("TODO annuler");
+        $etat = $sortie->getEtat()->getLibelle();
+        $etatsNonAnnulables = ["Activité en cours", "Passée", "Historisée"];
+
+        if (!in_array($etat, $etatsNonAnnulables, true)) {
+            $etatAnnulee = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Annulée']);
+            $sortie->setEtat($etatAnnulee);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_sortie_index');
+    }
+
+    // PUBLIER ___________________________________________________________________
+    #[Route('/sortie/{id}/publier', name: 'app_sortie_publier', methods: ['POST'])]
+    public function publier(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $etatOuvert = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+        if ($etatOuvert) {
+            $sortie->setEtat($etatOuvert);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_sortie_index');
     }
 
 }
