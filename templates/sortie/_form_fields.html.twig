@@ -1,0 +1,63 @@
+{# sortie/_form_fields.html.twig #}
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.nom) }}
+    </div>
+    <div class="col-md-6">
+        <p class=" my-1">Ville organisatrice :</p>
+        <p>{{ form.vars.data.organisateur.site.nomSite }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.datedebut) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_row(form.ville) }}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.datecloture) }}
+    </div>
+
+
+    <div class="col-md-6">
+        {{ form_row(form.lieu) }}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.duree) }}
+    </div>
+
+    <div class="col-md-6 my-2 position-realtive mt-3" id="lieu-details" style="display:none;">
+        <div class="position-absolute">
+            <p class=" my-1"><strong>Rue :</strong> <span id="rue-display"></span></p>
+            <p class=" my-1"><strong>Code postal :</strong> <span id="ville-cp"></span></p>
+            <p class=" my-1"><strong>Latitude :</strong> <span id="latitude"></span></p>
+            <p class=" my-1"><strong>Longitude :</strong> <span id="longitude"></span></p>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.nbInscriptionsMax) }}
+    </div>
+
+</div>
+<div class="row">
+
+    <div class="col-md-6">
+        {{ form_row(form.descriptionInfos) }}
+    </div>
+
+</div>
+
+

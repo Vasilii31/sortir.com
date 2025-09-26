@@ -5,29 +5,39 @@ namespace App\Form;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Service\LieuService;
+use App\Service\SiteService;
 use App\Service\VilleService;
-use Symfony\Component\Validator\Constraints as Assert;
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SortieType extends AbstractType
 {
-    public function __construct(private readonly LieuService $lieuService, private readonly VilleService $villeService)
+    public function __construct(private readonly LieuService $lieuService, private readonly VilleService $villeService, private readonly SiteService $siteService)
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
         $lieux = $this->lieuService->getAllLieux();
         $villes = $this->villeService->getAllVilles();
+        $sites = $this->siteService->getAllSites();
+
+        // Récupérer la sortie actuelle si en mode edit
+        $sortie = $options['data'] ?? null;
+        $villeInitiale = null;
+
+        if ($sortie && $sortie->getLieu()) {
+            $villeInitiale = $sortie->getLieu()->getVille();
+        }
+
         $builder
             ->add('nom', TextType::class, [
                 'required' => true,
@@ -37,11 +47,23 @@ class SortieType extends AbstractType
                     'class' => 'form-control'
                 ],
             ])
-            ->add('datedebut', DateType::class, [
+            ->add('ville', ChoiceType::class, [
+                'choices' => $villes,
+                'choice_label' => fn($ville) => $ville->getNomVille(),
+                'choice_value' => fn($ville) => $ville ? $ville->getId() : '',
+                'placeholder' => 'Choisissez une ville',
+                'required' => true,
+                'label' => 'Ville',
+                'attr' => ['class' => 'form-control'],
+                'mapped' => false,
+                'data' => $villeInitiale, // <-- pré-remplit la ville en edit
+            ])
+
+            ->add('datedebut', DateTimeType::class, [
                 'widget' => 'single_text',
                 'html5' => true,
-                'required' => false,
-                'label' => 'Date début',
+                'required' => true,
+                'label' => 'Date et heure de début',
                 'attr' => [
                     'class' => 'form-control',
                 ],
@@ -49,14 +71,14 @@ class SortieType extends AbstractType
             ->add('datecloture', DateType::class, [
                 'widget' => 'single_text',
                 'html5' => true,
-                'required' => false,
-                'label' => 'Date début',
+                'required' => true,
+                'label' => 'Date de fin',
                 'attr' => [
                     'class' => 'form-control',
                 ],
             ])
             ->add('nbInscriptionsMax', IntegerType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Nombre de places',
                 'attr' => [
                     'class' => 'form-control',
@@ -71,23 +93,25 @@ class SortieType extends AbstractType
                     'placeholder' => '90',
                 ],
             ])
-            ->add('descriptionInfos', TextType::class, [
+            ->add('descriptionInfos', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description et infos ',
                 'attr' => [
                     'placeholder' => 'Parcours de 15km...',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'rows' => 5, // nombre de lignes visibles
                 ],
             ])
             ->add('ville', ChoiceType::class, [
                 'choices' => $villes,
-                'choice_label' => fn($ville) => $ville->getNomVille() ,
+                'choice_label' => fn($ville) => $ville->getNomVille(),
                 'choice_value' => fn($ville) => $ville ? $ville->getId() : '',
                 'placeholder' => 'Choisissez une ville',
                 'required' => true,
                 'label' => 'Ville',
                 'attr' => ['class' => 'form-control'],
                 'mapped' => false,
+                'data' => $villeInitiale, // <-- pré-remplit la ville en edit
             ])
             ->add('lieu', ChoiceType::class, [
                 'choices' => $lieux,
@@ -105,11 +129,16 @@ class SortieType extends AbstractType
                     ];
                 },
                 'placeholder' => 'Choisissez un lieu',
-                'required' => false,
+                'required' => true,
                 'label' => 'Lieu',
                 'attr' => ['class' => 'form-control'],
             ])
-           ;
+            ->add('enregistrer', SubmitType::class, [
+                'label' => 'Enregistrer',
+            ])
+            ->add('publier', SubmitType::class, [
+                'label' => 'Publier',
+            ]);
 
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Dto\SortieInscritsDTO;
 use App\Entity\Sortie;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,25 +25,17 @@ class SortieRepository extends BaseRepository
     // Renvoie les sorties avec le nombre d'inscrits
     public function findAllWithSubscribed(): array
     {
-        $qb = $this->createQueryBuilder('s')
+        return $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.etat', 'e')
-            ->addSelect('COUNT(i.id) as nbInscrits')
-            ->addSelect('e.libelle AS etatLibelle')
+            ->addSelect('COUNT(i.id) AS nbInscrits')
+            ->where('e.libelle NOT IN (:excludedEtats)')
+            ->setParameter('excludedEtats', ['Annulée', 'Historisée'])
             ->groupBy('s.id')
-            ->addGroupBy('e.id')
-            ->orderBy('s.id', 'ASC');
-
-        $results = $qb->getQuery()->getResult();
-
-        return array_map(
-            fn($row) => new SortieInscritsDTO(
-                $row[0],
-                (int)$row['nbInscrits'],
-            ),
-            $results
-        );
+            ->getQuery()
+            ->getResult();
     }
+
 
     /**
      * Récupère une sortie avec toutes ses relations (participants inclus).
@@ -68,41 +59,32 @@ class SortieRepository extends BaseRepository
     }
 
     // Renvoie les sorties filtrées
-    public function FindByFilter(array $searchCriteria): array
+    public function findByFilter(array $criteria): array
     {
-        $queryBuilder = $this->createQueryBuilder('s')
+        $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.etat', 'e')
-            ->addSelect('COUNT(i.id) as nbInscrits')
+            ->addSelect('COUNT(i.id) AS nbInscrits')
             ->addSelect('e.libelle AS etatLibelle')
             ->groupBy('s.id')
             ->addGroupBy('e.id')
             ->orderBy('s.id', 'ASC');
 
-        if (!empty($searchCriteria['nom'])) {
-            $queryBuilder->andWhere('s.nom LIKE :nom')
-                ->setParameter('nom', '%' . $searchCriteria['nom'] . '%');
+        if (!empty($criteria['nom'])) {
+            $qb->andWhere('s.nom LIKE :nom')
+                ->setParameter('nom', '%' . $criteria['nom'] . '%');
         }
-        if (!empty($searchCriteria['datedebut'])) {
-            $queryBuilder->andWhere('s.datedebut >= :datedebut')
-                ->setParameter('datedebut', $searchCriteria['datedebut']); // déjà un DateTime
+        if (!empty($criteria['datedebut'])) {
+            $qb->andWhere('s.datedebut >= :datedebut')
+                ->setParameter('datedebut', $criteria['datedebut']);
+        }
+        if (!empty($criteria['datecloture'])) {
+            $qb->andWhere('s.datecloture <= :datecloture')
+                ->setParameter('datecloture', $criteria['datecloture']);
         }
 
-        if (!empty($searchCriteria['datecloture'])) {
-            $queryBuilder->andWhere('s.datecloture <= :datecloture')
-                ->setParameter('datecloture', $searchCriteria['datecloture']); // déjà un DateTime
-        }
-
-        $results = $queryBuilder->getQuery()->getResult();
-
-        return array_map(
-            fn($row) => new SortieInscritsDTO(
-                $row[0],
-                (int)$row['nbInscrits'],
-            ),
-            $results
-        );
-
+        return $qb->getQuery()->getResult();
     }
+
 
 }
