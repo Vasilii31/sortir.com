@@ -112,4 +112,45 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('admin_users');
     }
+
+    #[Route('/users/{id}/toggle-actif', name: 'admin_toggle_actif', methods: ['POST'])]
+    public function toggleActif(
+        int $id,
+        Request $request,
+        ParticipantRepository $participantRepository,
+        ParticipantService $participantService,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): Response {
+        // Vérifier que l'utilisateur est admin
+        $currentUser = $this->getUser();
+        if (!$currentUser || !$currentUser->isAdministrateur()) {
+            throw $this->createAccessDeniedException('Accès réservé aux administrateurs');
+        }
+
+        // Vérifier le token CSRF
+        $csrfToken = $request->request->get('_csrf_token');
+        if (!$csrfTokenManager->isTokenValid(new \Symfony\Component\Security\Csrf\CsrfToken('toggle_actif_' . $id, $csrfToken))) {
+            $this->addFlash('error', 'Token de sécurité invalide');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        $user = $participantRepository->find($id);
+        if (!$user) {
+            $this->addFlash('error', 'Utilisateur introuvable');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        // Empêcher de se désactiver soi-même
+        if ($user->getId() === $currentUser->getId()) {
+            $this->addFlash('error', 'Vous ne pouvez pas désactiver votre propre compte');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        $participantService->toggleActif($user);
+
+        $action = $user->isActif() ? 'réactivé' : 'désactivé';
+        $this->addFlash('success', "Le compte de {$user->getPseudo()} a été {$action}");
+
+        return $this->redirectToRoute('admin_users');
+    }
 }

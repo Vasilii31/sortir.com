@@ -84,11 +84,24 @@
                                                         {% endif %}
                                                     </button>
                                                 </form>
+                                                <!-- Toggle Actif -->
+                                                <form method="post" action="{{ path('admin_toggle_actif', {id: user.id}) }}" style="display: inline;">
+                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('toggle_actif_' ~ user.id) }}">
+                                                    <button type="submit" class="btn btn-outline-{% if user.actif %}secondary{% else %}info{% endif %} btn-sm me-2"
+                                                            onclick="return confirm('{% if user.actif %}Désactiver le compte de{% else %}Réactiver le compte de{% endif %} {{ user.pseudo }} ?{% if user.actif %} Ses inscriptions et sorties futures seront supprimées.{% endif %}')">
+                                                        {% if user.actif %}
+                                                            <i class="bi bi-person-slash text-secondary"></i>
+                                                        {% else %}
+                                                            <i class="bi bi-person-check text-info"></i>
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
                                                 <!-- Delete User -->
                                                 <form method="post" action="{{ path('admin_delete_user', {id: user.id}) }}" style="display: inline;">
                                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm"
-                                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer {{ user.pseudo }} ? Cette action est irréversible.')">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" {{ user.actif ? 'disabled' : '' }}
+                                                            onclick="return {% if user.actif %}false{% else %}confirm('Êtes-vous sûr de vouloir supprimer {{ user.pseudo }} ? Cette action est irréversible.'){% endif %}"
+                                                            {% if user.actif %}title="Désactivez d'abord ce compte pour pouvoir le supprimer"{% endif %}>
                                                         <i class="bi bi-trash text-danger"></i>
                                                     </button>
                                                 </form>
