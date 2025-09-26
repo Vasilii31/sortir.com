@@ -3,42 +3,151 @@
 {% block title %}Sortie{% endblock %}
 
 {% block body %}
-    <h1>Sortie</h1>
+    {% set maxVisible = 10 %}
+    {% set totalParticipants = sortie.participants|length %}
+    {% set isInscrit = false %}
+    {% for participant in sortie.participants %}
+        {% if participant.id == app.user.id %}
+            {% set isInscrit = true %}
+        {% endif %}
+    {% endfor %}
+    <h1 class="txt-custom-prim my-3 ">Sortie</h1>
 
-    <table class="table">
-        <tbody>
+    <div class="card">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ sortie.nom }}</td>
+                </tr>
+                <tr>
+                    <th>Organisée par :</th>
+                    <td>{{ sortie.organisateur.pseudo }}</td>
+                </tr>
+                <tr>
+                    <th>Date de début</th>
+                    <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Durée</th>
+                    <td>{{ sortie.duree ~ ' minutes '}}</td>
+                </tr>
+                <tr>
+                    <th>Date de clotûre</th>
+                    <td>{{ sortie.datecloture ? sortie.datecloture|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+{#                <tr>#}
+{#                    <th>Nombre maximum de participants</th>#}
+{#                    <td>{{ sortie.nbInscriptionsMax }}</td>#}
+{#                </tr>#}
+                <tr>
+                    <th>DescriptionInfos</th>
+                    <td>{{ sortie.description }}</td>
+                </tr>
+                <tr>
+                    <th>Etat de la sortie</th>
+                    <td>{{ sortie.etat }}</td>
+                </tr>
+                <tr>
+                    <th>Lieu</th>
+                    <td>{{ sortie.lieu.NomLieu  ~ ' - ' ~ sortie.lieu.rue  ~ ' - ' ~ sortie.ville }}</td>
+                </tr>
+            </tbody>
+        </table>
 
-            <tr>
-                <th>Nom</th>
-                <td>{{ sortie.nom }}</td>
-            </tr>
-            <tr>
-                <th>Datedebut</th>
-                <td>{{ sortie.datedebut ? sortie.datedebut|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Duree</th>
-                <td>{{ sortie.duree }}</td>
-            </tr>
-            <tr>
-                <th>Datecloture</th>
-                <td>{{ sortie.datecloture ? sortie.datecloture|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>NbInscriptionsMax</th>
-                <td>{{ sortie.nbInscriptionsMax }}</td>
-            </tr>
-            <tr>
-                <th>DescriptionInfos</th>
-                <td>{{ sortie.descriptionInfos }}</td>
-            </tr>
+        {% if app.user %}
+{#            <h1 class="text-white">{{ sortie.organisateur.id }}</h1>#}
+            {# --- Cas : Organisateur --- #}
+            {% if sortie.organisateur.id == app.user.id %}
 
-        </tbody>
-    </table>
+{#                <h1 class="text-white">coucou</h1>#}
+                {% if sortie.etat == 'Ouverte' %}
+                    <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
+                          method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
+                        <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
+                    </form>
+                {% elseif sortie.etat == 'Créée' %}
+                    <a class="a-custom-sec-outline"
+                       href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">Modifier</a>
 
-    <a href="{{ path('app_sortie_index') }}">back to list</a>
+                    <form class="text-center my-1" action="{{ path('app_sortie_publier', {'id': sortie.id}) }}"
+                          method="POST" style="display:inline">
+                        <button type="submit" class="a-custom-prim w-25">Publier</button>
+                    </form>
 
-    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">edit</a>
+                {% endif %}
 
-    {{ include('sortie/_delete_form.html.twig') }}
+                {# --- Cas : Pas organisateur --- #}
+            {% else %}
+                {% if sortie.etat == 'En cours' %}
+
+                {% else %}
+                    {{ isInscrit }}
+                    {% if isInscrit %}
+                        <form class="text-center my-1" action="{{ path('app_sortie_desister', {'id': sortie.id}) }}"
+                              method="POST" style="display:inline">
+                            <button type="submit" class="a-custom-warn w-25">Se désister</button>
+                        </form>
+                    {% else %}
+                        {% if sortie.etat =="Ouverte" %}
+                            <form class="text-center my-1" action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}"
+                                  method="POST" style="display:inline">
+                                <button type="submit" class="a-custom-sec w-25">S'inscrire</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
+                              method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
+                            <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
+                        </form>
+                    {% endif %}
+
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+
+
+    <h4 class="txt-custom-prim my-3">Utilisateurs inscrits : {{  totalParticipants ~ ' sur ' ~ sortie.nbInscriptionMax }}</h4>
+
+
+    <div class="card p-3">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3"
+             style="max-height: 400px; overflow-y: auto;">
+            {% for participant in sortie.participants %}
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        {% if participant.urlPhoto %}
+                            <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}"
+                                 alt="Photo de profil"
+                                 class="rounded-circle mx-auto d-block mt-2"
+                                 style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                            <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-2"
+                                 style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                                {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="card-body p-2 text-center">
+                            <h6 class="card-title mb-1">{{ participant.pseudo }}</h6>
+                            <small class="text-muted">{{ participant.prenom }} {{ participant.nom }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        Aucun participant inscrit pour l’instant.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+    <a class="a-custom-sec text-center my-2" href="{{ path('app_sortie_index') }}">Retourner aux sorties</a>
+
 {% endblock %}
