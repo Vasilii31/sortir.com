@@ -20,30 +20,33 @@
                 <!-- Liens -->
                 {% if is_granted('ROLE_ADMIN') %}
                 <li class="nav-item">
-                    <a class="nav-link txt-custom-sec" href="{{ path('app_ville_index') }}">Villes</a>
+                    <a class="nav-link txt-custom-sec" href="{{ path('admin_users') }}" data-turbo="false">Participants</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link txt-custom-sec"  href="{{ path('app_site_index') }}">Sites</a>
+                    <a class="nav-link txt-custom-sec" href="{{ path('app_ville_index') }}" data-turbo="false">Villes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link txt-custom-sec"  href="{{ path('app_site_index') }}" data-turbo="false">Sites</a>
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link txt-custom-sec"  href="{{ path('app_sortie_index') }}">Accueil</a>
+                    <a class="nav-link txt-custom-sec"  href="{{ path('app_sortie_index') }}" data-turbo="false">Accueil</a>
                 </li>
 
                 <!-- Authentification boutons -->
                 {% if app.user %}
                     <li class="nav-item ms-2">
-                        <a class="a-custom-sec" href="{{ path('app_profile') }}">Mon profil</a>
+                        <a class="a-custom-sec" href="{{ path('app_profile') }}" data-turbo="false">Mon profil</a>
                     </li>
                     <li class="nav-item ms-2">
-                        <a class="a-custom-sec-outline" href="{{ path('app_logout') }}">Logout</a>
+                        <a class="a-custom-sec-outline" href="{{ path('app_logout') }}" data-turbo="false">Logout</a>
                     </li>
                 {% else %}
                     <li class="nav-item ms-2">
-                        <a class="a-custom-sec" href="{{ path('app_login') }}">Login</a>
+                        <a class="a-custom-sec" href="{{ path('app_login') }}" data-turbo="false">Login</a>
                     </li>
                     <li class="nav-item ms-2">
-                        <a class="a-custom-sec-outline" href="{{ path('app_register') }}">Register</a>
+                        <a class="a-custom-sec-outline" href="{{ path('app_register') }}" data-turbo="false">Register</a>
                     </li>
                 {% endif %}
             </ul>

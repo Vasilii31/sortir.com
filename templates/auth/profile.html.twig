@@ -127,13 +127,6 @@
                     </div>
                 </form>
 
-                {% if app.user.administrateur %}
-                    <div class="text-center mb-3">
-                        <a href="{{ path('admin_users') }}" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-shield-check me-1"></i>Gestion des utilisateurs
-                        </a>
-                    </div>
-                {% endif %}
 
                 <hr class="my-3">
                 <div class="text-center">
@@ -146,10 +139,6 @@
 </div>
 {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
-{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}

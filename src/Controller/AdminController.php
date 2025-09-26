@@ -4,19 +4,18 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Repository\ParticipantRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ParticipantService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use App\Service\ImageUploadService;
 
 #[Route('/admin')]
 final class AdminController extends AbstractController
 {
     #[Route('/users', name: 'admin_users')]
-    public function users(ParticipantRepository $participantRepository): Response
+    public function users(ParticipantService $participantService): Response
     {
         // Vérifier que l'utilisateur est admin
         $currentUser = $this->getUser();
@@ -24,7 +23,7 @@ final class AdminController extends AbstractController
             throw $this->createAccessDeniedException('Accès réservé aux administrateurs');
         }
 
-        $users = $participantRepository->findBy([], ['nom' => 'ASC', 'prenom' => 'ASC']);
+        $users = $participantService->getAllParticipants();
 
         return $this->render('admin/users.html.twig', [
             'users' => $users,
@@ -37,7 +36,7 @@ final class AdminController extends AbstractController
         int $id,
         Request $request,
         ParticipantRepository $participantRepository,
-        EntityManagerInterface $entityManager,
+        ParticipantService $participantService,
         CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
         // Vérifier que l'utilisateur est admin
@@ -65,9 +64,7 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        // Basculer le statut admin
-        $user->setAdministrateur(!$user->isAdministrateur());
-        $entityManager->flush();
+        $participantService->toggleAdmin($user);
 
         $action = $user->isAdministrateur() ? 'promu administrateur' : 'retiré des administrateurs';
         $this->addFlash('success', "L'utilisateur {$user->getPseudo()} a été {$action}");
@@ -80,9 +77,8 @@ final class AdminController extends AbstractController
         int $id,
         Request $request,
         ParticipantRepository $participantRepository,
-        EntityManagerInterface $entityManager,
-        CsrfTokenManagerInterface $csrfTokenManager,
-        ImageUploadService $imageUploadService
+        ParticipantService $participantService,
+        CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
         // Vérifier que l'utilisateur est admin
         $currentUser = $this->getUser();
@@ -110,15 +106,7 @@ final class AdminController extends AbstractController
         }
 
         $pseudo = $user->getPseudo();
-
-        // Supprimer la photo de profil si elle existe
-        if ($user->getPhotoProfil()) {
-            $imageUploadService->delete($user->getPhotoProfil());
-        }
-
-        // Supprimer l'utilisateur
-        $entityManager->remove($user);
-        $entityManager->flush();
+        $participantService->deleteParticipant($user);
 
         $this->addFlash('success', "L'utilisateur {$pseudo} a été supprimé");
 
