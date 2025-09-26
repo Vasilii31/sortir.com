@@ -88,4 +88,24 @@ class SortieService
             return new SortieInscritsDTO($sortie, $nbInscrits, $isParticipating);
         }, $rawResults);
     }
+
+
+    public function validateDates(Sortie $sortie): ?string
+    {
+        $now = new \DateTime();
+        $datedebut = $sortie->getDatedebut();
+        $datecloture = $sortie->getDatecloture();
+
+        if ($datedebut < $now) {
+            return 'La date de début ne peut pas être antérieure à aujourd’hui.';
+        }
+        if ($datecloture < $now) {
+            return 'La date de clôture ne peut pas être  antérieure à aujourd’hui.';
+        }
+        if ($datecloture > $datedebut) {
+            return 'La date de clôture ne peut pas être  postérieure à la date de début.';
+        }
+
+        return null;
+    }
 }

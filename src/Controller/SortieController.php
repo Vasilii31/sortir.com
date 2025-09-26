@@ -52,6 +52,8 @@ final class SortieController extends AbstractController
 
 
     // NEW ___________________________________________________________________________
+    // src/Controller/SortieController.php
+
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -61,10 +63,16 @@ final class SortieController extends AbstractController
         InscriptionService $inscriptionService,
     ): Response {
         $sortie = new Sortie();
+        $lieux = $lieuService->getAllLieux();
+        $sortie = new Sortie();
+
+        $sessionData = $request->getSession()->get('sortie_data');
+        if ($sessionData) {
+            $sortie = $sessionData;
+            $request->getSession()->remove('sortie_data');
+        }
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
-
-        $lieux = $lieuService->getAllLieux();
 
         $user = $this->getUser();
         if (!$user instanceof Participant) {
@@ -75,6 +83,16 @@ final class SortieController extends AbstractController
         $inscriptionService->registerParticipant($sortie, $user);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $dateError = $sortieService->validateDates($sortie);
+            if ($dateError) {
+                $this->addFlash('error', $dateError);
+
+                $request->getSession()->set('sortie_data', $form->getData());
+                return $this->redirectToRoute('app_sortie_new');
+
+            }
+
             $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
             $sortieService->setEtatBasedOnButton($sortie, $bouton);
 
@@ -82,6 +100,7 @@ final class SortieController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Votre sortie a été ' . ($bouton === 'enregistrer' ? 'créée.' : 'publiée.'));
+
             return $this->redirectToRoute('app_sortie_index');
         }
 
@@ -90,6 +109,9 @@ final class SortieController extends AbstractController
             'lieux' => $lieux,
         ]);
     }
+
+
+
 
     // SHOW ___________________________________________________________________________
     #[Route('/sortie/{id}', name: 'app_sortie_show', methods: ['GET'])]

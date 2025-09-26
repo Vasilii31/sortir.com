@@ -71,9 +71,6 @@
                                           method="POST" style="display:inline">
                                         <button type="submit" class="a-custom-sec-outline">Annuler</button>
                                     </form>
-
-
-
                                 {% elseif item.sortie.etat.libelle == 'Créée' %}
                                     <a class="a-custom-sec-outline"
                                        href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">Modifier</a>
