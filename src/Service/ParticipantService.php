@@ -2,7 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\Participant;
+use App\Entity\Site;
 use App\Repository\ParticipantRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ParticipantService
 {
