@@ -99,4 +99,31 @@ class SortieRepository extends BaseRepository
 
     }
 
+    /**
+     * Trouve les sorties futures ou en cours organisées par un participant
+     */
+    public function findFutureOrOngoingByOrganizer($organizer): array
+    {
+        $now = new \DateTime();
+
+        return $this->createQueryBuilder('s')
+            ->where('s.organisateur = :organizer')
+            ->andWhere('s.datedebut > :now OR (s.duree IS NOT NULL AND DATE_ADD(s.datedebut, s.duree, \'MINUTE\') > :now) OR s.duree IS NULL')
+            ->setParameter('organizer', $organizer)
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Supprime des sorties
+     */
+    public function removeSorties(array $sorties): void
+    {
+        foreach ($sorties as $sortie) {
+            $this->getEntityManager()->remove($sortie);
+        }
+        $this->getEntityManager()->flush();
+    }
+
 }
