@@ -28,17 +28,12 @@ class SortieFilterType extends AbstractType
                 'placeholder' => 'Choisissez un site',
                 'required' => false,
                 'label' => 'Site :',
-                'attr' => [
-                    'class' => 'form-control custom-select',
-                ],
+                'attr' => ['class' => 'form-control custom-select'],
             ])
             ->add('nom', TextType::class, [
                 'required' => false,
                 'label' => 'Le nom de la sortie contient:',
-                'attr' => [
-                    'placeholder' => 'Rechercher par nom',
-                    'class' => 'form-control'
-                ],
+                'attr' => ['placeholder' => 'Rechercher par nom', 'class' => 'form-control'],
             ])
             ->add('datedebut', DateType::class, [
                 'required' => false,
@@ -55,49 +50,44 @@ class SortieFilterType extends AbstractType
                 'attr' => ['class' => 'form-control datepicker'],
             ])
             ->add('sortieCreator', CheckboxType::class, [
-                'required'   => false,
-                'mapped'     => false,
-                'label'      => "Sorties dont je suis l'organisateur",
-                'row_attr'   => ['class' => 'form-check'],
+                'required' => false,
+                'label' => "Sorties dont je suis l'organisateur",
+                'row_attr' => ['class' => 'form-check'],
                 'label_attr' => ['class' => 'form-check-label'],
-                'attr'       => ['class' => 'form-check-input'],
+                'attr' => ['class' => 'form-check-input'],
             ])
             ->add('sortieInscrit', CheckboxType::class, [
-                'required'   => false,
-                'mapped'     => false,
-                'label'      => "Sorties auxquelles je suis inscrit",
-                'row_attr'   => ['class' => 'form-check'],
+                'required' => false,
+                'label' => "Sorties auxquelles je suis inscrit",
+                'row_attr' => ['class' => 'form-check'],
                 'label_attr' => ['class' => 'form-check-label'],
-                'attr'       => ['class' => 'form-check-input'],
+                'attr' => ['class' => 'form-check-input'],
             ])
             ->add('sortieNonInscrit', CheckboxType::class, [
-                'required'   => false,
-                'mapped'     => false,
-                'label'      => "Sorties auxquelles je ne suis pas inscrit",
-                'row_attr'   => ['class' => 'form-check'],
+                'required' => false,
+                'label' => "Sorties auxquelles je ne suis pas inscrit",
+                'row_attr' => ['class' => 'form-check'],
                 'label_attr' => ['class' => 'form-check-label'],
-                'attr'       => ['class' => 'form-check-input'],
+                'attr' => ['class' => 'form-check-input'],
             ])
             ->add('sortiesPassees', CheckboxType::class, [
                 'required' => false,
-                'mapped' => false,
                 'label' => "Sorties passées",
                 'row_attr' => ['class' => 'form-check'],
                 'label_attr' => ['class' => 'form-check-label'],
                 'attr' => ['class' => 'form-check-input'],
             ])
-
             ->add('submit', SubmitType::class, [
-                'label' => 'Rechercher'
-            ]);;
+                'label' => 'Rechercher',
+                'attr' => ['class' => 'btn btn-primary'],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'csrf_protection' => true,
             'method' => 'GET',
-            'data_class' => null,
+            'csrf_protection' => false,
         ]);
     }
 }

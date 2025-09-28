@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Participant;
+use App\Entity\Site;
 use App\Entity\Sortie;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -38,75 +39,111 @@ class SortieRepository extends BaseRepository
     }
 
 
-    // Renvoie les sorties filtrées
-    public function findByFilter(array $criteria, Participant $user): array
+    public function findByFilter(array $criteria, Participant $user = null): array
     {
+        // Construction de base de la requête
         $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.organisateur', 'o')
             ->leftJoin('o.site', 'site')
             ->leftJoin('s.etat', 'e')
-            ->addSelect('COUNT(i.id) AS nbInscrits')
+            ->addSelect('COUNT(DISTINCT i.id) AS nbInscrits')
             ->addSelect('e.libelle AS etatLibelle')
             ->groupBy('s.id')
             ->addGroupBy('e.id')
-            ->orderBy('s.id', 'ASC');
+            ->orderBy('s.datedebut', 'DESC');
 
-        // Filtre site
-        if (!empty($criteria['site'])) {
-            $qb->andWhere('site.id = :siteId')
-                ->setParameter('siteId', $criteria['site']);
-        }
-
-        // Filtre nom (LIKE pour correspondance partielle)
+        // Filtre par nom
         if (!empty($criteria['nom'])) {
             $qb->andWhere('s.nom LIKE :nom')
                 ->setParameter('nom', '%' . $criteria['nom'] . '%');
         }
 
-        // Filtre dates
-        if (!empty($criteria['datedebut'])) {
+        // Filtre par site
+        if (!empty($criteria['site'])) {
+            $siteId = $criteria['site'] instanceof Site ? $criteria['site']->getId() : $criteria['site'];
+            $qb->andWhere('site.id = :siteId')
+                ->setParameter('siteId', $siteId);
+        }
+
+        // Filtre par date de début
+        if (!empty($criteria['datedebut']) && $criteria['datedebut'] instanceof \DateTimeInterface) {
             $qb->andWhere('s.datedebut >= :datedebut')
                 ->setParameter('datedebut', $criteria['datedebut']);
         }
-        if (!empty($criteria['datecloture'])) {
+
+        // Filtre par date de clôture
+        if (!empty($criteria['datecloture']) && $criteria['datecloture'] instanceof \DateTimeInterface) {
             $qb->andWhere('s.datecloture <= :datecloture')
                 ->setParameter('datecloture', $criteria['datecloture']);
         }
 
-        // Checkbox : sorties dont je suis l’organisateur
-        if (!empty($criteria['sortieCreator'])) {
+        // Filtre sorties créées par l'utilisateur
+        if (!empty($criteria['sortieCreator']) && $user) {
             $qb->andWhere('s.organisateur = :user')
                 ->setParameter('user', $user);
         }
 
-        // Sorties auxquelles je suis inscrit
-        if (!empty($criteria['sortieInscrit'])) {
-            $qb->andWhere(':user MEMBER OF s.inscriptions')
-                ->setParameter('user', $user);
+        // Filtre sorties où l'utilisateur est inscrit
+        if (!empty($criteria['sortieInscrit']) && $user) {
+            $qb->innerJoin('s.inscriptions', 'i_user', 'WITH', 'i_user.participant = :user_inscrit')
+                ->setParameter('user_inscrit', $user);
         }
 
-        // Sorties auxquelles je ne suis pas inscrit
-        if (!empty($criteria['sortieNonInscrit'])) {
-            $qb->andWhere(':user NOT MEMBER OF s.inscriptions')
-                ->setParameter('user', $user);
+        // Filtre sorties où l'utilisateur n'est pas inscrit
+        if (!empty($criteria['sortieNonInscrit']) && $user) {
+            $qb->andWhere('s.id NOT IN (
+            SELECT s2.id FROM App\Entity\Sortie s2
+            INNER JOIN s2.inscriptions i2
+            WHERE i2.participant = :user_non_inscrit
+        )')
+                ->setParameter('user_non_inscrit', $user);
         }
 
-        // Sorties passées
+        // Filtre sorties passées (état = 5)
         if (!empty($criteria['sortiesPassees'])) {
-            $qb->andWhere('s.datedebut < :now')
-                ->setParameter('now', new \DateTime());
-        } else {
-            // Si non cochée, on ne renvoie que les sorties futures
-            $qb->andWhere('s.datedebut >= :now')
-                ->setParameter('now', new \DateTime());
+            $qb->andWhere('s.etat = :etatPasse')
+                ->setParameter('etatPasse', 5);
         }
 
-        return $qb->getQuery()->getResult();
+        $query = $qb->getQuery();
+        return $query->getResult();
     }
 
 
 
+//    public function findByFilter(array $criteria, Participant $user = null): array
+//    {
+//        // Construction de base de la requête
+//        $qb = $this->createQueryBuilder('s')
+//            ->leftJoin('s.inscriptions', 'i')
+//            ->leftJoin('s.organisateur', 'o')
+//            ->leftJoin('o.site', 'site')
+//            ->leftJoin('s.etat', 'e')
+//            ->addSelect('COUNT(DISTINCT i.id) AS nbInscrits')
+//            ->addSelect('e.libelle AS etatLibelle')
+//            ->groupBy('s.id')
+//            ->addGroupBy('e.id')
+//            ->orderBy('s.datedebut', 'DESC');
+//
+//        // Test du filtre inscriptions avec méthode EXISTS plus propre
+//        if (!empty($criteria['sortiesPassees'])) {
+//            // Filtre pour sorties dont l'état a l'id 5 (passées)
+//            $qb->andWhere('s.etat = :etatPasse')
+//                ->setParameter('etatPasse', 5);
+//        }
+//
+//
+//        $query = $qb->getQuery();
+//        $results = $query->getResult();
+//
+//        dd('ÉTAPE 9 - Sortie passées', [
+//            'user_id' => $user ? $user->getId() : null,
+//            'sortiesPassees' => $criteria['sortiesPassees'] ?? false,
+//            'nombre_résultats' => count($results),
+//            'results' => $results,
+//          ]);
+//    }
 
 
 }
