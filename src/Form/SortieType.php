@@ -21,17 +21,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SortieType extends AbstractType
 {
-    public function __construct(private readonly LieuService $lieuService, private readonly VilleService $villeService, private readonly SiteService $siteService)
-    {
+    public function __construct(
+        private readonly LieuService $lieuService,
+        private readonly VilleService $villeService,
+        private readonly SiteService $siteService
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $lieux = $this->lieuService->getAllLieux();
         $villes = $this->villeService->getAllVilles();
-//        $sites = $this->siteService->getAllSites();
 
-        // Récupérer la sortie actuelle si en mode edit
         $sortie = $options['data'] ?? null;
         $villeInitiale = null;
 
@@ -45,21 +46,10 @@ class SortieType extends AbstractType
                 'label' => 'Nom ',
                 'attr' => [
                     'placeholder' => 'Randonnée',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'autocomplete' => 'off'
                 ],
             ])
-            ->add('ville', ChoiceType::class, [
-                'choices' => $villes,
-                'choice_label' => fn($ville) => $ville->getNomVille(),
-                'choice_value' => fn($ville) => $ville ? $ville->getId() : '',
-                'placeholder' => 'Choisissez une ville',
-                'required' => true,
-                'label' => 'Ville',
-                'attr' => ['class' => 'form-control'],
-                'mapped' => false,
-                'data' => $villeInitiale,
-            ])
-
             ->add('datedebut', DateTimeType::class, [
                 'widget' => 'single_text',
                 'html5' => true,
@@ -100,7 +90,7 @@ class SortieType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Parcours de 15km...',
                     'class' => 'form-control',
-                    'rows' => 5, // nombre de lignes visibles
+                    'rows' => 5,
                 ],
             ])
             ->add('ville', ChoiceType::class, [
@@ -112,7 +102,7 @@ class SortieType extends AbstractType
                 'label' => 'Ville',
                 'attr' => ['class' => 'form-control'],
                 'mapped' => false,
-                'data' => $villeInitiale, // <-- pré-remplit la ville en edit
+                'data' => $villeInitiale,
             ])
             ->add('lieu', ChoiceType::class, [
                 'choices' => $lieux,
@@ -134,13 +124,13 @@ class SortieType extends AbstractType
                 'label' => 'Lieu',
                 'attr' => ['class' => 'form-control'],
             ])
+
             ->add('enregistrer', SubmitType::class, [
                 'label' => 'Enregistrer',
             ])
             ->add('publier', SubmitType::class, [
                 'label' => 'Publier',
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

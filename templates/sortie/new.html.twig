@@ -20,83 +20,76 @@
         {{ form_end(form) }}
     </div>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectVille = document.getElementById('{{ form.ville.vars.id }}');
+                const selectLieu  = document.getElementById('{{ form.lieu.vars.id }}');
 
+                const spanRue      = document.getElementById('rue-display');
+                const spanCp       = document.getElementById('ville-cp');
+                const spanLatitude = document.getElementById('latitude');
+                const spanLongitude= document.getElementById('longitude');
+                const divDetails   = document.getElementById('lieu-details');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const selectVille = document.getElementById('{{ form.ville.vars.id }}');
-            const selectLieu  = document.getElementById('{{ form.lieu.vars.id }}');
+                const options = Array.from(selectLieu.querySelectorAll("option"))
+                    .filter(opt => opt.value !== "");
 
-            const spanRue      = document.getElementById('rue-display');
-            const spanCp       = document.getElementById('ville-cp');
-            const spanLatitude = document.getElementById('latitude');
-            const spanLongitude= document.getElementById('longitude');
-            const divDetails   = document.getElementById('lieu-details');
-
-            const allOptions = Array.from(selectLieu.options);
-
-            function resetLieu() {
-                selectLieu.innerHTML = '';
-                selectLieu.appendChild(new Option('Choisissez un lieu', ''));
-                selectLieu.value = '';
-                selectLieu.disabled = true;
-                updateLieuDetails();
-            }
-
-            function updateLieuOptions() {
-                const villeId = selectVille.value;
-
-                // toujours reset si aucune ville
-                if (!villeId) {
-                    resetLieu();
-                    return;
+                function resetLieu() {
+                    selectLieu.innerHTML = '';
+                    const placeholder = new Option('Choisissez un lieu', '', true, true);
+                    placeholder.disabled = true;
+                    selectLieu.appendChild(placeholder);
+                    selectLieu.disabled = true;
+                    updateLieuDetails();
                 }
 
-                selectLieu.disabled = false;
-                selectLieu.innerHTML = '';
-
-                // 👉 placeholder désactivé
-                selectLieu.appendChild(new Option('Choisissez un lieu', '', true, true));
-                selectLieu.options[0].disabled = true;
-
-                allOptions.forEach(opt => {
-                    if (opt.dataset.villeId === villeId) {
-                        selectLieu.appendChild(opt);
+                function updateLieuOptions() {
+                    const villeId = selectVille.value;
+                    if (!villeId) {
+                        resetLieu();
+                        return;
                     }
-                });
 
-                // forcer à rester sur le placeholder tant qu'aucun choix n'est fait
-                selectLieu.value = '';
+                    selectLieu.disabled = false;
+                    selectLieu.innerHTML = '';
+                    const placeholder = new Option('Choisissez un lieu', '', true, true);
+                    placeholder.disabled = true;
+                    selectLieu.appendChild(placeholder);
 
-                updateLieuDetails();
-            }
+                    options.forEach(opt => {
+                        if (opt.dataset.villeId === villeId) {
+                            selectLieu.appendChild(opt.cloneNode(true));
+                        }
+                    });
 
-            function updateLieuDetails() {
-                const opt = selectLieu.options[selectLieu.selectedIndex];
-                if (!opt || !opt.value) {
-                    spanRue.textContent = '';
-                    spanCp.textContent = '';
-                    spanLatitude.textContent = '';
-                    spanLongitude.textContent = '';
-                    divDetails.style.display = 'none';
-                    return;
+                    selectLieu.value = '';
+                    updateLieuDetails();
                 }
 
-                spanRue.textContent      = opt.dataset.rue || '';
-                spanCp.textContent       = opt.dataset.cp || '';
-                spanLatitude.textContent = opt.dataset.latitude || '';
-                spanLongitude.textContent= opt.dataset.longitude || '';
-                divDetails.style.display = 'block';
-            }
+                function updateLieuDetails() {
+                    const opt = selectLieu.options[selectLieu.selectedIndex];
+                    if (!opt || !opt.value) {
+                        spanRue.textContent = '';
+                        spanCp.textContent = '';
+                        spanLatitude.textContent = '';
+                        spanLongitude.textContent = '';
+                        divDetails.style.display = 'none';
+                        return;
+                    }
+                    spanRue.textContent      = opt.dataset.rue || '';
+                    spanCp.textContent       = opt.dataset.cp || '';
+                    spanLatitude.textContent = opt.dataset.latitude || '';
+                    spanLongitude.textContent= opt.dataset.longitude || '';
+                    divDetails.style.display = 'block';
+                }
 
-            // Events
-            selectVille.addEventListener('change', updateLieuOptions);
-            selectLieu.addEventListener('change', updateLieuDetails);
+                selectVille.addEventListener('change', updateLieuOptions);
+                selectLieu.addEventListener('change', updateLieuDetails);
 
-            // Init (utile en édition)
-            updateLieuOptions();
-        });
-    </script>
+                updateLieuOptions();
+            });
+
+        </script>
 
 
 {% endblock %}
