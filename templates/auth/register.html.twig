@@ -113,14 +113,47 @@
                 </form>
 
                 <hr class="my-3">
-                <div class="text-center">
-                    <small class="text-muted d-block mb-1">Déjà un compte ?</small>
-                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-sm">Se connecter</a>
-                </div>
+{#                <div class="text-center">#}
+{#                    <small class="text-muted d-block mb-1">Déjà un compte ?</small>#}
+{#                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-sm">Se connecter</a>#}
+{#                </div>#}
                 </div>
             </div>
         </div>
+    <hr class="my-4">
+
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h2 class="h6 mb-3 text-center">Importer plusieurs utilisateurs</h2>
+
+            <form method="post"
+                  action="{{ path('app_users_import') }}"
+                  enctype="multipart/form-data"
+                  data-turbo="false">
+
+                <div class="mb-3">
+                    <label for="csvFile" class="form-label">Fichier CSV</label>
+                    <input type="file"
+                           name="csvFile"
+                           id="csvFile"
+                           class="form-control form-control-sm"
+                           accept=".csv,text/csv"
+                           required>
+                    <small class="form-text text-muted">
+                        Le fichier doit être au format CSV, max 2Mo.
+                    </small>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Importer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
+</div>
 {% endblock %}
 
 
