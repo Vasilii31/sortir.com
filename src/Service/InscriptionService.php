@@ -3,26 +3,26 @@
 namespace App\Service;
 
 
-use App\Entity\Etat;
 use App\Entity\Inscription;
 use App\Entity\Participant;
 use App\Entity\Sortie;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\EtatRepository;
+use App\Repository\InscriptionRepository;
+use App\Repository\SortieRepository;
 
 class InscriptionService
 {
-    private EntityManagerInterface $entityManager;
+    public function __construct(
+        private readonly InscriptionRepository $inscriptionRepository,
+        private readonly EtatRepository $etatRepository,
+        private readonly SortieRepository $sortieRepository,
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
+    ) {}
 
     public function registerParticipant(Sortie $sortie, Participant $participant): void
     {
         $isOrganisateur = $sortie->getOrganisateur() === $participant;
 
-        // Vérification état sortie
         if (!$isOrganisateur && $sortie->getEtat()->getLibelle() !== 'Ouverte') {
             throw new \DomainException('Impossible de s’inscrire : la sortie n’est pas ouverte.');
         }
@@ -33,20 +33,20 @@ class InscriptionService
             }
         }
 
-
         $inscription = new Inscription();
         $inscription->setSortie($sortie);
         $inscription->setDateInscription(new \DateTime());
         $inscription->setParticipant($participant);
 
-        $this->entityManager->persist($inscription);
+        $this->inscriptionRepository->save($inscription);
 
         $nbInscrits = count($sortie->getInscriptions()) + 1;
         if ($nbInscrits >= $sortie->getNbInscriptionsMax()) {
-            $etatCloturee = $this->entityManager
-                ->getRepository(Etat::class)
-                ->findOneBy(['libelle' => 'Clôturée']);
+            $etatCloturee = $this->etatRepository->findOneBy(['libelle' => 'Clôturée']);
             $sortie->setEtat($etatCloturee);
+
+
+            $this->inscriptionRepository->save($sortie);
         }
     }
 
@@ -54,17 +54,17 @@ class InscriptionService
     {
         foreach ($sortie->getInscriptions() as $inscription) {
             if ($inscription->getParticipant() === $participant) {
-                $this->entityManager->remove($inscription);
 
-                // Vérifie si la sortie peut repasser à "Ouverte"
+                $this->inscriptionRepository->remove($inscription);
+
                 $nbInscrits = count($sortie->getInscriptions()) - 1;
-                $etatOuverte = $this->entityManager
-                    ->getRepository(Etat::class)
-                    ->findOneBy(['libelle' => 'Ouverte']);
+                $etatOuverte = $this->etatRepository->findOneBy(['libelle' => 'Ouverte']);
 
                 $now = new \DateTime();
                 if ($nbInscrits < $sortie->getNbInscriptionsMax() && $sortie->getDateCloture() > $now) {
                     $sortie->setEtat($etatOuverte);
+
+                    $this->sortieRepository->save($sortie);
                 }
 
                 return;

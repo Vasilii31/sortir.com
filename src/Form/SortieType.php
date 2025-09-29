@@ -7,6 +7,7 @@ use App\Entity\Sortie;
 use App\Service\LieuService;
 use App\Service\SiteService;
 use App\Service\VilleService;
+use App\Validator\SortieDates;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -28,7 +29,7 @@ class SortieType extends AbstractType
     {
         $lieux = $this->lieuService->getAllLieux();
         $villes = $this->villeService->getAllVilles();
-        $sites = $this->siteService->getAllSites();
+//        $sites = $this->siteService->getAllSites();
 
         // Récupérer la sortie actuelle si en mode edit
         $sortie = $options['data'] ?? null;
@@ -56,7 +57,7 @@ class SortieType extends AbstractType
                 'label' => 'Ville',
                 'attr' => ['class' => 'form-control'],
                 'mapped' => false,
-                'data' => $villeInitiale, // <-- pré-remplit la ville en edit
+                'data' => $villeInitiale,
             ])
 
             ->add('datedebut', DateTimeType::class, [
@@ -72,7 +73,7 @@ class SortieType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => true,
                 'required' => true,
-                'label' => 'Date de fin',
+                'label' => 'Date de cloture',
                 'attr' => [
                     'class' => 'form-control',
                 ],
