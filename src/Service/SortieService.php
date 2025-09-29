@@ -111,6 +111,8 @@ class SortieService
         return $this->sortieRepository->findAll();
     }
 
+
+
     public function findAllWithSubscribed(?Participant $user = null): array
     {
         $rawResults = $this->sortieRepository->findAllWithSubscribed();

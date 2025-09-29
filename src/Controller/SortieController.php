@@ -16,17 +16,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(['/','/sortie'])]
+#[Route(['/', '/sortie'])]
 final class SortieController extends AbstractController
 {
     // INDEX ___________________________________________________________________________
 
-    #[Route('/', name: 'app_sortie_index', methods: ['GET'])]
+    #[Route(name: 'app_sortie_index', methods: ['GET'])]
     public function index(Request $request, SortieService $sortieService): Response
     {
         $user = $this->getUser();
 
-        // Formulaire en GET
         $form = $this->createForm(SortieFilterType::class, null, [
             'method' => 'GET',
             'csrf_protection' => false,
@@ -49,7 +48,7 @@ final class SortieController extends AbstractController
 
     // NEW ___________________________________________________________________________
 
-    #[Route('/sortie/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, LieuService $lieuService, SortieService $sortieService, InscriptionService $inscriptionService): Response
     {
         $sortie = new Sortie();
@@ -99,7 +98,7 @@ final class SortieController extends AbstractController
 
     // SHOW ___________________________________________________________________________
 
-    #[Route('/{id}', name: 'app_sortie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/sortie/{id}', name: 'app_sortie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Sortie $sortie, SortieService $sortieService): Response
     {
         $sortieFull = $sortieService->getSortieWithParticipants($sortie->getId());
@@ -147,6 +146,8 @@ final class SortieController extends AbstractController
                 $request->getSession()->set('sortie_data', $form->getData());
                 return $this->redirectToRoute('app_sortie_edit', ['id' => $sortie->getId()]);
             }
+            $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
+            $sortieService->setEtatBasedOnButton($sortie, $bouton);
 
             $entityManager->flush();
 

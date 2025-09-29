@@ -38,6 +38,27 @@ class SortieRepository extends BaseRepository
             ->getResult();
     }
 
+    /**
+     * Récupère une sortie avec toutes ses relations (participants inclus).
+     */
+    public function findWithParticipants(int $id): ?Sortie
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.Lieu', 'l')
+            ->addSelect('l')
+            ->leftJoin('l.ville', 'v')
+            ->addSelect('v')
+            ->leftJoin('s.inscriptions', 'i')
+            ->leftJoin('i.participant', 'p')
+            ->leftJoin('s.etat', 'e')
+            ->addSelect('s', 'e')
+            ->addSelect('i', 'p')
+            ->where('s.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
     public function findByFilter(array $criteria, Participant $user = null): array
     {
