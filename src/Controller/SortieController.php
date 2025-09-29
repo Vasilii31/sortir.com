@@ -49,16 +49,16 @@ final class SortieController extends AbstractController
     // NEW ___________________________________________________________________________
 
     #[Route('/new', name: 'app_sortie_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, LieuService $lieuService, SortieService $sortieService, InscriptionService $inscriptionService): Response
+    public function new(
+        Request                $request,
+        EntityManagerInterface $entityManager,
+        LieuService            $lieuService,
+        SortieService          $sortieService,
+        InscriptionService     $inscriptionService
+    ): Response
     {
         $sortie = new Sortie();
-        $lieux = $lieuService->getAllLieux();
-
-        $sessionData = $request->getSession()->get('sortie_data');
-        if ($sessionData) {
-            $sortie = $sessionData;
-            $request->getSession()->remove('sortie_data');
-        }
+//        $lieux = $lieuService->getAllLieux();
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
@@ -69,42 +69,45 @@ final class SortieController extends AbstractController
         }
 
         $sortie->setOrganisateur($user);
-        $inscriptionService->registerParticipant($sortie, $user);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérification des dates
             $dateError = $sortieService->validateDates($sortie);
             if ($dateError) {
                 $this->addFlash('error', $dateError);
-                $request->getSession()->set('sortie_data', $form->getData());
                 return $this->redirectToRoute('app_sortie_new');
             }
 
+            // Définir l’état selon le bouton
             $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
             $sortieService->setEtatBasedOnButton($sortie, $bouton);
 
+            // Persister sortie
             $entityManager->persist($sortie);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre sortie a été ' . ($bouton === 'enregistrer' ? 'créée.' : 'publiée.'));
+            // Inscrire l’organisateur après que la sortie existe en BDD
+            $inscriptionService->registerParticipant($sortie, $user);
 
+            $this->addFlash('success', 'Votre sortie a été ' . ($bouton === 'enregistrer' ? 'créée.' : 'publiée.'));
             return $this->redirectToRoute('app_sortie_index');
         }
 
         return $this->render('sortie/new.html.twig', [
             'form' => $form->createView(),
-            'lieux' => $lieux,
+//            'lieux' => $lieux,
         ]);
     }
 
+
     // SHOW ___________________________________________________________________________
 
-    #[Route('/sortie/{id}', name: 'app_sortie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/{id}', name: 'app_sortie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Sortie $sortie, SortieService $sortieService): Response
     {
         $sortieFull = $sortieService->getSortieWithParticipants($sortie->getId());
 
-        if(!$sortie)
-        {
+        if (!$sortie) {
             throw $this->createNotFoundException("Sortie non trouvée");
         }
 
@@ -161,9 +164,9 @@ final class SortieController extends AbstractController
         ]);
     }
 
-        // DELETE ___________________________________________________________________________
+    // DELETE ___________________________________________________________________________
 
-        #[Route('/sortie/{id}/delete', name: 'app_sortie_delete', methods: ['POST'])]
+    #[Route('/sortie/{id}/delete', name: 'app_sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
