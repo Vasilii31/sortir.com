@@ -38,6 +38,17 @@ class UserImportService
 
     public function CheckCsvValidity($data) : CSVFileValidityResult
     {
+        $expectedHeaders = ['pseudo', 'nom', 'prenom', 'telephone', 'mail', 'mot_de_passe', 'administrateur', 'actif', 'nom_du_site'];
+        if ($data !== $expectedHeaders) {
+            return CSVFileValidityResult::NO_MATCH_COLUMN;
+        }
+
+        if(count($data) !== count($expectedHeaders))
+        {
+            return CSVFileValidityResult::INCORRECT_COLUMN_NUMBER;
+        }
+
+
         return CSVFileValidityResult::VALID;
     }
 
@@ -55,17 +66,61 @@ class UserImportService
                 return ParticipantCSVValidityResult::USER_PSEUDO_TAKEN;
             }
         }
+        else{ return ParticipantCSVValidityResult::MISSING_USERNAME;}
+
+        if(!$nom)
+        {
+            return ParticipantCSVValidityResult::MISSING_NOM;
+        }
+
+        if(!$prenom)
+        {
+            return ParticipantCSVValidityResult::MISSING_PRENOM;
+        }
+
+        if($plainPassword)
+        {
+            if(strlen($plainPassword) < 6)
+            {
+                return ParticipantCSVValidityResult::INVALID_PASSWORD_LENGTH;
+            }
+        }else{ return ParticipantCSVValidityResult::MISSING_PASSWORD;}
+
+        if($administrateur !== null && $administrateur !== '')
+        {
+            if ($administrateur !== '0' && $administrateur !== '1') {
+                return ParticipantCSVValidityResult::INVALID_ADMIN_FIELD;
+            }
+        }else{
+            return ParticipantCSVValidityResult::MISSING_ADMIN_FIELD;
+        }
+
+        if($actif !== null && $actif !== '')
+        {
+            if ($actif !== '0' && $actif !== '1') {
+                return ParticipantCSVValidityResult::INVALID_ACTIF_FIELD;
+            }
+        }else{
+            return ParticipantCSVValidityResult::MISSING_ACTIF_FIELD;
+        }
 
         //verification du mail
         if($mail)
         {
             $mail = trim($mail, ' ');
+
+            if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+            {
+                return ParticipantCSVValidityResult::INVALID_MAIL_FORMAT;
+            }
+
             $match = $this->participantService->findByMail($mail);
             if($match != null)
             {
                 return ParticipantCSVValidityResult::USER_MAIL_TAKEN;
             }
         }
+        else{return ParticipantCSVValidityResult::MISSING_EMAIL;}
 
         //Verification du site
         if ($site_name) {
@@ -77,7 +132,7 @@ class UserImportService
             else {return ParticipantCSVValidityResult::INVALID_SITE_NAME;}
         }
         else{
-            return  ParticipantCSVValidityResult::INVALID_SITE_NAME;
+            return  ParticipantCSVValidityResult::MISSING_SITE_NAME;
         }
 
         return ParticipantCSVValidityResult::SUCCESS;

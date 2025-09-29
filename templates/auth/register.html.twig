@@ -33,13 +33,13 @@
                         <div class="col-md-6 mb-2">
                             <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
                             <input type="text" name="nom" id="nom" class="form-control form-control-sm"
-                                   placeholder="Votre nom" maxlength="30"
+                                   placeholder="nom" maxlength="30"
                                    value="{{ formData.nom|default('') }}" required>
                         </div>
                         <div class="col-md-6 mb-2">
                             <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
                             <input type="text" name="prenom" id="prenom" class="form-control form-control-sm"
-                                   placeholder="Votre prénom" maxlength="30"
+                                   placeholder="prénom" maxlength="30"
                                    value="{{ formData.prenom|default('') }}" required>
                         </div>
                     </div>
@@ -48,14 +48,14 @@
                         <div class="col-md-6 mb-2">
                             <label for="pseudo" class="form-label">Pseudo <span class="text-danger">*</span></label>
                             <input type="text" name="pseudo" id="pseudo" class="form-control form-control-sm"
-                                   autocomplete="username" placeholder="Votre pseudo" maxlength="30"
+                                   autocomplete="username" placeholder="pseudo" maxlength="30"
                                    value="{{ formData.pseudo|default('') }}" required autofocus>
                             <small class="form-text text-muted">Ce sera votre identifiant de connexion</small>
                         </div>
                         <div class="col-md-6 mb-2">
                             <label for="mail" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" name="mail" id="mail" class="form-control form-control-sm"
-                                   autocomplete="email" placeholder="votre.email@exemple.fr" maxlength="255"
+                                   autocomplete="email" placeholder="email@exemple.fr" maxlength="255"
                                    value="{{ formData.mail|default('') }}" required>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                         <div class="col-md-6 mb-2">
                             <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
                             <input type="password" name="password" id="password" class="form-control form-control-sm"
-                                   autocomplete="new-password" placeholder="Votre mot de passe" required>
+                                   autocomplete="new-password" placeholder="mot de passe" required>
                         </div>
                         <div class="col-md-6 mb-2">
                             <label for="password_confirm" class="form-label">Confirmer <span class="text-danger">*</span></label>
@@ -108,7 +108,7 @@
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('register') }}">
 
                     <div class="text-center my-3">
-                        <button type="submit" class="btn btn-primary" style="width: 50%;">Créer mon compte</button>
+                        <button type="submit" class="btn btn-primary" style="width: 50%;">Créer le compte</button>
                     </div>
                 </form>
 

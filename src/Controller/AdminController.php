@@ -176,13 +176,13 @@ final class AdminController extends AbstractController
 
         if (($handle = fopen($file->getPathname(), 'r')) !== false) {
             $row = 0;
-            $expectedHeaders = ['pseudo', 'nom', 'prenom', 'telephone', 'mail', 'mot_de_passe', 'administrateur', 'actif', 'nom_du_site'];
             //On vérifie en amont la validité du fichier csv
 
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 $row++;
 
                 if ($row === 1) {
+
                     if (($res = $userImportService->CheckCsvValidity($data)) != CSVFileValidityResult::VALID) {
                         fclose($handle);
                         $this->addFlash('error', 'Format CSV invalide : '.$res->value);
@@ -200,6 +200,7 @@ final class AdminController extends AbstractController
                 }
 
             }
+            rewind($handle);
 
             $row = 0;
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
@@ -219,7 +220,7 @@ final class AdminController extends AbstractController
             $this->addFlash('success', 'Import des participants terminé avec succès !');
         }
 
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute('admin_users');
     }
 
 
