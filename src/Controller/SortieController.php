@@ -99,11 +99,19 @@ final class SortieController extends AbstractController
 
     // SHOW ___________________________________________________________________________
 
-    #[Route('/sortie/{id}', name: 'app_sortie_show', methods: ['GET'])]
-    public function show(Sortie $sortie): Response
+    #[Route('/{id}', name: 'app_sortie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function show(Sortie $sortie, SortieService $sortieService): Response
     {
+        $sortieFull = $sortieService->getSortieWithParticipants($sortie->getId());
+
+        if(!$sortie)
+        {
+            throw $this->createNotFoundException("Sortie non trouvée");
+        }
+
+
         return $this->render('sortie/show.html.twig', [
-            'sortie' => $sortie,
+            'sortie' => $sortieFull,
         ]);
     }
 

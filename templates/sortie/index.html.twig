@@ -115,8 +115,8 @@
                                     <a class="a-custom-sec-outline"
                                        href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                                     <form action="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}"
-                                          method="POST" style="display:inline">
-                                        <button type="submit" class="a-custom-warn">Annuler</button>
+                                          method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
+                                        <button type="submit" class="a-custom-sec-outline">Annuler</button>
                                     </form>
                                 {% elseif item.sortie.etat.libelle == 'Créée' %}
                                     <a class="a-custom-sec-outline"

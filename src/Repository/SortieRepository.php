@@ -111,39 +111,31 @@ class SortieRepository extends BaseRepository
     }
 
 
+    /**
+     * Trouve les sorties futures ou en cours organisées par un participant
+     */
+    public function findFutureOrOngoingByOrganizer($organizer): array
+    {
+        $now = new \DateTime();
 
-//    public function findByFilter(array $criteria, Participant $user = null): array
-//    {
-//        // Construction de base de la requête
-//        $qb = $this->createQueryBuilder('s')
-//            ->leftJoin('s.inscriptions', 'i')
-//            ->leftJoin('s.organisateur', 'o')
-//            ->leftJoin('o.site', 'site')
-//            ->leftJoin('s.etat', 'e')
-//            ->addSelect('COUNT(DISTINCT i.id) AS nbInscrits')
-//            ->addSelect('e.libelle AS etatLibelle')
-//            ->groupBy('s.id')
-//            ->addGroupBy('e.id')
-//            ->orderBy('s.datedebut', 'DESC');
-//
-//        // Test du filtre inscriptions avec méthode EXISTS plus propre
-//        if (!empty($criteria['sortiesPassees'])) {
-//            // Filtre pour sorties dont l'état a l'id 5 (passées)
-//            $qb->andWhere('s.etat = :etatPasse')
-//                ->setParameter('etatPasse', 5);
-//        }
-//
-//
-//        $query = $qb->getQuery();
-//        $results = $query->getResult();
-//
-//        dd('ÉTAPE 9 - Sortie passées', [
-//            'user_id' => $user ? $user->getId() : null,
-//            'sortiesPassees' => $criteria['sortiesPassees'] ?? false,
-//            'nombre_résultats' => count($results),
-//            'results' => $results,
-//          ]);
-//    }
+        return $this->createQueryBuilder('s')
+            ->where('s.organisateur = :organizer')
+            ->andWhere('s.datedebut > :now OR (s.duree IS NOT NULL AND DATE_ADD(s.datedebut, s.duree, \'MINUTE\') > :now) OR s.duree IS NULL')
+            ->setParameter('organizer', $organizer)
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
 
+    /**
+     * Supprime des sorties
+     */
+    public function removeSorties(array $sorties): void
+    {
+        foreach ($sorties as $sortie) {
+            $this->getEntityManager()->remove($sortie);
+        }
+        $this->getEntityManager()->flush();
+    }
 
 }
