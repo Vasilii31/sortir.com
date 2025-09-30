@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Participant{% endblock %}
+
+{% block body %}
+    <h1 class="txt-custom-prim my-3 ">Participant</h1>
+    <div class="card">
+        <header class="text-center mb-3">
+            {% if participant.photoProfil %}
+                <img src="{{ asset('uploads/profiles/' ~ participant.photoProfil) }}" alt="Photo de profil" class="rounded-circle mx-auto d-block my-3" style="width: 60px; height: 60px; object-fit: cover;">
+            {% else %}
+                <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold my-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                    {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                </div>
+            {% endif %}
+        </header>
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Pseudo</th>
+                <td>{{ participant.pseudo }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ participant.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prenom</th>
+                <td>{{ participant.prenom }}</td>
+            </tr>
+            <tr>
+                <th>Telephone</th>
+                <td>{{ participant.telephone }}</td>
+            </tr>
+            <tr>
+                <th>Mail</th>
+                <td>{{ participant.mail }}</td>
+            </tr>
+
+        </tbody>
+    </table>
+    </div>
+
+{#    <a href="{{ path('app_participant_index') }}">back to list</a>#}
+
+{#    <a href="{{ path('app_participant_edit', {'id': participant.id}) }}">edit</a>#}
+
+{#    {{ include('participant/_delete_form.html.twig') }}#}
+    <a class="a-custom-sec text-center my-2" href="{{ path('app_sortie_index') }}">Retourner aux sorties</a>
+{% endblock %}

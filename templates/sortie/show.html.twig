@@ -118,23 +118,25 @@
              style="max-height: 400px; overflow-y: auto;">
             {% for participant in sortie.participants %}
                 <div class="col">
-                    <div class="card shadow-sm h-100">
-                        {% if participant.urlPhoto %}
-                            <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}"
-                                 alt="Photo de profil"
-                                 class="rounded-circle mx-auto d-block mt-2"
-                                 style="width: 60px; height: 60px; object-fit: cover;">
-                        {% else %}
-                            <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-2"
-                                 style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
-                                {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                    <a href="{{ path('app_participant_show', {id: participant.id}) }}" class="text-decoration-none text-dark">
+                        <div class="card shadow-sm h-100">
+                            {% if participant.urlPhoto %}
+                                <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}"
+                                     alt="Photo de profil"
+                                     class="rounded-circle mx-auto d-block mt-2"
+                                     style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                                <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-2"
+                                     style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                                    {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="card-body p-2 text-center">
+                                <h6 class="card-title mb-1">{{ participant.pseudo }}</h6>
+                                <small class="text-muted">{{ participant.prenom }} {{ participant.nom }}</small>
                             </div>
-                        {% endif %}
-                        <div class="card-body p-2 text-center">
-                            <h6 class="card-title mb-1">{{ participant.pseudo }}</h6>
-                            <small class="text-muted">{{ participant.prenom }} {{ participant.nom }}</small>
                         </div>
-                    </div>
+                    </a>
                 </div>
             {% else %}
                 <div class="col-12">
