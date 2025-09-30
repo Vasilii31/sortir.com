@@ -17,8 +17,9 @@ COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
 WORKDIR /var/www/html
 COPY . .
 
-# Donner droits corrects
-RUN chown -R www-data:www-data var
+# Créer le dossier var si nécessaire et donner les droits
+RUN mkdir -p var var/cache var/log && \
+    chown -R www-data:www-data var
 
 # Installer dépendances Symfony
 RUN composer install --no-dev --optimize-autoloader --no-scripts
