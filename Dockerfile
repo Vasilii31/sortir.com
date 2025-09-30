@@ -49,7 +49,7 @@ RUN mkdir -p var/cache var/log var/sessions \
     && chown -R www-data:www-data var
 
 # Installer les dépendances Symfony
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Générer le cache et autoload pour l'environnement prod
 RUN APP_ENV=prod php bin/console cache:clear --no-warmup
