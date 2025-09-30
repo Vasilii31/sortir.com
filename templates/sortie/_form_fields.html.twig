@@ -37,7 +37,16 @@
 
 
     <div class="col-md-6">
-        {{ form_row(form.lieu) }}
+        {{ form_label(form.lieu) }}
+        <div class="d-flex align-items-center gap-2">
+            <div style="flex: 1;">
+                {{ form_widget(form.lieu) }}
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="add-lieu-btn" title="Ajouter un nouveau lieu">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
+        {{ form_errors(form.lieu) }}
     </div>
 </div>
 
