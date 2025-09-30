@@ -80,9 +80,10 @@
 #EXPOSE 80
 #CMD ["apache2-foreground"]
 # ---------- Stage Build ----------
+# ---------- Stage Build ----------
 FROM php:8.2-cli AS build
 
-# Installer les extensions nécessaires et git unzip
+# Installer extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libonig-dev libxml2-dev libzip-dev zip \
     && docker-php-ext-install intl pdo pdo_mysql mbstring zip opcache
@@ -95,20 +96,13 @@ RUN useradd -ms /bin/bash symfonyuser
 USER symfonyuser
 WORKDIR /home/symfonyuser/app
 
-# Copier uniquement les fichiers nécessaires au composer install
-COPY --chown=symfonyuser:symfonyuser composer.json composer.lock ./
-COPY --chown=symfonyuser:symfonyuser symfony.lock ./
-COPY --chown=symfonyuser:symfonyuser assets/ assets/
-COPY --chown=symfonyuser:symfonyuser config/ config/
-COPY --chown=symfonyuser:symfonyuser src/ src/
-COPY --chown=symfonyuser:symfonyuser translations/ translations/
-COPY --chown=symfonyuser:symfonyuser templates/ templates/
-COPY --chown=symfonyuser:symfonyuser public/ public/
+# Copier tout le projet avec droits corrects pour symfonyuser
+COPY --chown=symfonyuser:symfonyuser . .
 
 # Installer les dépendances Symfony pour prod
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Générer le cache prod et importmap
+# Générer le cache prod et assets
 RUN php bin/console cache:clear --no-warmup --env=prod
 RUN php bin/console cache:warmup --env=prod
 RUN php bin/console assets:install public --env=prod
@@ -133,3 +127,4 @@ WORKDIR /var/www/html
 
 EXPOSE 80
 CMD ["apache2-foreground"]
+
