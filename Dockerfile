@@ -29,9 +29,11 @@
 #EXPOSE 80
 #CMD ["apache2-foreground"]
 # Image PHP avec Apache
-FROM php:8.2-apache
+# --- Stage 0 : Build ---
+# --- Stage 0 : Build ---
+FROM php:8.2-apache AS build
 
-# Installer les extensions nécessaires
+# Installer dépendances système
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libonig-dev libxml2-dev libzip-dev zip \
     && docker-php-ext-install intl pdo pdo_mysql mbstring zip opcache \
@@ -44,25 +46,36 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
-# Créer les dossiers nécessaires pour Symfony
-RUN mkdir -p var/cache var/log var/sessions \
-    && chown -R www-data:www-data var
+# Créer un utilisateur non-root pour Composer
+RUN useradd -ms /bin/bash symfonyuser
+USER symfonyuser
 
-# Installer les dépendances Symfony
+# Installer les dépendances sans exécuter les scripts auto (on les fera après)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Générer le cache et autoload pour l'environnement prod
+# Générer cache et autoload pour prod
 RUN APP_ENV=prod php bin/console cache:clear --no-warmup
 RUN APP_ENV=prod php bin/console cache:warmup
 
-# Définir le propriétaire du projet
-RUN chown -R www-data:www-data .
+# --- Stage 1 : Production ---
+FROM php:8.2-apache
 
-# Copier le fichier vhost pour Apache si nécessaire
+# Installer extensions nécessaires
+RUN apt-get update && apt-get install -y \
+    libicu-dev libonig-dev libxml2-dev libzip-dev zip \
+    && docker-php-ext-install intl pdo pdo_mysql mbstring zip opcache \
+    && a2enmod rewrite
+
+WORKDIR /var/www/html
+
+# Copier le projet et vendor depuis le build
+COPY --from=build /var/www/html /var/www/html
+
+# Copier le vhost Apache si nécessaire
 COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
 
-# Exposer le port
-EXPOSE 80
+# Assurer les bons droits pour Apache
+RUN chown -R www-data:www-data /var/www/html/var /var/www/html/vendor
 
-# Commande pour lancer Apache
+EXPOSE 80
 CMD ["apache2-foreground"]
