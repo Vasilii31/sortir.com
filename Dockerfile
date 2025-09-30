@@ -81,12 +81,65 @@
 #CMD ["apache2-foreground"]
 # ---------- Stage Build ----------
 # ---------- Stage Build ----------
+#FROM php:8.2-cli AS build
+#
+## Installer extensions PHP nécessaires
+#RUN apt-get update && apt-get install -y \
+#    libicu-dev libonig-dev libxml2-dev libzip-dev zip \
+#    libpq-dev \
+#    && docker-php-ext-install intl pdo pdo_pgsql mbstring zip opcache
+#
+## Installer Composer
+#COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+#
+## Créer un utilisateur non-root pour build
+#RUN useradd -ms /bin/bash symfonyuser
+#USER symfonyuser
+#WORKDIR /home/symfonyuser/app
+#
+## Copier tout le projet avec droits corrects pour symfonyuser
+#COPY --chown=symfonyuser:symfonyuser . .
+#
+## Installer les dépendances Symfony pour prod
+#RUN composer install --no-dev --optimize-autoloader --no-scripts
+#
+## Générer le cache prod et assets
+#RUN php bin/console cache:clear --no-warmup --env=prod
+#RUN php bin/console cache:warmup --env=prod
+#RUN php bin/console assets:install public --env=prod
+#RUN php bin/console importmap:install --env=prod || echo "Importmap optional"
+#
+## ---------- Stage Apache ----------
+#FROM php:8.2-apache
+#
+## Activer mod_rewrite
+#RUN a2enmod rewrite
+#
+## Copier le projet et les vendor depuis le build
+#COPY --from=build /home/symfonyuser/app /var/www/html
+#
+## Copier la config Apache
+#COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+#
+## Permissions correctes
+#RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
+#
+#WORKDIR /var/www/html
+#
+#EXPOSE 80
+##CMD ["apache2-foreground"]
+## Migrations + fixtures (au démarrage du conteneur)
+#CMD php bin/console doctrine:migrations:migrate --no-interaction && \
+#    php bin/console doctrine:fixtures:load --no-interaction && \
+#    apache2-foreground
+# ---------- Stage Build ----------
 FROM php:8.2-cli AS build
 
 # Installer extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libonig-dev libxml2-dev libzip-dev zip \
-    && docker-php-ext-install intl pdo pdo_mysql mbstring zip opcache
+    libpq-dev \
+    && docker-php-ext-install intl pdo pdo_pgsql mbstring zip opcache
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -114,7 +167,11 @@ FROM php:8.2-apache
 # Activer mod_rewrite
 RUN a2enmod rewrite
 
-# Copier le projet et les vendor depuis le build
+# Installer extensions PHP pour PostgreSQL (runtime)
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql
+
+# Copier le projet et le vendor depuis le build
 COPY --from=build /home/symfonyuser/app /var/www/html
 
 # Copier la config Apache
@@ -126,9 +183,13 @@ RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
 WORKDIR /var/www/html
 
 EXPOSE 80
-#CMD ["apache2-foreground"]
-# Migrations + fixtures (au démarrage du conteneur)
-CMD php bin/console doctrine:migrations:migrate --no-interaction && \
-    php bin/console doctrine:fixtures:load --no-interaction && \
-    apache2-foreground
+
+# CMD final : attendre la DB, exécuter migrations + fixtures, puis Apache
+CMD bash -c "\
+until pg_isready -h \$DB_HOST -p \$DB_PORT -U \$DB_USER; do \
+    echo 'Waiting for PostgreSQL...'; sleep 2; \
+done && \
+php bin/console doctrine:migrations:migrate --no-interaction --env=prod && \
+php bin/console doctrine:fixtures:load --no-interaction --env=prod && \
+apache2-foreground"
 
