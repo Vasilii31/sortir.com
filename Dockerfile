@@ -185,8 +185,9 @@ WORKDIR /var/www/html
 EXPOSE 80
 
 # CMD final : attendre la DB, exécuter migrations + fixtures, puis Apache
-CMD bash -c "\
-php bin/console doctrine:migrations:migrate --no-interaction --env=prod && \
-php bin/console doctrine:fixtures:load --no-interaction --env=prod && \
-apache2-foreground"
+CMD php bin/console doctrine:migrations:diff --from-empty-schema --no-interaction && \
+    php bin/console doctrine:migrations:migrate --no-interaction && \
+    php bin/console doctrine:fixtures:load --no-interaction && \
+    apache2-foreground
+
 
