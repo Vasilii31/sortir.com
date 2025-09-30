@@ -126,5 +126,9 @@ RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
 WORKDIR /var/www/html
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+#CMD ["apache2-foreground"]
+# Migrations + fixtures (au démarrage du conteneur)
+CMD php bin/console doctrine:migrations:migrate --no-interaction && \
+    php bin/console doctrine:fixtures:load --no-interaction && \
+    apache2-foreground
 
