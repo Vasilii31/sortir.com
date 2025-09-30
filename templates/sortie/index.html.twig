@@ -67,10 +67,14 @@
 
             <div class="col-12">
                 {{ form_widget(form.submit, {'attr': {'class': 'a-custom-sec'}}) }}
+                <a class="a-custom-warn-outline" href="{{ path('app_sortie_index') }}">Réinitialiser</a>
+
             </div>
 
             {{ form_end(form) }}
+
         </div>
+
     </div>
 
 
@@ -99,67 +103,74 @@
                     <td class="text-center align-middle">{{ item.sortie.nom }}</td>
                     <td class="text-center align-middle">{{ item.sortie.datedebut ? item.sortie.datedebut|date('d/m/Y H:i') : '' }}</td>
                     <td class="text-center align-middle">{{ item.sortie.datecloture ? item.sortie.datecloture|date('d/m/Y') : '' }}</td>
-                    <td class="text-center align-middle">{{ item.nbInscrits }} / {{ item.sortie.nbInscriptionsMax }}</td>
+                    <td class="text-center align-middle">{{ item.nbInscrits }}/ {{ item.sortie.nbInscriptionsMax }}</td>
                     <td class="text-center align-middle">{{ item.sortie.etat.libelle }}</td>
                     <td class="text-center align-middle">{{ item.isUserParticipating ? "x" : "" }}</td>
-                    <td class="text-center align-middle"> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}.</td>
+                    <td class="text-center align-middle"> {{ item.sortie.organisateur.getprenom() }} {{ item.sortie.organisateur.getNom() | slice(0,1) }}
+                        .
+                    </td>
 
                     <td class="text-center">
                         <div class="d-flex flex-column flex-md-column flex-lg-row gap-1 gap-md-2 justify-content-center">
 
-                        {% if app.user %}
-                            {# --- Cas : Organisateur --- #}
-                            {% if item.sortie.organisateur == app.user %}
+                            {% if app.user %}
+                                {# --- Cas : Organisateur --- #}
+                                {% if item.sortie.organisateur == app.user %}
 
-                                {% if item.sortie.etat.libelle == 'Ouverte' %}
-                                    <a class="a-custom-sec-outline"
-                                       href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
-                                    <form action="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}"
-                                          method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
-                                        <button type="submit" class="a-custom-sec-outline">Annuler</button>
-                                    </form>
-                                {% elseif item.sortie.etat.libelle == 'Créée' %}
-                                    <a class="a-custom-sec-outline"
-                                       href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">Modifier</a>
-
-                                    <form action="{{ path('app_sortie_publier', {'id': item.sortie.id}) }}"
-                                          method="POST" style="display:inline">
-                                        <button type="submit" class="a-custom-prim-outline">Publier</button>
-                                    </form>
-
-                                {% endif %}
-
-                                {# --- Cas : Pas organisateur --- #}
-                            {% else %}
-                                {% if item.sortie.etat.libelle == 'En cours' %}
-                                    <a class="a-custom-sec-outline"
-                                       href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
-
-                                {% else %}
-                                    {% if item.isUserParticipating  %}
+                                    {% if item.sortie.etat.libelle == 'Ouverte' %}
                                         <a class="a-custom-sec-outline"
                                            href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
-
-                                        <form action="{{ path('app_sortie_desister', {'id': item.sortie.id}) }}"
-                                              method="POST" style="display:inline">
-                                            <button type="submit" class="a-custom-warn">Se désister</button>
+                                        <form action="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}"
+                                              method="POST" style="display:inline"
+                                              onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
+                                            <button type="submit" class="a-custom-warn">Annuler</button>
                                         </form>
-                                    {% else %}
+                                    {% elseif item.sortie.etat.libelle == 'Créée' %}
+                                        <a class="a-custom-sec-outline"
+                                           href="{{ path('app_sortie_edit', {'id': item.sortie.id}) }}">Modifier</a>
+
+                                        <form action="{{ path('app_sortie_publier', {'id': item.sortie.id}) }}"
+                                              method="POST" style="display:inline">
+                                            <button type="submit" class="a-custom-sec">Publier</button>
+                                        </form>
+                                    {% elseif item.sortie.etat.libelle == 'Activité en cours' %}
                                         <a class="a-custom-sec-outline"
                                            href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
-                                        {% if item.sortie.etat.libelle =="Ouverte" %}
-                                            <form action="{{ path('app_sortie_inscrire', {'id': item.sortie.id}) }}"
+
+                                    {% endif %}
+
+                                    {# --- Cas : Pas organisateur --- #}
+                                {% else %}
+                                    {% if item.sortie.etat.libelle == 'Activité en cours' %}
+                                        <a class="a-custom-sec-outline"
+                                           href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
+
+                                    {% else %}
+                                        {% if item.isUserParticipating %}
+                                            <a class="a-custom-sec-outline"
+                                               href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
+
+                                            <form action="{{ path('app_sortie_desister', {'id': item.sortie.id}) }}"
                                                   method="POST" style="display:inline">
-                                                <button type="submit" class="a-custom-prim-outline">S'inscrire</button>
+                                                <button type="submit" class="a-custom-warn-outline">Se désister</button>
                                             </form>
+                                        {% else %}
+                                            <a class="a-custom-sec-outline"
+                                               href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
+                                            {% if item.sortie.etat.libelle =="Ouverte" %}
+                                                <form action="{{ path('app_sortie_inscrire', {'id': item.sortie.id}) }}"
+                                                      method="POST" style="display:inline">
+                                                    <button type="submit" class="a-custom-prim-outline">S'inscrire
+                                                    </button>
+                                                </form>
+                                            {% endif %}
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
+                            {% else %}
+                                <a class="a-custom-sec-outline"
+                                   href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                             {% endif %}
-                        {% else %}
-                            <a class="a-custom-sec-outline"
-                               href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
-                        {% endif %}
                         </div>
                     </td>
 
