@@ -63,7 +63,11 @@ final class SortieController extends AbstractController
     ): Response
     {
         $sortie = new Sortie();
-//        $lieux = $lieuService->getAllLieux();
+        $sessionData = $request->getSession()->get('sortie_data');
+        if ($sessionData) {
+            $sortie = $sessionData;
+            $request->getSession()->remove('sortie_data');
+        }
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
@@ -80,6 +84,7 @@ final class SortieController extends AbstractController
             $dateError = $sortieService->validateDates($sortie);
             if ($dateError) {
                 $this->addFlash('error', $dateError);
+                $request->getSession()->set('sortie_data', $form->getData());
                 return $this->redirectToRoute('app_sortie_new');
             }
 
@@ -100,7 +105,6 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/new.html.twig', [
             'form' => $form->createView(),
-//            'lieux' => $lieux,
         ]);
     }
 
