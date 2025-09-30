@@ -186,9 +186,6 @@ EXPOSE 80
 
 # CMD final : attendre la DB, exécuter migrations + fixtures, puis Apache
 CMD bash -c "\
-until pg_isready -h \$DB_HOST -p \$DB_PORT -U \$DB_USER; do \
-    echo 'Waiting for PostgreSQL...'; sleep 2; \
-done && \
 php bin/console doctrine:migrations:migrate --no-interaction --env=prod && \
 php bin/console doctrine:fixtures:load --no-interaction --env=prod && \
 apache2-foreground"
