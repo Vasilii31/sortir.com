@@ -2,15 +2,13 @@
 
 namespace App\Repository;
 
-use App\Dto\SortieInscritsDTO;
 use App\Entity\Lieu;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Lieu>
+ * @extends BaseRepository<Lieu>
  */
-class LieuRepository extends ServiceEntityRepository
+class LieuRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -20,8 +20,67 @@
         {{ form_end(form) }}
     </div>
 
+    <!-- Modal Container -->
+    <div id="lieu-modal-container">
+        <!-- Modal pour créer un nouveau lieu -->
+        <div class="modal fade" id="lieuModal" tabindex="-1" aria-labelledby="lieuModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lieuModalLabel">Créer un nouveau lieu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="lieu-form" novalidate>
+                        <input type="hidden" name="_token" value="{{ csrf_token('lieu_form') }}">
+                        <div class="modal-body">
+                            <div id="lieu-form-errors" class="alert alert-danger d-none"></div>
+
+                            <div class="mb-3">
+                                <label for="lieu_nom_lieu" class="form-label">Nom du lieu</label>
+                                <input type="text" class="form-control" id="lieu_nom_lieu" name="lieu[nom_lieu]" placeholder="Restaurant, Parc, etc." required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lieu_rue" class="form-label">Rue</label>
+                                <input type="text" class="form-control" id="lieu_rue" name="lieu[rue]" placeholder="123 rue de la République">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lieu_ville" class="form-label">Ville</label>
+                                <select class="form-control" id="lieu_ville" name="lieu[ville]" required>
+                                    <option value="">Choisissez une ville</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="lieu_latitude" class="form-label">Latitude</label>
+                                    <input type="number" step="any" class="form-control" id="lieu_latitude" name="lieu[latitude]" placeholder="48.8566">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lieu_longitude" class="form-label">Longitude</label>
+                                    <input type="number" step="any" class="form-control" id="lieu_longitude" name="lieu[longitude]" placeholder="2.3522">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Créer le lieu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            // Wait for both DOM and Bootstrap to be ready
+            function initializeLieuModal() {
+                if (typeof bootstrap === 'undefined') {
+                    setTimeout(initializeLieuModal, 100);
+                    return;
+                }
+
                 const selectVille = document.getElementById('{{ form.ville.vars.id }}');
                 const selectLieu  = document.getElementById('{{ form.lieu.vars.id }}');
 
@@ -57,7 +116,9 @@
                     selectLieu.appendChild(placeholder);
 
                     options.forEach(opt => {
-                        if (opt.dataset.villeId === villeId) {
+                        const optVilleId = String(opt.dataset.villeId);
+                        const targetVilleId = String(villeId);
+                        if (optVilleId === targetVilleId) {
                             selectLieu.appendChild(opt.cloneNode(true));
                         }
                     });
@@ -86,9 +147,143 @@
                 selectVille.addEventListener('change', updateLieuOptions);
                 selectLieu.addEventListener('change', updateLieuDetails);
 
-                updateLieuOptions();
-            });
+                // Initialize dropdown state - enable lieu dropdown by default
+                const currentVilleValue = selectVille.value;
+                const currentLieuValue = selectLieu.value;
 
+                // Always enable lieu dropdown on page load and show all lieux
+                selectLieu.disabled = false;
+
+                if (currentVilleValue) {
+                    updateLieuOptions();
+                    if (currentLieuValue) {
+                        selectLieu.value = currentLieuValue;
+                        updateLieuDetails();
+                    }
+                } else {
+                    // Show all lieux when no ville is selected
+                    selectLieu.innerHTML = '';
+                    const placeholder = new Option('Choisissez un lieu', '', true, true);
+                    placeholder.disabled = true;
+                    selectLieu.appendChild(placeholder);
+
+                    options.forEach(opt => {
+                        selectLieu.appendChild(opt.cloneNode(true));
+                    });
+                }
+
+                // Modal handling
+                const addLieuBtn = document.getElementById('add-lieu-btn');
+
+                addLieuBtn.addEventListener('click', function() {
+                    // Clear previous errors
+                    const errorsDiv = document.getElementById('lieu-form-errors');
+                    errorsDiv.classList.add('d-none');
+
+                    // Load villes
+                    fetch('{{ path('app_villes_list') }}', {
+                        method: 'GET',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(response => response.json())
+                    .then(villes => {
+                        const villeSelect = document.getElementById('lieu_ville');
+                        villeSelect.innerHTML = '<option value="">Choisissez une ville</option>';
+                        villes.forEach(ville => {
+                            const option = new Option(ville.nom_ville + ' (' + ville.code_postal + ')', ville.id);
+                            villeSelect.appendChild(option);
+                        });
+                    })
+                    .catch(() => {});
+
+                    // Show modal immediately - Bootstrap is available
+                    const modal = new bootstrap.Modal(document.getElementById('lieuModal'));
+                    modal.show();
+                });
+
+                // Form submission
+                document.getElementById('lieu-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const errorsDiv = document.getElementById('lieu-form-errors');
+
+                    const modalUrl = '{{ path('app_lieu_modal') }}';
+                    fetch(modalUrl, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur serveur (HTTP ' + response.status + ')');
+                        }
+                        return response.text().then(text => {
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                throw new Error('Réponse serveur invalide (pas de JSON)');
+                            }
+                        });
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const lieuSelect = document.getElementById('{{ form.lieu.vars.id }}');
+                            const villeSelect = document.getElementById('{{ form.ville.vars.id }}');
+
+                            const newOption = new Option(data.lieu.nom_lieu, data.lieu.id);
+                            newOption.dataset.villeId = String(data.lieu.ville_id);
+                            newOption.dataset.rue = data.lieu.rue || '';
+                            newOption.dataset.ville = data.lieu.ville_nom || '';
+                            newOption.dataset.cp = data.lieu.ville_cp || '';
+                            newOption.dataset.latitude = data.lieu.latitude || '';
+                            newOption.dataset.longitude = data.lieu.longitude || '';
+
+                            options.push(newOption);
+
+                            // Select the ville of the new lieu first
+                            villeSelect.value = data.lieu.ville_id;
+
+                            // Then update lieu options and select the new lieu
+                            updateLieuOptions();
+                            lieuSelect.value = data.lieu.id;
+                            updateLieuDetails();
+
+                            // Hide modal
+                            const modalElement = document.getElementById('lieuModal');
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                            if (modalInstance) {
+                                modalInstance.hide();
+                            }
+                            this.reset();
+
+                            // Show success message
+                            const flashContainer = document.querySelector('main');
+                            const flashDiv = document.createElement('div');
+                            flashDiv.className = 'alert alert-success alert-dismissible fade show';
+                            flashDiv.innerHTML = `
+                                Lieu "${data.lieu.nom_lieu}" bien créé !
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            `;
+                            flashContainer.insertBefore(flashDiv, flashContainer.firstChild);
+                        } else {
+                            errorsDiv.innerHTML = data.error || 'Une erreur est survenue.';
+                            errorsDiv.classList.remove('d-none');
+                        }
+                    })
+                    .catch(error => {
+                        errorsDiv.innerHTML = error.message || 'Erreur de connexion au serveur';
+                        errorsDiv.classList.remove('d-none');
+                    });
+                });
+            }
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeLieuModal);
+            } else {
+                initializeLieuModal();
+            }
         </script>
 
 

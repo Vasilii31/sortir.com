@@ -3,13 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\LieuType;
 use App\Form\SortieFilterType;
 use App\Form\SortieType;
+use App\Repository\LieuRepository;
 use App\Service\InscriptionService;
 use App\Service\LieuService;
 use App\Service\SortieService;
+use App\Service\VilleService;
+use App\Repository\VilleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -265,6 +270,79 @@ final class SortieController extends AbstractController
         }
 
         return $this->redirectToRoute('app_sortie_index');
+    }
+
+    // MODAL LIEU ___________________________________________________________________
+
+    #[Route('/lieu/modal', name: 'app_lieu_modal', methods: ['POST'])]
+    public function lieuModal(Request $request, LieuRepository $lieuRepository, VilleRepository $villeRepository): Response
+    {
+        try {
+            $lieu = new Lieu();
+
+            $lieuData = $request->request->all()['lieu'] ?? null;
+            if (!$lieuData || !is_array($lieuData)) {
+                return $this->json(['error' => 'Données du formulaire invalides'], 400);
+            }
+
+            $lieu->setNomLieu($lieuData['nom_lieu'] ?? '');
+            $lieu->setRue($lieuData['rue'] ?? null);
+            $lieu->setLatitude($lieuData['latitude'] ? (float)$lieuData['latitude'] : null);
+            $lieu->setLongitude($lieuData['longitude'] ? (float)$lieuData['longitude'] : null);
+
+            $villeId = $lieuData['ville'] ?? null;
+            if ($villeId) {
+                $ville = $villeRepository->find($villeId);
+                $lieu->setVille($ville);
+            }
+
+            // Basic validation
+            $errors = [];
+            if (!$lieu->getNomLieu()) {
+                $errors[] = 'Le nom du lieu est requis';
+            }
+            if (!$lieu->getVille()) {
+                $errors[] = 'La ville est requise';
+            }
+
+            if (!empty($errors)) {
+                return $this->json(['error' => implode(', ', $errors)], 400);
+            }
+
+            $lieuRepository->save($lieu);
+
+            return $this->json([
+                'success' => true,
+                'lieu' => [
+                    'id' => $lieu->getId(),
+                    'nom_lieu' => $lieu->getNomLieu(),
+                    'rue' => $lieu->getRue(),
+                    'ville_id' => $lieu->getVille()?->getId(),
+                    'ville_nom' => $lieu->getVille()?->getNomVille(),
+                    'ville_cp' => $lieu->getVille()?->getCodePostal(),
+                    'latitude' => $lieu->getLatitude(),
+                    'longitude' => $lieu->getLongitude(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // Log the actual error for debugging
+            error_log('Lieu modal error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            return $this->json(['error' => 'Erreur serveur: ' . $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/villes/list', name: 'app_villes_list', methods: ['GET'])]
+    public function villesList(VilleService $villeService): Response
+    {
+        $villes = $villeService->getAllVilles();
+
+        return $this->json(array_map(function($ville) {
+            return [
+                'id' => $ville->getId(),
+                'nom_ville' => $ville->getNomVille(),
+                'code_postal' => $ville->getCodePostal()
+            ];
+        }, $villes));
     }
 }
 
