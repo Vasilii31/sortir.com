@@ -11,17 +11,19 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Config Apache
 RUN a2enmod rewrite
-COPY ./docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Copier le projet
 WORKDIR /var/www/html
 COPY . .
 
-# Installer dépendances Symfony
-RUN composer install --no-dev --optimize-autoloader
-
 # Donner droits corrects
 RUN chown -R www-data:www-data var
+
+# Installer dépendances Symfony
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+#RUN APP_ENV=prod php bin/console cache:clear
+
 
 EXPOSE 80
 CMD ["apache2-foreground"]
