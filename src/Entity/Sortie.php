@@ -6,6 +6,7 @@ use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use function Symfony\Component\Translation\t;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -26,6 +27,22 @@ class Sortie
 
     #[ORM\Column]
     private ?\DateTime $datecloture = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPrivate = false;
+
+    public function isPrivate(): bool
+    {
+        return $this->isPrivate;
+    }
+
+    /**
+     * @param bool $isPrivate
+     */
+    public function setIsPrivate(bool $isPrivate): void
+    {
+        $this->isPrivate = $isPrivate;
+    }
 
     #[ORM\Column]
     private ?int $nbInscriptionsMax = null;
@@ -51,9 +68,39 @@ class Sortie
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'Sortie')]
     private Collection $inscriptions;
 
+    #[ORM\ManyToMany(targetEntity: Participant::class)]
+    #[ORM\JoinTable(name: "sortie_participant_prives")]
+    private Collection $participantsPrives;
+
+    public function getParticipantsPrives() : Collection
+    {
+        return $this->participantsPrives;
+    }
+
+    public function addParticipantsPrives(Participant $participant): self
+    {
+        if(!$this->participantsPrives->contains($participant)){
+            $this->participantsPrives->add($participant);
+        }
+        return $this;
+    }
+
+    public function removeParticipantsPrives(Participant $participant): self
+    {
+        $this->participantsPrives->removeElement($participant);
+        return $this;
+    }
+
+    public function setParticipantsPrives(Collection $participants): self
+    {
+        $this->participantsPrives = $participants;
+        return $this;
+    }
+
     public function __construct()
     {
         $this->inscriptions = new ArrayCollection();
+        $this->participantsPrives = new ArrayCollection();
     }
 
     public function getId(): ?int

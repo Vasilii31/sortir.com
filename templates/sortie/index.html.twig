@@ -158,11 +158,13 @@
                                             <a class="a-custom-sec-outline"
                                                href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                                             {% if item.sortie.etat.libelle =="Ouverte" %}
-                                                <form action="{{ path('app_sortie_inscrire', {'id': item.sortie.id}) }}"
-                                                      method="POST" style="display:inline">
-                                                    <button type="submit" class="a-custom-prim-outline">S'inscrire
-                                                    </button>
-                                                </form>
+                                                    {% if not item.sortie.isPrivate or (item.sortie.isPrivate and item.sortie.participantsPrives.contains(app.user))%}
+                                                        <form action="{{ path('app_sortie_inscrire', {'id': item.sortie.id}) }}"
+                                                              method="POST" style="display:inline">
+                                                            <button type="submit" class="a-custom-prim-outline">S'inscrire
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
                                             {% endif %}
                                         {% endif %}
                                     {% endif %}
