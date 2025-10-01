@@ -78,6 +78,50 @@
         {{ form_row(form.descriptionInfos) }}
     </div>
 
+
 </div>
+<div class="row my-2">
+    <div class="col-md-6 mx-2">
+        {{ form_row(form.isPrivate) }}
+        {# Inclure les CSS/JS de Select2 #}
+
+
+        {#        <button type="button" class="btn btn-outline-primary btn-sm" id="gerer-private-members-btn" title="Gérer les membres du groupe privé">#}
+        {#            <i class="bi bi-plus-lg"></i>#}
+        {#            <p>Gérer les membres du groupe privé</p>#}
+        {#        </button>#}
+        <div id="invites-block">
+            {{ form_row(form.participantsPrives) }}
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        $('.select2-multi').select2({
+            placeholder: "Choisissez des participants",
+            allowClear: true,
+            closeOnSelect: false
+        });
+    });
+
+    const checkbox = document.querySelector('#{{ form.isPrivate.vars.id }}');
+    // const privateMembersButton = document.querySelector('#gerer-private-members-btn');
+    // privateMembersButton.addEventListener('click', function() {
+    //
+    // })
+    const privateMembers =document.querySelector('#invites-block');
+    function toggleInvites() {
+        //privateMembersButton.style.display = checkbox.checked ? 'block' : 'none';
+        privateMembers.style.display = checkbox.checked ? 'block' : 'none';
+
+        }
+
+
+
+    checkbox.addEventListener('change', toggleInvites);
+    toggleInvites(); // au chargement
+</script>
 
 
