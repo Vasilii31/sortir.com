@@ -90,10 +90,12 @@
                         </form>
                     {% else %}
                         {% if sortie.etat =="Ouverte" %}
-                            <form class="text-center my-1" action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}"
-                                  method="POST" style="display:inline">
-                                <button type="submit" class="a-custom-sec w-25">S'inscrire</button>
-                            </form>
+                            {% if not sortie.isPrivate or (sortie.isPrivate and sortie.participantsPrives.contains(app.user))%}
+                                <form class="text-center my-1" action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}"
+                                      method="POST" style="display:inline">
+                                    <button type="submit" class="a-custom-sec w-25">S'inscrire</button>
+                                </form>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                     {% if is_granted('ROLE_ADMIN') %}

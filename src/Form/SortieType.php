@@ -3,12 +3,16 @@
 namespace App\Form;
 
 use App\Entity\Lieu;
+use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Repository\ParticipantRepository;
 use App\Service\LieuService;
 use App\Service\SiteService;
 use App\Service\VilleService;
 use App\Validator\SortieDates;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -124,6 +128,29 @@ class SortieType extends AbstractType
                 'label' => 'Lieu',
                 'attr' => ['class' => 'form-control'],
             ])
+            ->add('isPrivate', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Sortie privée ',
+                'label_attr' => [
+                    'class' => 'me-5 my-2'
+                ],
+            ])
+            ->add('participantsPrives', EntityType::class, [
+                'class' => Participant::class,
+                'choice_label' => 'nom', // adapte au champ que tu veux afficher
+                'multiple' => true,
+                'expanded' => false, // checkboxes, sinon mets false pour un select multiple
+                'label' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'select2-multi w-50'  // classe pour JS
+                ],
+                'query_builder' => function (ParticipantRepository $repo) use ($options) {
+                    return $repo->createQueryBuilder('p')
+                        ->where('p != :organisateur')
+                        ->setParameter('organisateur', $options['organisateur']);
+                }
+            ])
 
             ->add('enregistrer', SubmitType::class, [
                 'label' => 'Enregistrer',
@@ -137,6 +164,10 @@ class SortieType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Sortie::class,
+            'organisateur' => null,
         ]);
+        //on déclare explicitement que l’option existe
+        $resolver->setDefined('organisateur');
+        $resolver->setAllowedTypes('organisateur', ['null', Participant::class]);
     }
 }

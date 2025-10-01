@@ -3,6 +3,7 @@
 namespace App\Dto;
 
 use App\Entity\Lieu;
+use Doctrine\Common\Collections\Collection;
 
 class SortieFullDTO
 {
@@ -14,6 +15,7 @@ class SortieFullDTO
     public int $duree;
     public string $etat;
     public ParticipantDTO $organisateur;
+    public bool $isPrivate;
 
     public ?string $description = null;
     public ?Lieu $lieu;
@@ -21,4 +23,6 @@ class SortieFullDTO
 
     /** @var ParticipantDto[] */
     public array $participants = [];
+
+    public Collection $participantsPrives;
 }

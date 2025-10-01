@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Inscription;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
@@ -62,22 +63,29 @@ final class SortieController extends AbstractController
         InscriptionService     $inscriptionService
     ): Response
     {
-        $sortie = new Sortie();
-        $sessionData = $request->getSession()->get('sortie_data');
-        if ($sessionData) {
-            $sortie = $sessionData;
-            $request->getSession()->remove('sortie_data');
-        }
-
-        $form = $this->createForm(SortieType::class, $sortie);
-        $form->handleRequest($request);
-
         $user = $this->getUser();
         if (!$user instanceof Participant) {
             throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
         }
 
+        $sortie = new Sortie();
+        $sessionData = $request->getSession()->get('sortie_data');
+        if ($sessionData) {
+            $sortie = $sessionData;
+            $sortie->getParticipantsPrives()->removeElement($user);
+            $request->getSession()->remove('sortie_data');
+        }
+
+
+
         $sortie->setOrganisateur($user);
+
+        $form = $this->createForm(SortieType::class, $sortie, [
+            'organisateur' => $user
+        ]);
+        $form->handleRequest($request);
+
+
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Vérification des dates
@@ -87,7 +95,13 @@ final class SortieController extends AbstractController
                 $request->getSession()->set('sortie_data', $form->getData());
                 return $this->redirectToRoute('app_sortie_new');
             }
-
+            //On ajoute automatiquement l'organisateur aux participants privés
+            if ($sortie->isPrivate()) {
+                $sortie->addParticipantsPrives($user);
+            }
+            else{
+                $sortie->getParticipantsPrives()->clear();
+            }
             // Définir l’état selon le bouton
             $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
             $sortieService->setEtatBasedOnButton($sortie, $bouton);
@@ -145,7 +159,9 @@ final class SortieController extends AbstractController
             $request->getSession()->remove('sortie_data');
         }
 
-        $form = $this->createForm(SortieType::class, $sortie);
+        $form = $this->createForm(SortieType::class, $sortie, [
+            'organisateur' => $user
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -157,6 +173,11 @@ final class SortieController extends AbstractController
                 // Conserver les données du formulaire pour le redirect
                 $request->getSession()->set('sortie_data', $form->getData());
                 return $this->redirectToRoute('app_sortie_edit', ['id' => $sortie->getId()]);
+            }
+
+            if(!$sortie->isPrivate())
+            {
+                $sortie->getParticipantsPrives()->clear();
             }
             $bouton = $form->get('enregistrer')->isClicked() ? 'enregistrer' : 'publier';
             $sortieService->setEtatBasedOnButton($sortie, $bouton);
@@ -186,10 +207,24 @@ final class SortieController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($sortie);
-            $entityManager->flush();
 
-            $this->addFlash('success', 'La sortie a été supprimée.');
+            if(count($sortie->getInscriptions()) == 1 && $sortie->getInscriptions()->first()->getParticipant() == $user)
+            {
+                foreach ($sortie->getInscriptions() as $inscription) {
+                    $entityManager->remove($inscription);
+                }
+                $entityManager->remove($sortie);
+                $entityManager->flush();
+                $this->addFlash('success', 'La sortie a été supprimée.');
+            }
+            else
+            {
+                $this->addFlash('error', 'Suppression impossible : des utilisateurs sont déjà inscrits');
+            }
+
+
+
+
         } else {
             $this->addFlash('error', 'Token CSRF invalide.');
         }
