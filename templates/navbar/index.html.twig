@@ -34,19 +34,20 @@
                 </li>
 
                 <!-- Authentification boutons -->
-                {% if app.user %}
-                    <li class="nav-item ms-2">
-                        <a class="a-custom-sec" href="{{ path('app_profile') }}" data-turbo="false">Mon profil</a>
-                    </li>
-                    <li class="nav-item ms-2">
-                        <a class="a-custom-sec-outline" href="{{ path('app_logout') }}" data-turbo="false">Logout</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item ms-2">
-                        <a class="a-custom-sec" href="{{ path('app_login') }}" data-turbo="false">Login</a>
-                    </li>
-
-                {% endif %}
+                <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center d-flex flex-column flex-lg-row gap-2 gap-lg-2">
+                    {% if app.user %}
+                        <li class="nav-item">
+                            <a class="a-custom-sec" href="{{ path('app_profile') }}" data-turbo="false">Mon profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="a-custom-sec-outline" href="{{ path('app_logout') }}" data-turbo="false">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="a-custom-sec" href="{{ path('app_login') }}" data-turbo="false">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </ul>
         </div>
     </div>
