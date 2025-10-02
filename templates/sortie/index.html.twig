@@ -117,7 +117,7 @@
                                 {# --- Cas : Organisateur --- #}
                                 {% if item.sortie.organisateur == app.user %}
 
-                                    {% if item.sortie.etat.libelle == 'Ouverte' %}
+                                    {% if item.sortie.etat.libelle == 'Ouverte' or item.sortie.etat.libelle == 'Clôturée' %}
                                         <a class="a-custom-sec-outline"
                                            href="{{ path('app_sortie_show', {'id': item.sortie.id}) }}">Afficher</a>
                                         <form action="{{ path('app_sortie_annuler', {'id': item.sortie.id}) }}"
