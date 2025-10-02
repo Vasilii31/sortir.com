@@ -73,7 +73,7 @@
             </thead>
             <tbody>
             {% for item in sortiesWithSub %}
-                {# Détecte si DTO ou  Sortie #}
+                {# Détecte si DTO ou Sortie #}
                 {% set sortie = item.sortie is defined ? item.sortie : item %}
                 {% set nbInscrits = item.nbInscrits is defined ? item.nbInscrits : '' %}
                 {% set isUserParticipating = item.isUserParticipating is defined ? item.isUserParticipating : false %}
@@ -157,8 +157,7 @@
             </tbody>
         </table>
     </div>
-
-    {% if app.user %}
+    {% if app.user and not isMobile %}
         <a class="a-custom-sec d-md-flex d-none mb-3" href="{{ path('app_sortie_new') }}">Créer une sortie</a>
     {% endif %}
 

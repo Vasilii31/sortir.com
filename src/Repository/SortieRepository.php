@@ -169,13 +169,17 @@ class SortieRepository extends BaseRepository
 
 
     // SortieRepository.php
-    public function findWithSubscribedBySite(Participant $participant)
+    public function findWithSubscribedBySite(Participant $user)
     {
         return $this->createQueryBuilder('s')
-            ->innerJoin('s.organisateur', 'o')  // jointure sur l'organisateur
-            ->innerJoin('o.site', 'site')       // jointure sur le site du participant
-            ->andWhere('site = :site')
-            ->setParameter('site', $participant->getSite())
+            ->innerJoin('s.organisateur', 'o')
+            ->innerJoin('o.site', 'site')
+            ->where('site = :site')
+            ->setParameter('site', $user->getSite())
+            ->andWhere('s.isPrivate = false OR (s.isPrivate = true AND :user MEMBER OF s.participantsPrives)
+                                                    OR :isAdmin = true')
+            ->setParameter('user', $user)
+            ->setParameter('isAdmin', in_array('ROLE_ADMIN', $user->getRoles() ?? []))
             ->orderBy('s.datedebut', 'ASC')
             ->getQuery()
             ->getResult();

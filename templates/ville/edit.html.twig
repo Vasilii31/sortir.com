@@ -5,12 +5,29 @@
 {% block body %}
 
     <h4 class="txt-custom-prim my-3">Modifier une ville</h4>
-<div class="card my-3 p-3">
-    {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
-    {{ form_row(form.nom_ville) }}
-    {{ form_row(form.code_postal) }}
-    <button type="submit" class="a-custom-sec my-3">Enregistrer</button>
-</div>
-    <a class="a-custom-sec-outline"  href="{{ path('app_ville_index') }}">Retourner aux villes</a>
+    <div class="card my-3 p-3 d-flex flex-column gap-3">
+        {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+
+        <div class="d-flex flex-column gap-1 mb-3">
+            {{ form_label(form.nom_ville, 'Nom de la ville', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nom_ville, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nom_ville) }}
+        </div>
+
+
+        <div class="d-flex flex-column gap-1 mb-3">
+            {{ form_label(form.code_postal, 'Code Postal', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.code_postal, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.code_postal) }}
+        </div>
+
+        {# Bouton Submit #}
+        <div class="d-flex gap-2 m">
+            <button type="submit" class="a-custom-sec">Enregistrer</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+    <a class="a-custom-sec-outline " href="{{ path('app_ville_index') }}">Retourner aux villes</a>
     {{ form_end(form) }}
 {% endblock %}

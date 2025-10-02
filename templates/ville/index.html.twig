@@ -6,20 +6,20 @@
     <h1 class="txt-custom-prim my-3 ">Gestion des villes</h1>
     <h4 class="txt-custom-prim my-3">Filtrer les villes</h4>
 
-    <div class="pb-3">
+    <div class="pb-3 ">
 
-        <div class="card p-3 mb-4 shadow-sm">
-            {{ form_start(form, {'attr': {'class': 'row align-items-end'}}) }}
+        <div class="card p-3 mb-3 shadow-sm">
+            {{ form_start(form, {'attr': {'class': 'd-flex flex-column '}}) }}
 
-            <div class="col-md-4">
-                {{ form_row(form.nom) }}
+            <div class="d-flex flex-column gap-1 mb-3">
+                {{ form_label(form.nom, 'Le nom de la ville contient:', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nom) }}
             </div>
 
-            <div class="col-md-1 me-5">
+            <div class="d-flex gap-2">
                 {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
-            </div>
 
-            <div class="col-md-1">
                 <a class="a-custom-warn-outline" href="{{ path('app_site_index') }}">Réinitialiser</a>
             </div>
             {{ form_end(form) }}
@@ -41,7 +41,7 @@
 
                 <td>{{ ville.nomVille }}</td>
                 <td>{{ ville.codePostal }}</td>
-                <td>
+                <td class="d-flex flex-column flex-md-row gap-2">
                     <a class="a-custom-sec-outline" href="{{ path('app_ville_edit', {'id': ville.id}) }}">Modifier</a>
                     <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cette ville ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
@@ -57,7 +57,7 @@
         </tbody>
     </table>
 
-    <a class="a-custom-sec my-3" href="{{ path('app_sortie_new') }}" data-turbo="false">Créer une nouvelle ville</a>
+    <a class="a-custom-sec my-3" href="{{ path('app_ville_new') }}" data-turbo="false">Créer une nouvelle ville</a>
 
 
 
