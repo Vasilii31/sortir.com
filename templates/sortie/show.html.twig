@@ -79,11 +79,11 @@
 
                 {# --- Cas : Pas organisateur --- #}
             {% else %}
-                {% if sortie.etat == 'En cours' %}
+                {% if sortie.etat == 'Activité en cours' %}
 
                 {% else %}
-                    {{ isInscrit }}
-                    {% if isInscrit %}
+
+                    {% if isInscrit and sortie.etat == "Ouverte"%}
                         <form class="text-center my-1" action="{{ path('app_sortie_desister', {'id': sortie.id}) }}"
                               method="POST" style="display:inline">
                             <button type="submit" class="a-custom-warn w-25">Se désister</button>
@@ -99,7 +99,7 @@
                         {% endif %}
                     {% endif %}
 
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% if is_granted('ROLE_ADMIN') and not (sortie.etat == 'Activité en cours' or sortie.etat == 'Passée' or sortie.etat == 'Historisée') %}
 
                         <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
                               method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">

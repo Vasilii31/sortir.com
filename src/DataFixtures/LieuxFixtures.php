@@ -34,6 +34,20 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface
                 'latitude' => 43.2697,
                 'longitude' => 5.3950
             ],
+            [
+                'nom' => 'Pigalle',
+                'rue' => 'Rue du moulin rouge',
+                'ville' => 'Paris',
+                'latitude' => 43.2697,
+                'longitude' => 5.3950
+            ],
+            [
+                'nom' => 'Seventies',
+                'rue' => 'Rue François Verdier',
+                'ville' => 'Toulouse',
+                'latitude' => 43.2697,
+                'longitude' => 5.3950
+            ],
         ];
 
         foreach ($lieuxData as $data) {
