@@ -61,7 +61,7 @@
             {% if sortie.organisateur.id == app.user.id %}
 
 {#                <h1 class="text-white">coucou</h1>#}
-                {% if sortie.etat == 'Ouverte' %}
+                {% if sortie.etat == 'Ouverte' or sortie.etat == "Clôturée" %}
                     <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
                           method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
                         <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
@@ -98,7 +98,9 @@
                             {% endif %}
                         {% endif %}
                     {% endif %}
+
                     {% if is_granted('ROLE_ADMIN') %}
+
                         <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
                               method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
                             <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>

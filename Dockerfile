@@ -1,5 +1,5 @@
 # Image PHP avec Apache
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 # Installer les extensions nécessaires
 RUN apt-get update && apt-get install -y \
@@ -11,14 +11,14 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Config Apache
 RUN a2enmod rewrite
-COPY ./docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Copier le projet
 WORKDIR /var/www/html
 COPY . .
 
 # Installer dépendances Symfony
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --optimize-autoloader
 
 # Donner droits corrects
 RUN chown -R www-data:www-data var
