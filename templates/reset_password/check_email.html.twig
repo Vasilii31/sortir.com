@@ -3,9 +3,11 @@
 {% block title %}Password Reset Email Sent{% endblock %}
 
 {% block body %}
-    <p>
-        Si un compte correspond à cette adresse, un email contenant un lien vous sera envoyé pour réinitialiser votre mot de passe.
-        Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>Si vous ne recevez pas d'email, veuillez vérifier vos spams ou <a href="{{ path('app_forgot_password_request') }}">réessayer</a>.</p>
+    <div class="card my-5">
+        <p class="mx-2">
+            Si un compte correspond à cette adresse, un email contenant un lien vous sera envoyé pour réinitialiser votre mot de passe.
+            Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+        </p>
+        <p class="mx-2">Si vous ne recevez pas d'email, veuillez vérifier vos spams ou <a href="{{ path('app_forgot_password_request') }}">réessayer</a>.</p>
+    </div>
 {% endblock %}
