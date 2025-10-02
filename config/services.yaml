@@ -36,7 +36,3 @@ services:
     App\Security\AccessDeniedHandler:
         autowire: true
         autoconfigure: true
-
-    App\Service\SortiesEtatScheduler:
-        arguments:
-            $projectDir: '%kernel.project_dir%'

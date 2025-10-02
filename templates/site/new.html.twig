@@ -7,7 +7,12 @@
     <div class="card my-3 p-3">
 {#        {{ include('site/_form.html.twig') }}#}
         {{ form_start(form) }}
-        {{ form_widget(form) }}
+
+        <div class="d-flex flex-column gap-1 mb-3">
+            {{ form_label(form.nom_site, 'Nom du site: ', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nom_site, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nom_site) }}
+        </div>
         <button class="a-custom-sec my-3">{{ button_label|default('Enregistrer') }}</button>
         {{ form_end(form) }}
     </div>

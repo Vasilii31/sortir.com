@@ -38,16 +38,22 @@ final class SortieController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $criteria = $form->getData();
-            $sortiesWithSub = $sortieService->findFilteredSorties($criteria, $user);
-        } else {
-            $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
-        }
+        $isMobile = preg_match('/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry/', $request->headers->get('User-Agent'));
 
+        if ($isMobile && $user instanceof Participant) {
+            $sortiesWithSub = $sortieService->findByUserSite($user);
+        } else {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $criteria = $form->getData();
+                $sortiesWithSub = $sortieService->findFilteredSorties($criteria, $user);
+            } else {
+                $sortiesWithSub = $sortieService->findAllWithSubscribed($user);
+            }
+        }
         return $this->render('sortie/index.html.twig', [
             'sortiesWithSub' => $sortiesWithSub,
             'form' => $form->createView(),
+            'isMobile' => (bool)$isMobile,
         ]);
     }
 

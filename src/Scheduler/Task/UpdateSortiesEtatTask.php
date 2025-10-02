@@ -56,7 +56,7 @@ class UpdateSortiesEtatTask
 
             $conn->commit();
 
-            dump('Sorties updated with success at' . (new \DateTime())->format('Y-m-d H:i:s'));
+            dump('Sorties updated with success at ' . (new \DateTime())->format('Y-m-d H:i:s'));
         } catch (\Exception $e) {
             $conn->rollBack();
             dump('Error: ' . $e->getMessage());

@@ -167,4 +167,27 @@ class SortieRepository extends BaseRepository
         $this->getEntityManager()->flush();
     }
 
+
+    // SortieRepository.php
+    public function findWithSubscribedBySite(Participant $user)
+    {
+        return $this->createQueryBuilder('s')
+            ->innerJoin('s.organisateur', 'o')
+            ->innerJoin('o.site', 'site')
+            ->where('site = :site')
+            ->setParameter('site', $user->getSite())
+            ->andWhere('s.isPrivate = false OR (s.isPrivate = true AND :user MEMBER OF s.participantsPrives)
+                                                    OR :isAdmin = true')
+            ->setParameter('user', $user)
+            ->setParameter('isAdmin', in_array('ROLE_ADMIN', $user->getRoles() ?? []))
+            ->orderBy('s.datedebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
+
+
+
 }

@@ -39,12 +39,12 @@ class ExceptionListener implements EventSubscriberInterface
         ];
 
         // Exemple : redirection vers une page d'erreur custom
-        $response = new RedirectResponse($this->router->generate('error_page'));
+//        $response = new RedirectResponse($this->router->generate('error_page'));
 //        $response = new Response(
 //            $this->twig->render('error/error.html.twig', $data),
 //            Response::HTTP_INTERNAL_SERVER_ERROR
 //        );
-        $event->setResponse($response);
+//        $event->setResponse($response);
     }
 
     public static function getSubscribedEvents(): array
