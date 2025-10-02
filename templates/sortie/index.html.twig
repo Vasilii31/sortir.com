@@ -113,13 +113,13 @@
                                               style="display:inline">
                                             <button type="submit" class="a-custom-sec">Publier</button>
                                         </form>
-                                    {% elseif sortie.etat.libelle == 'Activité en cours' %}
+                                    {% elseif sortie.etat.libelle == 'Activité en cours' or sortie.etat.libelle == 'Passée' or sortie.etat.libelle == 'Historisée'%}
                                         <a class="a-custom-sec-outline "
                                            href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                     {% endif %}
                                 {% else %}
                                     {# Pas organisateur #}
-                                    {% if sortie.etat.libelle == 'Activité en cours' %}
+                                    {% if sortie.etat.libelle == 'Activité en cours' or sortie.etat.libelle == 'Passée' or sortie.etat.libelle == 'Historisée'%}
                                         <a class="a-custom-sec-outline m-auto"
                                            href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                     {% else %}
