@@ -166,7 +166,6 @@ final class AdminController extends AbstractController
     ): Response {
         $file = $request->files->get('csvFile');
 
-
         if (!$file) {
             $this->addFlash('error', 'Aucun fichier sélectionné.');
             return $this->redirectToRoute('app_register');
@@ -188,7 +187,6 @@ final class AdminController extends AbstractController
                     }
                     continue;
                 }
-
                 //On vérifie la validité de chaque participant
                 if(($res = $userImportService->CheckParticipantValidity($data)) != ParticipantCSVValidityResult::SUCCESS)
                 {
@@ -196,28 +194,21 @@ final class AdminController extends AbstractController
                     $this->addFlash('error','Erreur ligne '.$row.' : '.$res->value);
                     return $this->redirectToRoute('app_register');
                 }
-
             }
             rewind($handle);
 
             $row = 0;
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 $row++;
-
                 // On ignore l'entête (première ligne)
                 if ($row === 1) {
                     continue;
                 }
-
                 $userImportService->CreateParticipantCSV($data);
-
             }
             fclose($handle);
-
-
             $this->addFlash('success', 'Import des participants terminé avec succès !');
         }
-
         return $this->redirectToRoute('admin_users');
     }
 

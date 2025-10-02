@@ -30,3 +30,5 @@ package-lock.json
 
 # Claude Code
 .claude/
+.idea/php.xml
+/.idea
