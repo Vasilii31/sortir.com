@@ -154,4 +154,14 @@ class SortieService
 
         return null;
     }
+
+
+
+
+    public function findByUserSite(Participant $participant)
+    {
+        return $this->sortieRepository->findWithSubscribedBySite($participant);
+    }
+
+
 }

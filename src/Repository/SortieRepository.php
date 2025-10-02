@@ -167,4 +167,23 @@ class SortieRepository extends BaseRepository
         $this->getEntityManager()->flush();
     }
 
+
+    // SortieRepository.php
+    public function findWithSubscribedBySite(Participant $participant)
+    {
+        return $this->createQueryBuilder('s')
+            ->innerJoin('s.organisateur', 'o')  // jointure sur l'organisateur
+            ->innerJoin('o.site', 'site')       // jointure sur le site du participant
+            ->andWhere('site = :site')
+            ->setParameter('site', $participant->getSite())
+            ->orderBy('s.datedebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
+
+
+
 }
