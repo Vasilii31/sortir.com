@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="row justify-content-center gap-3 mt-3">
+            <div class="row justify-content-center w-50 gap-3 mt-3 m-auto">
                 {{ form_widget(form.submit, {'attr': {'class': 'a-custom-sec w-25'}}) }}
                 <a class="a-custom-warn-outline w-25" href="{{ path('app_sortie_index') }}">Réinitialiser</a>
             </div>
@@ -63,12 +63,12 @@
             <tr>
                 <th class="text-center">Nom de la sortie</th>
                 <th class="text-center">Date de la sortie</th>
-                <th class="text-center">Cloture</th>
-                <th class="text-center">Inscrits / places</th>
-                <th class="text-center">Etat</th>
-                <th class="text-center">Inscrit</th>
-                <th class="text-center">Organisateur</th>
-                <th class="text-center">actions</th>
+                <th class="text-center  d-none d-xl-table-cell">Cloture</th>
+                <th class="text-center  d-none d-xl-table-cell">Inscrits / places</th>
+                <th class="text-center  d-none d-xl-table-cell">Etat</th>
+                <th class="text-center  d-none d-xl-table-cell">Inscrit</th>
+                <th class="text-center  d-none d-xl-table-cell">Organisateur</th>
+                <th class="text-center ">actions</th>
             </tr>
             </thead>
             <tbody>
@@ -96,7 +96,7 @@
                                 {% if sortie.organisateur == app.user %}
                                     {# Organisateur #}
                                     {% if sortie.etat.libelle == 'Ouverte' %}
-                                        <a class="a-custom-sec-outline m-auto"
+                                        <a class="a-custom-sec-outline "
                                            href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                         <form action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}" method="POST"
                                               style="display:inline"
@@ -104,14 +104,17 @@
                                             <button type="submit" class="a-custom-warn">Annuler</button>
                                         </form>
                                     {% elseif sortie.etat.libelle == 'Créée' %}
-                                        <a class="a-custom-sec-outline m-auto"
+                                        {% if not isMobile %}
+                                        <a class="a-custom-sec-outline "
                                            href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">Modifier</a>
+                                        {% endif %}
+
                                         <form action="{{ path('app_sortie_publier', {'id': sortie.id}) }}" method="POST"
                                               style="display:inline">
                                             <button type="submit" class="a-custom-sec">Publier</button>
                                         </form>
                                     {% elseif sortie.etat.libelle == 'Activité en cours' %}
-                                        <a class="a-custom-sec-outline m-auto"
+                                        <a class="a-custom-sec-outline "
                                            href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                     {% endif %}
                                 {% else %}
@@ -121,14 +124,14 @@
                                            href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                     {% else %}
                                         {% if isUserParticipating %}
-                                            <a class="a-custom-sec-outline m-auto"
+                                            <a class="a-custom-sec-outline "
                                                href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                             <form action="{{ path('app_sortie_desister', {'id': sortie.id}) }}"
                                                   method="POST" style="display:inline">
                                                 <button type="submit" class="a-custom-warn-outline">Se désister</button>
                                             </form>
                                         {% else %}
-                                            <a class="a-custom-sec-outline m-auto"
+                                            <a class="a-custom-sec-outline "
                                                href="{{ path('app_sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                             {% if sortie.etat.libelle == "Ouverte" %}
                                                 {% if not sortie.isPrivate or (sortie.isPrivate and sortie.participantsPrives.contains(app.user)) %}
