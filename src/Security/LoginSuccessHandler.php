@@ -34,7 +34,6 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 
             $response = new RedirectResponse($this->router->generate('app_sortie_index'));
 
-            // Durée du cookie correspond à la durée du token
             $cookieExpiry = $rememberMe ? time() + 2592000 : time() + 86400; // 30 jours ou 24h
 
             $response->headers->setCookie(
@@ -44,8 +43,8 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
                     $cookieExpiry,
                     '/',
                     null,
-                    false, // secure (false pour dev)
-                    true   // httpOnly
+                    false,
+                    true
                 )
             );
 

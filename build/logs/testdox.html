@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Test Documentation</title>
+        <style>
+            body {
+                text-rendering: optimizeLegibility;
+                font-family: Source SansSerif Pro, Arial, sans-serif;
+                font-variant-ligatures: common-ligatures;
+                font-kerning: normal;
+                margin-left: 2rem;
+                background-color: #fff;
+                color: #000;
+            }
+
+            body > ul > li {
+                font-size: larger;
+            }
+
+            h2 {
+                font-size: larger;
+                text-decoration-line: underline;
+                text-decoration-thickness: 2px;
+                margin: 0;
+                padding: 0.5rem 0;
+            }
+
+            ul {
+                list-style: none;
+                margin: 0 0 2rem;
+                padding: 0 0 0 1rem;
+                text-indent: -1rem;
+            }
+
+            .success:before {
+                color: #4e9a06;
+                content: '✓';
+                padding-right: 0.5rem;
+            }
+
+            .defect {
+                color: #a40000;
+            }
+
+            .defect:before {
+                color: #a40000;
+                content: '✗';
+                padding-right: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Cleanup Service (App\Tests\Unit\Service\CleanupService)</h2>
+        <ul>
+            <li class="success">Cleanup finished sorties for inactive participants</li>
+            <li class="success">Cancel ongoing sorties for inactive organizers success</li>
+            <li class="success">Cancel ongoing sorties for inactive organizers no etat annule</li>
+            <li class="success">Cleanup finished sorties with zero results</li>
+        </ul>
+        <h2>Etat Service (App\Tests\Unit\Service\EtatService)</h2>
+        <ul>
+            <li class="success">Get all etats</li>
+        </ul>
+        <h2>Image Upload Service (App\Tests\Unit\Service\ImageUploadService)</h2>
+        <ul>
+            <li class="success">Get upload directory</li>
+            <li class="success">Is valid image file with valid jpeg</li>
+            <li class="success">Is valid image file with valid png</li>
+            <li class="success">Is valid image file with valid webp</li>
+            <li class="success">Is valid image file with too large file</li>
+            <li class="success">Is valid image file with invalid mime type</li>
+            <li class="success">Is valid image file with text file</li>
+            <li class="success">Upload file exception</li>
+            <li class="success">Upload success</li>
+            <li class="success">Upload with old filename deletion</li>
+            <li class="success">Delete with null filename</li>
+            <li class="success">Delete with empty filename</li>
+            <li class="success">Delete with non existent file</li>
+        </ul>
+        <h2>Inscription Service (App\Tests\Unit\Service\InscriptionService)</h2>
+        <ul>
+            <li class="success">Register participant success</li>
+            <li class="success">Register participant when sortie not open</li>
+            <li class="success">Register participant when already registered</li>
+            <li class="success">Unregister participant success</li>
+            <li class="success">Unregister participant when not registered</li>
+        </ul>
+        <h2>Lieu Service (App\Tests\Unit\Service\LieuService)</h2>
+        <ul>
+            <li class="success">Get all lieux</li>
+        </ul>
+        <h2>Participant Service (App\Tests\Unit\Service\ParticipantService)</h2>
+        <ul>
+            <li class="success">Create participant</li>
+            <li class="success">Update participant</li>
+            <li class="success">Find by pseudo</li>
+            <li class="success">Find by mail</li>
+            <li class="success">Check unique fields with no conflicts</li>
+            <li class="success">Check unique fields with conflicts</li>
+            <li class="success">Get all participants</li>
+            <li class="success">Toggle admin</li>
+            <li class="success">Delete participant</li>
+            <li class="success">Toggle actif</li>
+        </ul>
+        <h2>Site Service (App\Tests\Unit\Service\SiteService)</h2>
+        <ul>
+            <li class="success">Get all sites</li>
+            <li class="success">Create site</li>
+            <li class="success">Delete site success</li>
+            <li class="success">Delete site in use</li>
+            <li class="success">Update site</li>
+            <li class="success">Search by name</li>
+        </ul>
+        <h2>Sortie Service (App\Tests\Unit\Service\SortieService)</h2>
+        <ul>
+            <li class="success">Set etat based on button enregistrer</li>
+            <li class="success">Set etat based on button publier</li>
+            <li class="success">Set etat based on button unknown</li>
+            <li class="success">Find filtered sorties</li>
+            <li class="success">Get sortie with participants</li>
+            <li class="success">Find all</li>
+            <li class="success">Find all with subscribed</li>
+            <li class="success">Validate dates</li>
+            <li class="success">Validate dates with past date</li>
+        </ul>
+        <h2>User Import Service (App\Tests\Unit\Service\UserImportService)</h2>
+        <ul>
+            <li class="success">Create participant c s v success</li>
+            <li class="success">Create participant c s v with invalid site name</li>
+            <li class="success">Create participant c s v with empty site name</li>
+            <li class="success">Create participant c s v with participant creation error</li>
+            <li class="success">Check csv validity with valid headers</li>
+            <li class="success">Check csv validity with incorrect headers</li>
+            <li class="success">Check csv validity with incorrect column number</li>
+            <li class="success">Check participant validity success</li>
+            <li class="success">Check participant validity with missing username</li>
+            <li class="success">Check participant validity with taken pseudo</li>
+            <li class="success">Check participant validity with missing nom</li>
+            <li class="success">Check participant validity with missing prenom</li>
+            <li class="success">Check participant validity with short password</li>
+            <li class="success">Check participant validity with missing password</li>
+            <li class="success">Check participant validity with invalid admin field</li>
+            <li class="success">Check participant validity with missing admin field</li>
+            <li class="success">Check participant validity with invalid actif field</li>
+            <li class="success">Check participant validity with missing actif field</li>
+            <li class="success">Check participant validity with invalid email format</li>
+            <li class="success">Check participant validity with taken email</li>
+            <li class="success">Check participant validity with missing email</li>
+            <li class="success">Check participant validity with missing site name</li>
+        </ul>
+        <h2>Ville Service (App\Tests\Unit\Service\VilleService)</h2>
+        <ul>
+            <li class="success">Get all villes</li>
+            <li class="success">Create ville</li>
+            <li class="success">Delete ville success</li>
+            <li class="success">Delete ville in use</li>
+            <li class="success">Update ville</li>
+            <li class="success">Search by name</li>
+        </ul>
+    </body>
+</html>

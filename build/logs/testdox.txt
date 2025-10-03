@@ -1,0 +1,97 @@
+Cleanup Service (App\Tests\Unit\Service\CleanupService)
+ [x] Cleanup finished sorties for inactive participants
+ [x] Cancel ongoing sorties for inactive organizers success
+ [x] Cancel ongoing sorties for inactive organizers no etat annule
+ [x] Cleanup finished sorties with zero results
+
+Etat Service (App\Tests\Unit\Service\EtatService)
+ [x] Get all etats
+
+Image Upload Service (App\Tests\Unit\Service\ImageUploadService)
+ [x] Get upload directory
+ [x] Is valid image file with valid jpeg
+ [x] Is valid image file with valid png
+ [x] Is valid image file with valid webp
+ [x] Is valid image file with too large file
+ [x] Is valid image file with invalid mime type
+ [x] Is valid image file with text file
+ [x] Upload file exception
+ [x] Upload success
+ [x] Upload with old filename deletion
+ [x] Delete with null filename
+ [x] Delete with empty filename
+ [x] Delete with non existent file
+
+Inscription Service (App\Tests\Unit\Service\InscriptionService)
+ [x] Register participant success
+ [x] Register participant when sortie not open
+ [x] Register participant when already registered
+ [x] Unregister participant success
+ [x] Unregister participant when not registered
+
+Lieu Service (App\Tests\Unit\Service\LieuService)
+ [x] Get all lieux
+
+Participant Service (App\Tests\Unit\Service\ParticipantService)
+ [x] Create participant
+ [x] Update participant
+ [x] Find by pseudo
+ [x] Find by mail
+ [x] Check unique fields with no conflicts
+ [x] Check unique fields with conflicts
+ [x] Get all participants
+ [x] Toggle admin
+ [x] Delete participant
+ [x] Toggle actif
+
+Site Service (App\Tests\Unit\Service\SiteService)
+ [x] Get all sites
+ [x] Create site
+ [x] Delete site success
+ [x] Delete site in use
+ [x] Update site
+ [x] Search by name
+
+Sortie Service (App\Tests\Unit\Service\SortieService)
+ [x] Set etat based on button enregistrer
+ [x] Set etat based on button publier
+ [x] Set etat based on button unknown
+ [x] Find filtered sorties
+ [x] Get sortie with participants
+ [x] Find all
+ [x] Find all with subscribed
+ [x] Validate dates
+ [x] Validate dates with past date
+
+User Import Service (App\Tests\Unit\Service\UserImportService)
+ [x] Create participant c s v success
+ [x] Create participant c s v with invalid site name
+ [x] Create participant c s v with empty site name
+ [x] Create participant c s v with participant creation error
+ [x] Check csv validity with valid headers
+ [x] Check csv validity with incorrect headers
+ [x] Check csv validity with incorrect column number
+ [x] Check participant validity success
+ [x] Check participant validity with missing username
+ [x] Check participant validity with taken pseudo
+ [x] Check participant validity with missing nom
+ [x] Check participant validity with missing prenom
+ [x] Check participant validity with short password
+ [x] Check participant validity with missing password
+ [x] Check participant validity with invalid admin field
+ [x] Check participant validity with missing admin field
+ [x] Check participant validity with invalid actif field
+ [x] Check participant validity with missing actif field
+ [x] Check participant validity with invalid email format
+ [x] Check participant validity with taken email
+ [x] Check participant validity with missing email
+ [x] Check participant validity with missing site name
+
+Ville Service (App\Tests\Unit\Service\VilleService)
+ [x] Get all villes
+ [x] Create ville
+ [x] Delete ville success
+ [x] Delete ville in use
+ [x] Update ville
+ [x] Search by name
+
