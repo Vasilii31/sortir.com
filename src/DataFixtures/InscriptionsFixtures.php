@@ -31,6 +31,81 @@ class InscriptionsFixtures extends Fixture implements DependentFixtureInterface
                 'sortie' => 'sortie-concert-jazz',
                 'date' => new \DateTime('-3 days'),
             ],
+            [
+                'participant' => 'user2',
+                'sortie' => 'sortie-concert-jazz',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user3',
+                'sortie' => 'sortie-concert-jazz',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user4',
+                'sortie' => 'sortie-concert-jazz',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user10',
+                'sortie' => 'sortie-pub-crawl',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user11',
+                'sortie' => 'sortie-pub-crawl',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user12',
+                'sortie' => 'sortie-pub-crawl',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user13',
+                'sortie' => 'sortie-pub-crawl',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user1',
+                'sortie' => 'sortie-conférence-tech',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user1',
+                'sortie' => 'sortie-bowling',
+                'date' => new \DateTime('-3 days'),
+            ],
+            [
+                'participant' => 'user4',
+                'sortie' => 'sortie-tournoi-de-cartes-magik',
+                'date' => new \DateTime('-20 days'),
+            ],
+            [
+                'participant' => 'user7',
+                'sortie' => 'sortie-tournoi-de-cartes-magik',
+                'date' => new \DateTime('-20 days'),
+            ],
+            [
+                'participant' => 'user9',
+                'sortie' => 'sortie-tournoi-de-cartes-magik',
+                'date' => new \DateTime('-20 days'),
+            ],
+            [
+                'participant' => 'user11',
+                'sortie' => 'sortie-tournoi-de-cartes-magik',
+                'date' => new \DateTime('-20 days'),
+            ],
+            [
+                'participant' => 'user13',
+                'sortie' => 'sortie-tournoi-de-cartes-magik',
+                'date' => new \DateTime('-20 days'),
+            ],
+            [
+                'participant' => 'user2',
+                'sortie' => 'sortie-tournoi-de-cartes-magik',
+                'date' => new \DateTime('-20 days'),
+            ],
         ];
 
         foreach ($inscriptions as $data) {

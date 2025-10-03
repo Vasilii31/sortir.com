@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Site;
-use App\Repository\ParticipantRepository;
 use App\Service\ParticipantService;
 use App\Service\SiteService;
 use App\Service\UserImportService;
@@ -17,7 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_ADMIN')]
 #[Route('/admin')]
 final class AdminController extends AbstractController
 {
@@ -42,7 +43,6 @@ final class AdminController extends AbstractController
     public function toggleAdmin(
         int $id,
         Request $request,
-        ParticipantRepository $participantRepository,
         ParticipantService $participantService,
         CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
@@ -59,7 +59,7 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        $user = $participantRepository->find($id);
+        $user = $participantService->find($id);
         if (!$user) {
             $this->addFlash('error', 'Utilisateur introuvable');
             return $this->redirectToRoute('admin_users');
@@ -83,7 +83,6 @@ final class AdminController extends AbstractController
     public function deleteUser(
         int $id,
         Request $request,
-        ParticipantRepository $participantRepository,
         ParticipantService $participantService,
         CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
@@ -100,7 +99,7 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        $user = $participantRepository->find($id);
+        $user = $participantService->find($id);
         if (!$user) {
             $this->addFlash('error', 'Utilisateur introuvable');
             return $this->redirectToRoute('admin_users');
@@ -124,7 +123,6 @@ final class AdminController extends AbstractController
     public function toggleActif(
         int $id,
         Request $request,
-        ParticipantRepository $participantRepository,
         ParticipantService $participantService,
         CsrfTokenManagerInterface $csrfTokenManager
     ): Response {
@@ -141,7 +139,7 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        $user = $participantRepository->find($id);
+        $user = $participantService->find($id);
         if (!$user) {
             $this->addFlash('error', 'Utilisateur introuvable');
             return $this->redirectToRoute('admin_users');
@@ -168,7 +166,6 @@ final class AdminController extends AbstractController
     ): Response {
         $file = $request->files->get('csvFile');
 
-
         if (!$file) {
             $this->addFlash('error', 'Aucun fichier sélectionné.');
             return $this->redirectToRoute('app_register');
@@ -190,7 +187,6 @@ final class AdminController extends AbstractController
                     }
                     continue;
                 }
-
                 //On vérifie la validité de chaque participant
                 if(($res = $userImportService->CheckParticipantValidity($data)) != ParticipantCSVValidityResult::SUCCESS)
                 {
@@ -198,28 +194,21 @@ final class AdminController extends AbstractController
                     $this->addFlash('error','Erreur ligne '.$row.' : '.$res->value);
                     return $this->redirectToRoute('app_register');
                 }
-
             }
             rewind($handle);
 
             $row = 0;
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 $row++;
-
                 // On ignore l'entête (première ligne)
                 if ($row === 1) {
                     continue;
                 }
-
                 $userImportService->CreateParticipantCSV($data);
-
             }
             fclose($handle);
-
-
             $this->addFlash('success', 'Import des participants terminé avec succès !');
         }
-
         return $this->redirectToRoute('admin_users');
     }
 

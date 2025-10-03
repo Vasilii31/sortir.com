@@ -61,7 +61,7 @@
             {% if sortie.organisateur.id == app.user.id %}
 
 {#                <h1 class="text-white">coucou</h1>#}
-                {% if sortie.etat == 'Ouverte' %}
+                {% if sortie.etat == 'Ouverte' or sortie.etat == "Clôturée" %}
                     <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
                           method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
                         <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
@@ -79,24 +79,28 @@
 
                 {# --- Cas : Pas organisateur --- #}
             {% else %}
-                {% if sortie.etat == 'En cours' %}
+                {% if sortie.etat == 'Activité en cours' %}
 
                 {% else %}
-                    {{ isInscrit }}
-                    {% if isInscrit %}
+
+                    {% if isInscrit and sortie.etat == "Ouverte"%}
                         <form class="text-center my-1" action="{{ path('app_sortie_desister', {'id': sortie.id}) }}"
                               method="POST" style="display:inline">
                             <button type="submit" class="a-custom-warn w-25">Se désister</button>
                         </form>
                     {% else %}
                         {% if sortie.etat =="Ouverte" %}
-                            <form class="text-center my-1" action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}"
-                                  method="POST" style="display:inline">
-                                <button type="submit" class="a-custom-sec w-25">S'inscrire</button>
-                            </form>
+                            {% if not sortie.isPrivate or (sortie.isPrivate and sortie.participantsPrives.contains(app.user))%}
+                                <form class="text-center my-1" action="{{ path('app_sortie_inscrire', {'id': sortie.id}) }}"
+                                      method="POST" style="display:inline">
+                                    <button type="submit" class="a-custom-sec w-25">S'inscrire</button>
+                                </form>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
-                    {% if is_granted('ROLE_ADMIN') %}
+
+                    {% if is_granted('ROLE_ADMIN') and not (sortie.etat == 'Activité en cours' or sortie.etat == 'Passée' or sortie.etat == 'Historisée') %}
+
                         <form class="text-center my-1" action="{{ path('app_sortie_annuler', {'id': sortie.id}) }}"
                               method="POST" style="display:inline" onsubmit="return confirm('Etes-vous sûr de vouloir annuler cette sortie ?');">
                             <button type="submit" class="a-custom-warn w-25">Annuler la sortie</button>
@@ -118,23 +122,25 @@
              style="max-height: 400px; overflow-y: auto;">
             {% for participant in sortie.participants %}
                 <div class="col">
-                    <div class="card shadow-sm h-100">
-                        {% if participant.urlPhoto %}
-                            <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}"
-                                 alt="Photo de profil"
-                                 class="rounded-circle mx-auto d-block mt-2"
-                                 style="width: 60px; height: 60px; object-fit: cover;">
-                        {% else %}
-                            <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-2"
-                                 style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
-                                {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                    <a href="{{ path('app_participant_show', {id: participant.id}) }}" class="text-decoration-none text-dark">
+                        <div class="card shadow-sm h-100">
+                            {% if participant.urlPhoto %}
+                                <img src="{{ asset('uploads/profiles/' ~ participant.urlPhoto) }}"
+                                     alt="Photo de profil"
+                                     class="rounded-circle mx-auto d-block mt-2"
+                                     style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                                <div class="avatar-initials d-flex align-items-center justify-content-center mx-auto text-white fw-bold mt-2"
+                                     style="width: 60px; height: 60px; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; font-size: 1.2rem;">
+                                    {{ participant.prenom|first|upper }}{{ participant.nom|first|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="card-body p-2 text-center">
+                                <h6 class="card-title mb-1">{{ participant.pseudo }}</h6>
+                                <small class="text-muted">{{ participant.prenom }} {{ participant.nom }}</small>
                             </div>
-                        {% endif %}
-                        <div class="card-body p-2 text-center">
-                            <h6 class="card-title mb-1">{{ participant.pseudo }}</h6>
-                            <small class="text-muted">{{ participant.prenom }} {{ participant.nom }}</small>
                         </div>
-                    </div>
+                    </a>
                 </div>
             {% else %}
                 <div class="col-12">

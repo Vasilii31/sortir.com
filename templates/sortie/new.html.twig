@@ -46,10 +46,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="lieu_ville" class="form-label">Ville</label>
-                                <select class="form-control" id="lieu_ville" name="lieu[ville]" required>
-                                    <option value="">Choisissez une ville</option>
-                                </select>
+                                <label class="form-label">Ville</label>
+                                <p class="form-control-plaintext" id="lieu_ville_display"><strong>-</strong></p>
+                                <input type="hidden" id="lieu_ville" name="lieu[ville]" required>
                             </div>
 
                             <div class="row">
@@ -93,6 +92,21 @@
                 const options = Array.from(selectLieu.querySelectorAll("option"))
                     .filter(opt => opt.value !== "");
 
+                function updateAddLieuButton() {
+                    const addLieuBtn = document.getElementById('add-lieu-btn');
+                    const villeId = selectVille.value;
+
+                    if (!villeId) {
+                        addLieuBtn.disabled = true;
+                        addLieuBtn.title = 'Veuillez d\'abord choisir une ville';
+                        addLieuBtn.classList.add('disabled');
+                    } else {
+                        addLieuBtn.disabled = false;
+                        addLieuBtn.title = 'Ajouter un nouveau lieu';
+                        addLieuBtn.classList.remove('disabled');
+                    }
+                }
+
                 function resetLieu() {
                     selectLieu.innerHTML = '';
                     const placeholder = new Option('Choisissez un lieu', '', true, true);
@@ -100,6 +114,7 @@
                     selectLieu.appendChild(placeholder);
                     selectLieu.disabled = true;
                     updateLieuDetails();
+                    updateAddLieuButton();
                 }
 
                 function updateLieuOptions() {
@@ -125,6 +140,7 @@
 
                     selectLieu.value = '';
                     updateLieuDetails();
+                    updateAddLieuButton();
                 }
 
                 function updateLieuDetails() {
@@ -147,12 +163,9 @@
                 selectVille.addEventListener('change', updateLieuOptions);
                 selectLieu.addEventListener('change', updateLieuDetails);
 
-                // Initialize dropdown state - enable lieu dropdown by default
+                // Initialize dropdown state
                 const currentVilleValue = selectVille.value;
                 const currentLieuValue = selectLieu.value;
-
-                // Always enable lieu dropdown on page load and show all lieux
-                selectLieu.disabled = false;
 
                 if (currentVilleValue) {
                     updateLieuOptions();
@@ -161,40 +174,33 @@
                         updateLieuDetails();
                     }
                 } else {
-                    // Show all lieux when no ville is selected
-                    selectLieu.innerHTML = '';
-                    const placeholder = new Option('Choisissez un lieu', '', true, true);
-                    placeholder.disabled = true;
-                    selectLieu.appendChild(placeholder);
-
-                    options.forEach(opt => {
-                        selectLieu.appendChild(opt.cloneNode(true));
-                    });
+                    // Block lieu selection and + button if no ville selected
+                    resetLieu();
                 }
 
                 // Modal handling
                 const addLieuBtn = document.getElementById('add-lieu-btn');
 
                 addLieuBtn.addEventListener('click', function() {
+                    // Empêcher l'ouverture si aucune ville sélectionnée
+                    if (!selectVille.value) {
+                        return;
+                    }
+
                     // Clear previous errors
                     const errorsDiv = document.getElementById('lieu-form-errors');
                     errorsDiv.classList.add('d-none');
 
-                    // Load villes
-                    fetch('{{ path('app_villes_list') }}', {
-                        method: 'GET',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
-                    .then(response => response.json())
-                    .then(villes => {
-                        const villeSelect = document.getElementById('lieu_ville');
-                        villeSelect.innerHTML = '<option value="">Choisissez une ville</option>';
-                        villes.forEach(ville => {
-                            const option = new Option(ville.nom_ville + ' (' + ville.code_postal + ')', ville.id);
-                            villeSelect.appendChild(option);
-                        });
-                    })
-                    .catch(() => {});
+                    // Récupérer la ville sélectionnée dans le formulaire principal
+                    const selectedVilleId = selectVille.value;
+                    const selectedVilleText = selectVille.options[selectVille.selectedIndex].text;
+
+                    // Afficher la ville dans la modale
+                    const villeDisplay = document.getElementById('lieu_ville_display');
+                    const villeHidden = document.getElementById('lieu_ville');
+
+                    villeDisplay.innerHTML = '<strong>' + selectedVilleText + '</strong>';
+                    villeHidden.value = selectedVilleId;
 
                     // Show modal immediately - Bootstrap is available
                     const modal = new bootstrap.Modal(document.getElementById('lieuModal'));

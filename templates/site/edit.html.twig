@@ -4,15 +4,25 @@
 
 {% block body %}
     <h4 class="txt-custom-prim my-3">Modifier un site</h4>
-<div class="card my-3 p-3">
-    {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
-    {{ form_row(form.nom_site) }}
-{#    {{ form_errors(form.nom_site) }} #}{# affichera le message si déjà utilisé #}
 
-    <button class="a-custom-sec my-3" type="submit">Enregistrer</button>
-    {{ form_end(form) }}
-</div>
+
+    <div class="card my-3 p-3 d-flex flex-column gap-3">
+        {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+
+        <div class="d-flex flex-column gap-1 mb-3">
+            {{ form_label(form.nom_site, 'Nom de la ville', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nom_site, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nom_site) }}
+        </div>
+
+        {# Bouton Submit #}
+        <div class="d-flex gap-2 m">
+            <button type="submit" class="a-custom-sec">Enregistrer</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
     <a class="a-custom-sec-outline" href="{{ path('app_site_index') }}">Retourner aux sites</a>
 
-{#    {{ include('site/_delete_form.html.twig') }}#}
+    {#    {{ include('site/_delete_form.html.twig') }} #}
 {% endblock %}

@@ -128,6 +128,11 @@ class ParticipantService
         return $this->participantRepository->findAll();
     }
 
+    public function find(int $id): ?Participant
+    {
+        return $this->participantRepository->find($id);
+    }
+
     public function toggleAdmin(Participant $participant): void
     {
         $participant->setAdministrateur(!$participant->isAdministrateur());

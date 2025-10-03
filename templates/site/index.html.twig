@@ -8,22 +8,20 @@
     <div class="pb-3">
 
         <div class="pb-3">
+            <div class="card p-3 mb-3 shadow-sm">
+                {{ form_start(form, {'attr': {'class': 'd-flex flex-column '}}) }}
 
-            <div class="card p-3 mb-4 shadow-sm">
-                {{ form_start(form, {'attr': {'class': 'row align-items-end'}}) }}
-
-                <div class="col-md-4">
-                    {{ form_row(form.nom) }}
+                <div class="d-flex flex-column gap-1 mb-3">
+                    {{ form_label(form.nom, 'Le nom du site contient:', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nom) }}
                 </div>
 
-                <div class="col-md-1 me-5">
+                <div class="d-flex gap-2">
                     {{ form_row(form.submit, {'attr': {'class': 'a-custom-sec '}}) }}
-                </div>
 
-                <div class="col-md-1">
                     <a class="a-custom-warn-outline" href="{{ path('app_site_index') }}">Réinitialiser</a>
                 </div>
-
                 {{ form_end(form) }}
             </div>
         </div>
@@ -31,11 +29,11 @@
         <div class="card">
             <table class="table">
                 <thead>
-                    <tr>
+                <tr>
 
-                        <th>Nom du site</th>
-                        <th>actions</th>
-                    </tr>
+                    <th>Nom du site</th>
+                    <th>Actions</th>
+                </tr>
                 </thead>
                 <tbody id="site-table">
                 {% for site in sites %}
@@ -44,9 +42,11 @@
                         <td>{{ site.nomSite }}</td>
                         {# Nom affiché en span et input caché #}
 
-                        <td>
-                            <a class="a-custom-sec-outline" href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
-                            <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
+                        <td class="d-flex flex-column flex-md-row gap-2">
+                            <a class="a-custom-sec-outline"
+                               href="{{ path('app_site_edit', {'id': site.id}) }}">Modifier</a>
+                            <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}"
+                                  style="display:inline" onsubmit="return confirm('Supprimer ce site ?');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
                                 <button class="a-custom-warn">Supprimer</button>
                             </form>
@@ -66,15 +66,15 @@
         <a class="a-custom-sec my-3" href="{{ path('app_site_new') }}">Créer un nouveau site</a>
     </div>
 
-{#    <script>#}
-{#        document.getElementById('site-search').addEventListener('keyup', function() {#}
-{#            let filter = this.value.toLowerCase();#}
-{#            document.querySelectorAll('#site-table tr').forEach(row => {#}
-{#                // On cible uniquement la première colonne <td> (nom du site)#}
-{#                let siteName = row.querySelector('td').innerText.toLowerCase();#}
-{#                row.style.display = siteName.includes(filter) ? '' : 'none';#}
-{#            });#}
-{#        });#}
-{#    </script>#}
+    {#    <script> #}
+    {#        document.getElementById('site-search').addEventListener('keyup', function() { #}
+    {#            let filter = this.value.toLowerCase(); #}
+    {#            document.querySelectorAll('#site-table tr').forEach(row => { #}
+    {#                // On cible uniquement la première colonne <td> (nom du site) #}
+    {#                let siteName = row.querySelector('td').innerText.toLowerCase(); #}
+    {#                row.style.display = siteName.includes(filter) ? '' : 'none'; #}
+    {#            }); #}
+    {#        }); #}
+    {#    </script> #}
 
 {% endblock %}

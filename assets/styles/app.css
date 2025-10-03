@@ -160,3 +160,13 @@ textarea{
     min-width: 200px;
     max-width: 400px;
 }
+
+.w-md-50 {
+    width: 100%; /* par défaut, mobile */
+}
+
+@media (min-width: 992px) { /* lg et plus */
+    .w-md-50 {
+        width: 50%;
+    }
+}

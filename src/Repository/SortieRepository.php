@@ -25,7 +25,7 @@ class SortieRepository extends BaseRepository
     }
 
     // Renvoie les sorties avec le nombre d'inscrits
-    public function findAllWithSubscribed(): array
+    public function findAllWithSubscribed(Participant $user): array
     {
         return $this->createQueryBuilder('s')
             ->leftJoin('s.inscriptions', 'i')
@@ -33,6 +33,10 @@ class SortieRepository extends BaseRepository
             ->addSelect('COUNT(i.id) AS nbInscrits')
             ->where('e.libelle NOT IN (:excludedEtats)')
             ->setParameter('excludedEtats', ['Annulée', 'Historisée'])
+            ->andWhere('s.isPrivate = false OR (s.isPrivate = true AND :user MEMBER OF s.participantsPrives)
+                                                    OR :isAdmin = true')
+            ->setParameter('user', $user)
+            ->setParameter('isAdmin', in_array('ROLE_ADMIN', $user->getRoles() ?? []))
             ->groupBy('s.id')
             ->getQuery()
             ->getResult();
@@ -70,6 +74,10 @@ class SortieRepository extends BaseRepository
             ->leftJoin('s.etat', 'e')
             ->addSelect('COUNT(DISTINCT i.id) AS nbInscrits')
             ->addSelect('e.libelle AS etatLibelle')
+            ->where('s.isPrivate = false OR (s.isPrivate = true AND :user MEMBER OF s.participantsPrives)
+                                                    OR :isAdmin = true')
+            ->setParameter('user', $user)
+            ->setParameter('isAdmin', in_array('ROLE_ADMIN', $user->getRoles() ?? []))
             ->groupBy('s.id')
             ->addGroupBy('e.id')
             ->orderBy('s.datedebut', 'DESC');
@@ -158,5 +166,28 @@ class SortieRepository extends BaseRepository
         }
         $this->getEntityManager()->flush();
     }
+
+
+    // SortieRepository.php
+    public function findWithSubscribedBySite(Participant $user)
+    {
+        return $this->createQueryBuilder('s')
+            ->innerJoin('s.organisateur', 'o')
+            ->innerJoin('o.site', 'site')
+            ->where('site = :site')
+            ->setParameter('site', $user->getSite())
+            ->andWhere('s.isPrivate = false OR (s.isPrivate = true AND :user MEMBER OF s.participantsPrives)
+                                                    OR :isAdmin = true')
+            ->setParameter('user', $user)
+            ->setParameter('isAdmin', in_array('ROLE_ADMIN', $user->getRoles() ?? []))
+            ->orderBy('s.datedebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
+
+
 
 }

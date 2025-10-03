@@ -82,13 +82,13 @@ class SortieService
         $dto->organisateur->nom = $sortie->getOrganisateur()->getNom();
         $dto->organisateur->prenom = $sortie->getOrganisateur()->getPrenom();
         $dto->organisateur->pseudo = $sortie->getOrganisateur()->getPseudo();
-
+        $dto->isPrivate = $sortie->isPrivate();
         $dto->lieu = $sortie->getLieu();
         $dto->ville = $sortie->getLieu()->getVille()->getNomVille();
 
-
-        for($i = 0; $i < 20; $i++)
-        {
+        $dto->participantsPrives = $sortie->getParticipantsPrives();
+//        for($i = 0; $i < 20; $i++)
+//        {
 
 
             foreach ($sortie->getInscriptions() as $inscription) {
@@ -102,7 +102,7 @@ class SortieService
 
                 $dto->participants[] = $pDto;
             }
-        }
+        //}
 
         return $dto;
     }
@@ -115,7 +115,7 @@ class SortieService
 
     public function findAllWithSubscribed(?Participant $user = null): array
     {
-        $rawResults = $this->sortieRepository->findAllWithSubscribed();
+        $rawResults = $this->sortieRepository->findAllWithSubscribed($user);
 
         return array_map(function($row) use ($user) {
             $sortie = $row[0];
@@ -154,4 +154,14 @@ class SortieService
 
         return null;
     }
+
+
+
+
+    public function findByUserSite(Participant $participant)
+    {
+        return $this->sortieRepository->findWithSubscribedBySite($participant);
+    }
+
+
 }

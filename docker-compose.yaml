@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  php:
+    build: .
+    container_name: symfony_php
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    environment:
+      APP_ENV: dev
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: symfony
+      DB_PASSWORD: symfony
+      DB_NAME: sortir.com
+      # parse host, user, password, db name depuis $DB_URL
+
+
+  db:
+    image: mysql:8.0
+    container_name: symfony_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sortir.com
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: symfony_phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: symfony
+      PMA_PASSWORD: symfony
+    depends_on:
+      - db
+
+volumes:
+  db_data:
